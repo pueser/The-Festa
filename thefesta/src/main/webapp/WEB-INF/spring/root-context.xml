@@ -42,5 +42,5 @@
 	<tx:annotation-driven/>
 	<context:component-scan base-package="kr.co.thefesta"></context:component-scan>
 	<mybatis-spring:scan base-package="kr.co.thefesta.mapper"/>	
-	<mybatis-spring:scan base-package="kr.co.thefesta.member.mapper"/>
+	<mybatis-spring:scan base-package="kr.co.thefesta.**.mapper"/>
 </beans>
