@@ -37,6 +37,7 @@ public class HomeController {
 		
 		// 주석 추가
 		// test
+		// test2
 	}
 	
 }
