@@ -36,6 +36,7 @@ public class HomeController {
 		return "home";
 		
 		// 주석 추가
+		// test
 	}
 	
 }
