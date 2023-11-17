@@ -13,9 +13,14 @@ import lombok.ToString;
 @ToString
 public class MemberDTO {
 
-	private Integer integer;
-	private String string;
-	private Date date;
-	private int num;
+	private String id;
+	private String password;
+	private String nickname;
+	private String profileImg;
+	private String agreement;
+	private Date joindate;
+	private Date finalaccess;
+	private Date withdrawdate;
+	private Integer reportnum;
 	
 }
