@@ -2,6 +2,8 @@ package kr.co.thefesta.member.domain;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,8 +21,10 @@ public class MemberDTO {
 	private String profileImg;
 	private String agreement;
 	private Date joindate;
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd")
 	private Date finalaccess;
 	private Date withdrawdate;
 	private Integer reportnum;
-	
+	private String statecode;
+	private Date updatedate;
 }
