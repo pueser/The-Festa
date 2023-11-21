@@ -6,6 +6,7 @@
  	<select id="memberList" resultType="kr.co.thefesta.member.domain.MemberDTO">
  		SELECT id,nickname ,statecode, reportnum, finalaccess
 		FROM member
+		WHERE NOT statecode IN '0'
  	</select>
  	
  	<select id="memberDetail" resultType="kr.co.thefesta.member.domain.MemberDTO">
