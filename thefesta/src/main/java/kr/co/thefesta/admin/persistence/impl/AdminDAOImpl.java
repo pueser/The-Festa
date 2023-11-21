@@ -24,6 +24,6 @@ public class AdminDAOImpl implements IAdminDAO {
 	//member 회원 디테일 정보
 	@Override
 	public MemberDTO memberDetail(String nickname) throws Exception {
-		return session.select("AdminMapper.memberDetail", nickname);
+		return session.selectOne("AdminMapper.memberDetail", nickname);
 	}
 }
