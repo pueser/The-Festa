@@ -28,7 +28,7 @@
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="dataSource"></property>
 		<property name="configLocation" value="classpath:/mybatis-config.xml"></property>
-		<!-- <property name="mapperLocations" value="classpath:mappers/**/*Mapper.xml"></property> Mapper 만들면 주석 해제-->
+		<property name="mapperLocations" value="classpath:mappers/**/*Mapper.xml"></property>
 	</bean>
 	
 	<bean id="sqlsession" class="org.mybatis.spring.SqlSessionTemplate" destroy-method="clearCache">
@@ -39,6 +39,26 @@
 		<property name="dataSource" ref="dataSource"></property>
 	</bean>
 	
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+       <property name="host" value="smtp.naver.com" />
+       <property name="port" value="465" />
+       <property name="username" value="dain7362"/> 
+       <property name="password" value="--------"/>
+       <property name="defaultEncoding" value="utf-8" />
+       
+       <property name="javaMailProperties"> 
+	       <props> 
+	       		<prop key="mail.smtp.starttls.enable">true</prop>
+			      <prop key="mail.smtp.auth">true</prop>
+			      <prop key="mail.smtps.ssl.checkserveridentity">true</prop>
+			      <prop key="mail.smtps.ssl.trust">*</prop>
+                  <prop key="mail.smtp.ssl.enable">true</prop>
+			      <prop key="mail.debug">true</prop>
+			      <prop key="mail.smtp.socketFactory.class">javax.net.ssl.SSLSocketFactory</prop>
+	       </props> 
+       </property>
+    </bean>
+    
 	<tx:annotation-driven/>
 	<context:component-scan base-package="kr.co.thefesta"></context:component-scan>
 	<mybatis-spring:scan base-package="kr.co.thefesta.mapper"/>	
