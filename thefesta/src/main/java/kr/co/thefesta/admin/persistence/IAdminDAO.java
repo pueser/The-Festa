@@ -2,7 +2,9 @@ package kr.co.thefesta.admin.persistence;
 
 import java.util.List;
 
-import kr.co.thefesta.admin.domain.MemberDTO;
+import kr.co.thefesta.member.domain.MemberDTO;
+
+
 
 
 

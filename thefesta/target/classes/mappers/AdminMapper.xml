@@ -3,12 +3,12 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
  <mapper namespace="AdminMapper">
- 	<select id="memberList" resultType="kr.co.thefesta.admin.domain.MemberDTO">
+ 	<select id="memberList" resultType="kr.co.thefesta.member.domain.MemberDTO">
  		SELECT id,nickname ,statecode, reportnum, finalaccess
 		FROM member
  	</select>
  	
- 	<select id="memberDetail" resultType="kr.co.thefesta.admin.domain.MemberDTO">
+ 	<select id="memberDetail" resultType="kr.co.thefesta.member.domain.MemberDTO">
  		SELECT statecode, finalaccess
  		FROM member
  	</select>

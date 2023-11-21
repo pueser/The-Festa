@@ -5,9 +5,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import kr.co.thefesta.admin.domain.MemberDTO;
 import kr.co.thefesta.admin.persistence.IAdminDAO;
 import kr.co.thefesta.admin.service.IAdminService;
+import kr.co.thefesta.member.domain.MemberDTO;
 
 
 @Service

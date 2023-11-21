@@ -6,8 +6,9 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import kr.co.thefesta.admin.domain.MemberDTO;
+
 import kr.co.thefesta.admin.persistence.IAdminDAO;
+import kr.co.thefesta.member.domain.MemberDTO;
 
 
 @Repository

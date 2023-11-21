@@ -2,9 +2,7 @@ package kr.co.thefesta.admin.service;
 
 import java.util.List;
 
-import kr.co.thefesta.admin.domain.MemberDTO;
-
-
+import kr.co.thefesta.member.domain.MemberDTO;
 
 public interface IAdminService {
 	//member 테이블 회원정보 list

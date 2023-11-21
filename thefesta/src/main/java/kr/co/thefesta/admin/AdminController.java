@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import kr.co.thefesta.admin.domain.MemberDTO;
 import kr.co.thefesta.admin.service.IAdminService;
+import kr.co.thefesta.member.domain.MemberDTO;
 import lombok.extern.log4j.Log4j;
 
 @RestController
