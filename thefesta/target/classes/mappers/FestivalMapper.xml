@@ -2,6 +2,9 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
- <mapper namespace="kr.co.springstudy.mapper.Sample1Mapper">
- 	
+ <mapper namespace="FestivalMapper">
+ 	<insert id="insertApi">
+ 		INSERT INTO festa(contentid, title, eventstartdate, eventenddate, addr1, eventintro, eventtext, homepage, agelimit, sponsor1, sponsor1tel, sponsor2, sponsor2tel, usetimefestival, playtime, acode, scode, mlevel, mapx, mapy) 
+		VALUES(#{contentid}, #{title}, #{eventstartdate}, #{eventenddate}, #{addr1, jdbcType=VARCHAR}, #{eventintro, jdbcType=VARCHAR}, #{eventtext, jdbcType=VARCHAR}, #{homepage, jdbcType=VARCHAR}, #{agelimit, jdbcType=VARCHAR}, #{sponsor1, jdbcType=VARCHAR}, #{sponsor1tel, jdbcType=VARCHAR}, #{sponsor2, jdbcType=VARCHAR}, #{sponsor2tel, jdbcType=VARCHAR}, #{usetimefestival, jdbcType=VARCHAR}, #{playtime, jdbcType=VARCHAR}, #{acode, jdbcType=INTEGER}, #{scode, jdbcType=INTEGER}, #{mlevel, jdbcType=INTEGER}, #{mapx, jdbcType=DOUBLE}, #{mapy, jdbcType=DOUBLE})
+ 	</insert>
  </mapper>

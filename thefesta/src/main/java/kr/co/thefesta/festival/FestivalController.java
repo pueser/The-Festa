@@ -18,6 +18,8 @@ import com.google.gson.Gson;
 import kr.co.thefesta.festival.domain.FestivalDTO;
 import kr.co.thefesta.festival.domain.detailCommon.DetailCommonDTO;
 import kr.co.thefesta.festival.domain.detailCommon.DetailCommonItemDTO;
+import kr.co.thefesta.festival.domain.detailInfo.DetailInfoDTO;
+import kr.co.thefesta.festival.domain.detailInfo.DetailInfoItemDTO;
 import kr.co.thefesta.festival.domain.detailIntro.DetailIntroDTO;
 import kr.co.thefesta.festival.domain.detailIntro.DetailIntroItemDTO;
 import kr.co.thefesta.festival.domain.searchFestival.SearchFestivalDTO;
@@ -60,36 +62,37 @@ public class FestivalController {
 				HttpURLConnection sfStream = (HttpURLConnection) sfUrl.openConnection();
 				BufferedReader sfReader = new BufferedReader(new InputStreamReader(sfStream.getInputStream()));
 				
-				StringBuilder resultBuilder = new StringBuilder();
+				StringBuilder sfResultBuilder = new StringBuilder();
                 String str;
                 while ((str = sfReader.readLine()) != null) {
-                    resultBuilder.append(str);
+                	sfResultBuilder.append(str);
                 }
                 
                 sfReader.close();
                 sfStream.disconnect();
 
-                String result = resultBuilder.toString();
+                String sfResult = sfResultBuilder.toString();
 
                 Gson gson = new Gson();
-                SearchFestivalDTO response = gson.fromJson(result, SearchFestivalDTO.class);
+                SearchFestivalDTO sfResponse = gson.fromJson(sfResult, SearchFestivalDTO.class);
 
-                List<SearchFestivalItemDTO> items = response.getResponse().getBody().getItems().getItem();
+                List<SearchFestivalItemDTO> sfItems = sfResponse.getResponse().getBody().getItems().getItem();
                 
                 FestivalDTO fDto = new FestivalDTO();
                 
-                for (SearchFestivalItemDTO itemDTO : items) {
-                    if (itemDTO.getCat2().equals("A0207")) {
-                    	fDto.setContentid(itemDTO.getContentid());
-                    	fDto.setTitle(itemDTO.getTitle());
-                    	fDto.setEventstartdate(itemDTO.getEventstartdate());
-                    	fDto.setEventenddate(itemDTO.getEventenddate());
-                    	fDto.setAddr1(itemDTO.getAddr1());
-                    	fDto.setAcode(Integer.parseInt(itemDTO.getAreacode()));
-                    	fDto.setScode(Integer.parseInt(itemDTO.getSigungucode()));
-                    	fDto.setMlevel(Integer.parseInt(itemDTO.getMlevel()));
-                    	fDto.setMapx(Double.parseDouble(itemDTO.getMapx()));
-                    	fDto.setMapy(Double.parseDouble(itemDTO.getMapy()));
+                for (SearchFestivalItemDTO searchFestivalItemDTO : sfItems) {
+                    if (searchFestivalItemDTO.getCat2().equals("A0207")) {
+                    	System.out.println("searchFestivalItemDTO-----");
+                    	fDto.setContentid(searchFestivalItemDTO.getContentid());
+                    	fDto.setTitle(searchFestivalItemDTO.getTitle());
+                    	fDto.setEventstartdate(searchFestivalItemDTO.getEventstartdate());
+                    	fDto.setEventenddate(searchFestivalItemDTO.getEventenddate());
+                    	fDto.setAddr1(searchFestivalItemDTO.getAddr1());
+                    	fDto.setAcode(Integer.parseInt(searchFestivalItemDTO.getAreacode()));
+                    	fDto.setScode(Integer.parseInt(searchFestivalItemDTO.getSigungucode()));
+                    	fDto.setMlevel(Integer.parseInt(searchFestivalItemDTO.getMlevel()));
+                    	fDto.setMapx(Double.parseDouble(searchFestivalItemDTO.getMapx()));
+                    	fDto.setMapy(Double.parseDouble(searchFestivalItemDTO.getMapy()));
                     	
                     	// API 호출 URL 구성 (detailCommon1)
                     	StringBuilder dcUrlBuilder = new StringBuilder("http://apis.data.go.kr/B551011/KorService1/detailCommon1");
@@ -99,7 +102,7 @@ public class FestivalController {
                     	dcUrlBuilder.append("&" + URLEncoder.encode("numOfRows", "UTF-8") + "=100");
                     	dcUrlBuilder.append("&" + URLEncoder.encode("pageNo", "UTF-8") + "=1");
                     	dcUrlBuilder.append("&" + URLEncoder.encode("_type", "UTF-8") + "=json");
-                    	dcUrlBuilder.append("&" + URLEncoder.encode("contentId", "UTF-8") + "=" + itemDTO.getContentid());
+                    	dcUrlBuilder.append("&" + URLEncoder.encode("contentId", "UTF-8") + "=" + searchFestivalItemDTO.getContentid());
                     	dcUrlBuilder.append("&" + URLEncoder.encode("defaultYN", "UTF-8") + "=Y");
                     	dcUrlBuilder.append("&" + URLEncoder.encode("firstImageYN", "UTF-8") + "=Y");
                     	dcUrlBuilder.append("&" + URLEncoder.encode("areacodeYN", "UTF-8") + "=Y");
@@ -127,6 +130,7 @@ public class FestivalController {
                         List<DetailCommonItemDTO> dcItems = dcResponse.getResponse().getBody().getItems().getItem();
                         
                         for (DetailCommonItemDTO detailCommonItemDTO : dcItems) {
+                        	System.out.println("detailCommonItemDTO-------");
 							fDto.setHomepage(detailCommonItemDTO.getHomepage());
 						}
                         
@@ -138,7 +142,7 @@ public class FestivalController {
                         diUrlBuilder.append("&" + URLEncoder.encode("numOfRows", "UTF-8") + "=100");
                         diUrlBuilder.append("&" + URLEncoder.encode("pageNo", "UTF-8") + "=1");
                         diUrlBuilder.append("&" + URLEncoder.encode("_type", "UTF-8") + "=json");
-                        diUrlBuilder.append("&" + URLEncoder.encode("contentId", "UTF-8") + "=" + itemDTO.getContentid());
+                        diUrlBuilder.append("&" + URLEncoder.encode("contentId", "UTF-8") + "=" + searchFestivalItemDTO.getContentid());
                         diUrlBuilder.append("&" + URLEncoder.encode("contentTypeId", "UTF-8") + "=15");
                         
                         URL diUrl = new URL(diUrlBuilder.toString());
@@ -161,6 +165,7 @@ public class FestivalController {
                         List<DetailIntroItemDTO> diItems = diResponse.getResponse().getBody().getItems().getItem();
                         
                         for (DetailIntroItemDTO detailIntroItemDTO : diItems) {
+                        	System.out.println("detailIntroItemDTO------");
 							fDto.setAgelimit(detailIntroItemDTO.getAgelimit());
 							fDto.setSponsor1(detailIntroItemDTO.getSponsor1());
 							fDto.setSponsor1tel(detailIntroItemDTO.getSponsor1tel());
@@ -178,18 +183,47 @@ public class FestivalController {
                         difUrlBuilder.append("&" + URLEncoder.encode("numOfRows", "UTF-8") + "=100");
                         difUrlBuilder.append("&" + URLEncoder.encode("pageNo", "UTF-8") + "=1");
                         difUrlBuilder.append("&" + URLEncoder.encode("_type", "UTF-8") + "=json");
-                        difUrlBuilder.append("&" + URLEncoder.encode("contentId", "UTF-8") + "=" + itemDTO.getContentid());
+                        difUrlBuilder.append("&" + URLEncoder.encode("contentId", "UTF-8") + "=" + searchFestivalItemDTO.getContentid());
                         difUrlBuilder.append("&" + URLEncoder.encode("contentTypeId", "UTF-8") + "=15");
                         
+                        URL difUrl = new URL(difUrlBuilder.toString());
+                    	HttpURLConnection difStream = (HttpURLConnection) difUrl.openConnection();
+                    	BufferedReader difReader = new BufferedReader(new InputStreamReader(difStream.getInputStream()));
+                    	
+                    	StringBuilder difResultBuilder = new StringBuilder();
+                        String str4;
+                        while ((str4 = difReader.readLine()) != null) {
+                        	difResultBuilder.append(str4);
+                        }
+                        
+                        difReader.close();
+                        difStream.disconnect();
+
+                        String difResult = difResultBuilder.toString();
+                        
+                        DetailInfoDTO difResponse = gson.fromJson(difResult, DetailInfoDTO.class);
+                    	
+                        List<DetailInfoItemDTO> difItems = difResponse.getResponse().getBody().getItems().getItem();
+                        
+                        for (DetailInfoItemDTO detailInfoItemDTO : difItems) {
+                        	if (detailInfoItemDTO.getInfoname().equals("행사소개")) {
+                        		System.out.println("detailInfoItemDTO.getInfoname------");
+                        		fDto.setEventintro(detailInfoItemDTO.getInfotext());
+							} else if (detailInfoItemDTO.getInfoname().equals("행사내용")) {
+								System.out.println("detailInfoItemDTO.getInfoname------");
+                        		fDto.setEventtext(detailInfoItemDTO.getInfotext());
+							}
+						}
                         
 //                    	System.out.println(fDto);
-//                    	service.insert(fDto);
+                    	service.insert(fDto);
                     }
                 }
                 
                 pageNo++;
                 
-                if (items.isEmpty() || items.size() < numOfRows) {
+                if (sfItems.isEmpty() || sfItems.size() < numOfRows) {
+                	System.out.println("완료-----------");
                 	break;
                 }
 			}
