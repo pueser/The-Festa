@@ -1,6 +1,6 @@
 package kr.co.thefesta.festival.domain;
 
-import java.sql.Timestamp;
+import java.sql.Date;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,6 +17,6 @@ public class FestivalReplyDTO {
 	private String id;
 	private String nickname;
 	private String frcontent;
-	private Timestamp frrgist;
-	private Timestamp fredit;
+	private Date frregist;
+	private Date fredit;
 }
