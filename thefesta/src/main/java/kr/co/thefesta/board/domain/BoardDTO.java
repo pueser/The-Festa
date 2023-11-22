@@ -1,6 +1,6 @@
 package kr.co.thefesta.board.domain;
 
-import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -26,11 +26,11 @@ public class BoardDTO {
 	private String bcontent;
 	
 	// 게시글 등록일자
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd")
-	private Timestamp bregdate;
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd HH:mm:ss")
+	private Date bregist;
 	// 게시글 수정일자
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd")
-	private Timestamp bedit;
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd HH:mm:ss")
+	private Date bedit;
 	
 	// 게시글 작성자
 	private String nickname;
