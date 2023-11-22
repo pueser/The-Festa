@@ -5,8 +5,11 @@ import lombok.Data;
 @Data
 public class BoardImageDTO {
 
+	// 게시글 이미지 id
 	private String bfileuuid;
+	// 게시글 파일 이름
 	private String bfileName;
-	private int bno;
+	// 게시글 번호
+	private int bid;
 	
 }

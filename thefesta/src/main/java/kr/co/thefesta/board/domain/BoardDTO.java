@@ -3,6 +3,8 @@ package kr.co.thefesta.board.domain;
 import java.sql.Timestamp;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,15 +16,33 @@ import lombok.ToString;
 @ToString
 public class BoardDTO {
 	
+	// 게시판 분류 번호
 	private Integer bno;
+	// 게시글 번호
 	private int bid;
+	// 게시글 제목
 	private String btitle;
+	// 게시글 내용
 	private String bcontent;
+	
+	// 게시글 등록일자
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd")
 	private Timestamp bregdate;
+	// 게시글 수정일자
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd")
 	private Timestamp bedit;
+	
+	// 게시글 작성자
 	private String nickname;
+	// 게시글 작성자 id
 	private String id;
+	
+	// 게시글 조회수
 	private int viewcnt;
+	// 게시글 댓글수
 	private int replycnt;
+	
+	// 게시글 이미지 리스트
 	private List<BoardImageDTO> attachList;
+	
 }

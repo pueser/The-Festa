@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.thefesta.board.mapper.BoardReplyMapper">
+	<select id="getTime2" resultType="string">
+		SELECT sysdate
+		FROM dual
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO board_reply(brno, bid, brcontent, nickname, id)
+		VALUES(seq_brno.nextval, #{bid}, #{brcontent}, #{nickname}, {id})
+		
+	</insert>
+	
+	<update id="replyCntUpdate">
+		UPDATE board
+		SET breplycnt = (SELECT COUNT(*)
+           				FROM board_reply
+                		WHERE #{bid} = bid)
+		WHERE #{bid}
+	</update>
+	
+	<select id="read" resultType="kr.co.thefesta.board.domain.ReplyDTO">
+		SELECT *
+		FROM board_reply
+		WHERE brno = #{brno}
+	</select>
+	
+	<delete id="delete">
+		DELETE FROM board_reply
+		WHERE brno = #{brno}
+	</delete>
+	
+	<update id="update">
+		UPDATE board_reply
+		SET brcontent = #{brcontent} brregist = sysdate
+		WHERE brno = #{brno}
+	</update>
+	
+	<select id="getListWithPaging" resultType="kr.co.thefesta.board.domain.ReplyDTO">
+		SELECT brno,
+			   bid,
+			   brcontent,
+			   nickname,
+			   brregist,
+			   id
+		FROM board_reply
+		WHERE bid = #{bid}
+		ORDER BY brno ASC
+	</select>
+</mapper>
+  
