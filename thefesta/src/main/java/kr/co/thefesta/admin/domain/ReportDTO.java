@@ -19,21 +19,23 @@ public class ReportDTO {
    private int reportid;
    //신고처리상태
    private int reportstate;
-   //등록일자
+   //신고일자
    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd")
-   private Timestamp reportregist;
+   private Timestamp reportdate;
    //신고내용
    private String reportcontent;
    
    
    
-   //신고자(이메일)
-   private String id;
+   //신고한 회원(이메일)
+   private String reporter;
+   //신고당한 회원(이메일)
+   private String reported;
    //게시글 댓글번호
-   private int brno; 
+   private int rbrno; 
    //축제 댓글번호
-   private int frno;
+   private int rfrno;
    //게시글 번호
-   private int bid;
+   private int rbid;
 	   
 }

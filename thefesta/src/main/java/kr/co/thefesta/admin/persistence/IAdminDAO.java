@@ -4,10 +4,6 @@ import java.util.List;
 
 import kr.co.thefesta.member.domain.MemberDTO;
 
-
-
-
-
 public interface IAdminDAO {
 	//member 테이블 회원정보 list
 	public List<MemberDTO> memberList()throws Exception;
