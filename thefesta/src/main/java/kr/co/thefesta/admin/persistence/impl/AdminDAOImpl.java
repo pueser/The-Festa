@@ -6,7 +6,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-
+import kr.co.thefesta.admin.domain.ReportDTO;
 import kr.co.thefesta.admin.persistence.IAdminDAO;
 import kr.co.thefesta.member.domain.MemberDTO;
 
@@ -24,7 +24,7 @@ public class AdminDAOImpl implements IAdminDAO {
 	
 	//member 회원 디테일 정보
 	@Override
-	public MemberDTO memberDetail(String nickname) throws Exception {
-		return session.selectOne("AdminMapper.memberDetail", nickname);
+	public List<ReportDTO> memberDetail(String id) throws Exception {
+		return session.selectList("AdminMapper.memberDetail", id);
 	}
 }

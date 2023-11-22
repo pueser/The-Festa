@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import kr.co.thefesta.admin.domain.ReportDTO;
 import kr.co.thefesta.admin.persistence.IAdminDAO;
 import kr.co.thefesta.admin.service.IAdminService;
 import kr.co.thefesta.member.domain.MemberDTO;
@@ -23,8 +24,8 @@ public class AdminServiceImpl implements IAdminService {
 	
 	//member 회원 디테일 정보
 	@Override
-	public MemberDTO memberDetail(String nickname) throws Exception {
-		return adminDao.memberDetail(nickname);
+	public List<ReportDTO> memberDetail(String id) throws Exception {
+		return adminDao.memberDetail(id);
 	}
 
 }

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import kr.co.thefesta.admin.domain.ReportDTO;
 import kr.co.thefesta.admin.service.IAdminService;
 import kr.co.thefesta.member.domain.MemberDTO;
 import lombok.extern.log4j.Log4j;
@@ -50,9 +51,14 @@ public class AdminController {
 		
 	}
 	
+	//회원 상세페이지(신고 list 페이지)
 	@RequestMapping(value = "/memberDetail", method = RequestMethod.GET)
-	public void memberDetailGet()throws Exception{
+	public List<ReportDTO> memberDetailGet(String id)throws Exception{
 		log.info("memberDetail Get...");
+		log.info("회원 상세 id값 = " + id);
+		List<ReportDTO> reportList = service.memberDetail(id);
+		log.info("reportList = " + reportList.toString());
 		
+		return reportList;
 	}
 }

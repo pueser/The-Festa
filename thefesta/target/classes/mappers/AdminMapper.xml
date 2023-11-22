@@ -9,8 +9,9 @@
 		WHERE NOT statecode IN '0'
  	</select>
  	
- 	<select id="memberDetail" resultType="kr.co.thefesta.member.domain.MemberDTO">
- 		SELECT statecode, finalaccess
- 		FROM member
+ 	<select id="memberDetail" resultType="kr.co.thefesta.admin.domain.ReportDTO">
+ 		SELECT *
+		FROM report
+		WHERE reported = #{id}
  	</select>
  </mapper>
