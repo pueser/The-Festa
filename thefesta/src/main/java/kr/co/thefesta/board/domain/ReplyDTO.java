@@ -1,6 +1,6 @@
 package kr.co.thefesta.board.domain;
 
-import java.sql.Timestamp;
+import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -20,10 +20,10 @@ public class ReplyDTO {
 	// 댓글 내용
 	private String brcontent;
 	
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd")
-	private Timestamp brregist;
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd")
-	private Timestamp bredit;
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd HH:mm:ss")
+	private Date brregist;
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd HH:mm:ss")
+	private Date bredit;
 	
 	// 게시글 번호
 	private int bid;
