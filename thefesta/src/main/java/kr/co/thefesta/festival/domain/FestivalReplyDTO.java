@@ -20,9 +20,9 @@ public class FestivalReplyDTO {
 	private String nickname;
 	private String frcontent;
 	
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd HH:mm:ss")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd HH:mm:ss", timezone = "GMT+9")
 	private Date frregist;
 	
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd HH:mm:ss")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd HH:mm:ss", timezone = "GMT+9")
 	private Date fredit;
 }

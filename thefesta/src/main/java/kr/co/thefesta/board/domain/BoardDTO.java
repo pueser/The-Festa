@@ -26,10 +26,10 @@ public class BoardDTO {
 	private String bcontent;
 	
 	// 게시글 등록일자
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd HH:mm:ss")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd HH:mm", timezone = "GMT+9")
 	private Date bregist;
 	// 게시글 수정일자
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd HH:mm:ss")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd HH:mm", timezone = "GMT+9")
 	private Date bedit;
 	
 	// 게시글 작성자
