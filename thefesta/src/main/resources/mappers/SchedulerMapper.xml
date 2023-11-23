@@ -2,6 +2,13 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
- <mapper namespace="kr.co.springstudy.mapper.Sample1Mapper">
- 	
+ <mapper namespace="kr.co.thefesta.scheduler.mapper.SchedulerMapper">
+ 	<select id="getFestaCnt" resultType="int">
+ 		<![CDATA[
+			SELECT	COUNT(*)
+			FROM	festa
+			WHERE	TO_NUMBER(eventstartdate) <= #{date}
+			AND		#{date} <= TO_NUMBER(eventenddate)
+		]]>
+	</select>
  </mapper>

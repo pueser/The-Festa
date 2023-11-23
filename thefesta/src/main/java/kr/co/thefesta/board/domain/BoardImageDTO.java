@@ -11,5 +11,9 @@ public class BoardImageDTO {
 	private String bfileName;
 	// 게시글 번호
 	private int bid;
+	// 업로드패스
+	private String uploadpath;
+	// 파일타입
+	private char bfiletype;
 	
 }
