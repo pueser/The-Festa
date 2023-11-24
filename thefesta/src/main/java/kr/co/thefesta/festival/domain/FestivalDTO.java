@@ -25,6 +25,8 @@ public class FestivalDTO {
 	private String sponsor2tel;
 	private String usetimefestival;
 	private String playtime;
+	private String firstimage;
+	private String firstimage2;
 	private int acode;
 	private int scode;
 	private int mlevel;
