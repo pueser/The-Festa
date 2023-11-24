@@ -1,6 +1,8 @@
 package kr.co.thefesta.scheduler;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import kr.co.thefesta.festival.domain.AreaCodeDTO;
+import kr.co.thefesta.festival.domain.FestivalDTO;
 import kr.co.thefesta.scheduler.service.ISchedulerService;
 import lombok.extern.log4j.Log4j;
 
@@ -38,10 +42,23 @@ public class SchedulerController {
 	
 	@RequestMapping(value = "/festaList", method = RequestMethod.GET)
 	@ResponseBody
-	public Map<String, Integer> getFestaList(@RequestParam("date") Integer date) throws Exception {
+	public Map<String, List<FestivalDTO>> getFestaList(@RequestParam("date") Integer date) throws Exception {
 		log.info("getFestaList....................");
 		log.info("RequestParam : " + date);
-		Map<String, Integer> result = new HashMap<>();
+		Map<String, List<FestivalDTO>> result = new HashMap<>();
+		result.put("festaList", service.getFestaList(date));
+		log.info("controllerResult : " + result);
+		return result;
+	}
+	
+	@RequestMapping(value = "/districtSelectOption", method = RequestMethod.GET)
+	@ResponseBody
+	public Map<String, ArrayList<AreaCodeDTO>> getDistrictSelectOptions(@RequestParam("acode") int acode) throws Exception {
+		log.info("getDistrictSelectOptions....................");
+		log.info("RequestParam : " + acode);
+		Map<String, ArrayList<AreaCodeDTO>> result = new HashMap<>();
+		result.put("districtList", service.getDistrictSelectOptions(acode));
+		log.info("controllerResult : " + result);
 		return result;
 	}
 }
