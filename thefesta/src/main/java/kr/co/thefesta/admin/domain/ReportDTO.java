@@ -1,6 +1,6 @@
 package kr.co.thefesta.admin.domain;
 
-import java.sql.Timestamp;
+import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -21,10 +21,11 @@ public class ReportDTO {
    private int reportstate;
    //신고일자
    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd")
-   private Timestamp reportdate;
+   private Date reportdate;
    //신고내용
    private String reportcontent;
-   
+   //신고대상
+   private String reportnumber;
    
    
    //신고한 회원(이메일)

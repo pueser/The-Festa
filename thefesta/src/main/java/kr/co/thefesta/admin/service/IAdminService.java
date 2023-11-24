@@ -6,6 +6,7 @@ import kr.co.thefesta.admin.domain.ReportDTO;
 import kr.co.thefesta.member.domain.MemberDTO;
 
 public interface IAdminService {
+	
 	//member 테이블 회원정보 list
 	public List<MemberDTO> memberList()throws Exception;
 	//member 회원 디테일 정보
