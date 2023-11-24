@@ -15,23 +15,19 @@ public class MemberDAOImpl implements IMemberDAO {
 
 	@Autowired
 	private SqlSession sqlSession;
-
-	private static final String namespace = "kr.co.myletter.memberMapper";
+	
+	private static final String namespace = "kr.co.thefesta.memberMapper";
+	
 	@Override
-	public String getTime() {
-		return sqlSession.selectOne(namespace + ".getTime");
+	public MemberDTO selMember(MemberDTO mDto) {
+		return sqlSession.selectOne(namespace + ".selMember", mDto);
 	}
 
 	@Override
-	public void insertMember(MemberDTO mDto) {
-		sqlSession.insert(namespace + ".insertMember", mDto);
+	public MemberDTO login(MemberDTO mDto) {
+		return sqlSession.selectOne(namespace + ".login", mDto);
 	}
-
-	@Override
-	public MemberDTO selMember(String id) throws Exception {
-		return sqlSession.selectOne(namespace + ".selMember", id);
-	}
-
+	
 	@Override
 	public MemberDTO selLoginInfo(String id, String password) throws Exception {
 		Map<String, Object> paramMap = new HashMap<>();
@@ -41,10 +37,50 @@ public class MemberDAOImpl implements IMemberDAO {
 		return sqlSession.selectOne(namespace + ".selLoginInfo", paramMap);
 	}
 
+	
 	@Override
 	public void updateLogDate(String id) {
 		sqlSession.update(namespace + ".loginUpdate", id);
-		
 	}
 
+	@Override
+	public String stateCodeCheck(String nickname) {
+		return sqlSession.selectOne(namespace + ".stateCodeCheck", nickname);
+	}
+
+	@Override
+	public int nicknameCheck(String nickname) {
+		return sqlSession.selectOne(namespace + ".nicknameCheck", nickname);
+	}
+
+	@Override
+	public int idCheck(String id) {
+		return sqlSession.selectOne(namespace + ".idCheck", id);
+	}
+
+	@Override
+	public void join(MemberDTO mDto) {
+		sqlSession.selectOne(namespace + ".join", mDto);
+	}
+
+	@Override
+	public void reJoin(MemberDTO mDto) {
+		sqlSession.selectOne(namespace + ".reJoin", mDto);
+	}
+
+	
+	@Override
+	public void logout(String id) {
+		sqlSession.update(namespace + ".logout", id);
+	}
+	
+	
+	@Override
+	public void updateState(String id, String statecode) {
+		Map<String, Object> paramMap = new HashMap<>();
+		
+		paramMap.put("id", id);
+		paramMap.put("statecode", statecode);
+		sqlSession.update(namespace + ".updateState", paramMap);
+	}
 }

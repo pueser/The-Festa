@@ -13,24 +13,54 @@ public class MemberServiceImpl implements IMemberService {
 	private MemberMapper mapper;
 	
 	@Override
-	public MemberDTO login(MemberDTO mDto) {
+	public MemberDTO selMember(MemberDTO mDto) throws Exception {
+		return mapper.selMember(mDto);
+	}
+	
+	@Override
+	public MemberDTO login(MemberDTO mDto) throws Exception {
 		return mapper.login(mDto);
 	}
 
 	@Override
-	public void logout(String id) {
+	public void updateLogDate(String id) throws Exception {
+		mapper.updateLogDate(id);
+	}
+	
+	
+	@Override
+	public String stateCodeCheck(String nickname) throws Exception {
+		return mapper.stateCodeCheck(nickname);
+	}
+	
+	@Override
+	public int nicknameCheck(String nickname) throws Exception {
+		return mapper.nicknameCheck(nickname);
+	}
+	
+	@Override
+	public int idCheck(String id) throws Exception {
+		return mapper.idCheck(id);
+	}
+	
+	@Override
+	public void join(MemberDTO mDto) throws Exception {
+		mapper.join(mDto);
+	}
+	
+	public void reJoin(MemberDTO mDto) throws Exception {
+		mapper.reJoin(mDto);
+	}
+
+
+	@Override
+	public void logout(String id) throws Exception {
 		mapper.logout(id);
 	}
-
+	
+	
 	@Override
-	public MemberDTO insertMember(MemberDTO mDto) {
-		return mapper.insertMember(mDto);
+	public void updateState(String id, String statecode) throws Exception {
+		mapper.updateState(id, statecode);
 	}
-
-	@Override
-	public void updateLogDate(String id) {
-		mapper.updateLogDate(id);
-		
-	}
-
 }
