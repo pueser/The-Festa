@@ -6,8 +6,10 @@ import org.springframework.stereotype.Repository;
 
 import kr.co.thefesta.food.domain.ItemDTO;
 import kr.co.thefesta.food.persistence.IFoodDAO;
+import lombok.extern.log4j.Log4j;
 
 @Repository
+@Log4j
 public class FoodDAOImpl implements IFoodDAO {
 
 	@Autowired
@@ -19,5 +21,9 @@ public class FoodDAOImpl implements IFoodDAO {
 		
 	}
 
+	@Override
+	public void delete() throws Exception {
+		session.delete("FoodMapper.delete");
+	}
 	
 }

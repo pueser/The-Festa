@@ -8,5 +8,9 @@
   		INSERT INTO Food(contentid, title, addr1, firstmenu, treatmenu, infocenterfood, parkingfood, opentimefood, restdatefood, overview, firstimage, firstimage2, mapx, mapy, areacode, sigungucode, cat3 )
 		VALUES(#{contentid}, #{title}, #{addr1}, #{firstmenu}, #{treatmenu}, #{infocenterfood}, #{parkingfood}, #{opentimefood}, #{restdatefood}, #{overview}, #{firstimage}, #{firstimage2}, #{mapx}, #{mapy}, #{areacode}, #{sigungucode}, #{cat3})
   	</insert>
+  	
+  	<delete id="delete">
+  		DELETE FROM Food
+  	</delete>
   </mapper>
   
