@@ -27,5 +27,29 @@ public class AdminServiceImpl implements IAdminService {
 	public List<ReportDTO> memberDetail(String id) throws Exception {
 		return adminDao.memberDetail(id);
 	}
+	
+	//회원 신고내용
+	@Override
+	public String memberReport(Integer reportid) throws Exception {
+		return adminDao.memberReport(reportid);
+	}
+	
+	//회원 신고글 삭제
+	@Override
+	public int memberReportDelete(Integer reportid) throws Exception {
+		return adminDao.memberReportDelete(reportid);
+		
+	}
+	
+	//신고 list
+	@Override
+	public List<ReportDTO> reportList() throws Exception {
+		return adminDao.reportList();
+	}
+
+	@Override
+	public int reportstateChange(Integer reportid) throws Exception {
+		return adminDao.reportstateChange(reportid);
+	}
 
 }

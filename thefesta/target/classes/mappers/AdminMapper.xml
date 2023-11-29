@@ -3,15 +3,48 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
  <mapper namespace="AdminMapper">
+ 	<!-- member 테이블 회원정보 list -->
  	<select id="memberList" resultType="kr.co.thefesta.member.domain.MemberDTO">
  		SELECT id,nickname ,statecode, reportnum, finalaccess
 		FROM member
 		WHERE NOT statecode IN '0'
  	</select>
  	
+ 	<!-- member 회원 디테일 정보 -->
  	<select id="memberDetail" resultType="kr.co.thefesta.admin.domain.ReportDTO">
- 		SELECT *
+ 		SELECT  report.reportid, report.reportcontent, report.reporter, report.rbrno, report.rfrno, report.rbid, report.reportdate,
+        		member.statecode, member.finalaccess
 		FROM report
-		WHERE reported = #{id}
+		INNER JOIN member
+		ON report.reported = member.id
+		WHERE member.id = #{id} AND report.reportstate = 2
  	</select>
+ 	
+ 	<!-- 회원 신고내용 -->
+ 	<select id="memberReport" resultType="String">
+ 		SELECT reportcontent
+		FROM report
+		WHERE reportid = #{reportid}
+ 	</select>
+ 	
+ 	<!-- 신고 list -->
+ 	<select id="reportList" resultType="kr.co.thefesta.admin.domain.ReportDTO">
+ 		SELECT reportid, reportcontent, reporter, rbid, rbrno, rfrno, reportdate
+		FROM report
+		WHERE reportstate = '1'
+ 	</select>
+ 	
+ 	<!-- 회원 신고글 삭제 -->
+ 	<delete id="memberReportDelete">
+	 	DELETE
+		FROM report 
+		WHERE reportid = #{reportid}
+ 	</delete>
+ 	
+ 	<!-- 신고처리상태 변경(reportstate->2) -->
+ 	<update id="reportstateChange">
+ 		UPDATE report
+		SET reportstate= 2
+		WHERE reportid = #{reportid}
+ 	</update>
  </mapper>
