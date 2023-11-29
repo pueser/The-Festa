@@ -32,7 +32,7 @@ public class BoardDAOImpl implements IBoardDAO {
 
 	@Override
 	public int delete(int bid) throws Exception {
-		return session.delete("BoardMapper.delete", bid);
+		return session.update("BoardMapper.delete", bid);
 	}
 
 //	@Override

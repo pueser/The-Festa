@@ -25,13 +25,14 @@
 	<select id="read" resultType="kr.co.thefesta.board.domain.ReplyDTO">
 		SELECT *
 		FROM board_reply
-		WHERE brno = #{brno}
+		WHERE brno = #{brno} AND brstatecode='Y'
 	</select>
 	
-	<delete id="delete">
-		DELETE FROM board_reply
+	<update id="delete">
+		UPDATE board_reply
+		SET brstatecode='N'
 		WHERE brno = #{brno}
-	</delete>
+	</update>
 	
 	<update id="update">
 		UPDATE board_reply
@@ -47,7 +48,7 @@
 			   brregist,
 			   id
 		FROM board_reply
-		WHERE bid = #{bid}
+		WHERE bid = #{bid} AND brstatecode='Y'
 		ORDER BY brno ASC
 	</select>
 </mapper>
