@@ -45,4 +45,6 @@ public class BoardDTO {
 	// 게시글 이미지 리스트
 	private List<BoardImageDTO> attachList;
 	
+	// 게시글 상태코드
+	private String bstatecode;
 }

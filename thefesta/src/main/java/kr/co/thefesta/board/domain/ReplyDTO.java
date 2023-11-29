@@ -31,4 +31,6 @@ public class ReplyDTO {
 	private String nickname;
 	// 댓글 작성자 id
 	private String id;
+	// 댓글 상태코드
+	private String brstatecode;
 }
