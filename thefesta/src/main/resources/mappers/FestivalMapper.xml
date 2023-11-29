@@ -4,17 +4,49 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
  <mapper namespace="FestivalMapper">
  	<insert id="insertApi">
- 		INSERT INTO festa(contentid, title, eventstartdate, eventenddate, addr1, eventintro, eventtext, homepage, agelimit, sponsor1, sponsor1tel, sponsor2, sponsor2tel, usetimefestival, playtime, firstimage, firstimage2, acode, scode, mlevel, mapx, mapy) 
-		VALUES(#{contentid}, #{title}, #{eventstartdate}, #{eventenddate}, #{addr1, jdbcType=VARCHAR}, #{eventintro, jdbcType=VARCHAR}, #{eventtext, jdbcType=VARCHAR}, #{homepage, jdbcType=VARCHAR}, #{agelimit, jdbcType=VARCHAR}, #{sponsor1, jdbcType=VARCHAR}, #{sponsor1tel, jdbcType=VARCHAR}, #{sponsor2, jdbcType=VARCHAR}, #{sponsor2tel, jdbcType=VARCHAR}, #{usetimefestival, jdbcType=VARCHAR}, #{playtime, jdbcType=VARCHAR}, #{firstimage, jdbcType=VARCHAR}, #{firstimage2, jdbcType=VARCHAR}, #{acode, jdbcType=INTEGER}, #{scode, jdbcType=INTEGER}, #{mlevel, jdbcType=INTEGER}, #{mapx, jdbcType=DOUBLE}, #{mapy, jdbcType=DOUBLE})
+ 		INSERT INTO festa(contentid, title, eventstartdate, eventenddate, addr1, eventintro, eventtext, homepage, agelimit, sponsor1, sponsor1tel, sponsor2, sponsor2tel, usetimefestival, playtime, firstimage, firstimage2, acode, scode, mapx, mapy) 
+		VALUES(#{contentid}, #{title}, #{eventstartdate}, #{eventenddate}, #{addr1, jdbcType=VARCHAR}, #{eventintro, jdbcType=VARCHAR}, #{eventtext, jdbcType=VARCHAR}, #{homepage, jdbcType=VARCHAR}, #{agelimit, jdbcType=VARCHAR}, #{sponsor1, jdbcType=VARCHAR}, #{sponsor1tel, jdbcType=VARCHAR}, #{sponsor2, jdbcType=VARCHAR}, #{sponsor2tel, jdbcType=VARCHAR}, #{usetimefestival, jdbcType=VARCHAR}, #{playtime, jdbcType=VARCHAR}, #{firstimage, jdbcType=VARCHAR}, #{firstimage2, jdbcType=VARCHAR}, #{acode, jdbcType=INTEGER}, #{scode, jdbcType=INTEGER}, #{mapx, jdbcType=DOUBLE}, #{mapy, jdbcType=DOUBLE})
  	</insert>
  	
  	<insert id="insertImg">
- 		INSERT INTO festa_image(ffileno, contentid, originimgurl, smallimageurl)
- 		VALUES(seq_ffileno.nextval, #{contentid}, #{originimgurl, jdbcType=VARCHAR}, #{smallimageurl, jdbcType=VARCHAR})
+ 		INSERT INTO festa_image(ffileno, contentid, serialnum, originimgurl, smallimageurl)
+ 		VALUES(seq_ffileno.nextval, #{contentid}, #{serialnum}, #{originimgurl, jdbcType=VARCHAR}, #{smallimageurl, jdbcType=VARCHAR})
  	</insert>
  	
  	<insert id="insertAreaCode">
  		INSERT INTO festa_area(ano, acode, aname, scode, sname)
  		VALUES(seq_ano.nextval, #{acode}, #{aname}, #{scode}, #{sname})
  	</insert>
+ 	
+ 	<select id="readFestival" resultType="kr.co.thefesta.festival.domain.FestivalDTO">
+ 		SELECT contentid, title, eventstartdate, eventenddate, addr1, eventintro, eventtext, homepage, agelimit, sponsor1, sponsor1tel, sponsor2, sponsor2tel, usetimefestival, playtime, firstimage, firstimage2, acode, scode
+		FROM festa
+		WHERE eventstartdate BETWEEN #{startdate} AND #{enddate}
+		ORDER BY eventstartdate
+ 	</select>
+ 	
+ 	<select id="getListWithPaging" resultType="kr.co.thefesta.festival.domain.FestivalDTO">
+		<![CDATA[
+			SELECT *
+			FROM (
+					SELECT rownum rn, a.*
+					FROM (
+			                SELECT *
+			                FROM festa
+			                ORDER BY eventstartdate DESC,
+			                		 title ASC
+			              ) a
+					WHERE 
+		]]>	
+		<![CDATA[
+					rownum <= #{pageNum} * #{amount}
+				 )
+			WHERE rn > (#{pageNum}-1)*#{amount}
+		]]>
+	</select>
+	
+	<select id="getTotalCnt" resultType="int">
+		SELECT COUNT(*)
+		FROM festa
+	</select>
  </mapper>
