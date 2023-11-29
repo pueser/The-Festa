@@ -12,5 +12,9 @@
   	<delete id="delete">
   		DELETE FROM Food
   	</delete>
+  	<select id="select" resultType="kr.co.thefesta.food.domain.ItemDTO">
+  		SELECT *
+  		FROM Food
+  	</select>
   </mapper>
   

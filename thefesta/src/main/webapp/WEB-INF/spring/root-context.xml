@@ -59,7 +59,7 @@
        </property>
     </bean>
     
-    <bean name="foodJob" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+    <!-- <bean name="foodJob" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
     	<property name="jobClass" value="kr.co.thefesta.food.job.FoodJob"/>
     	<property name="jobDataAsMap">
     		<map>
@@ -72,7 +72,7 @@
     <bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
     	<property name="jobDetail" ref="foodJob"/>
     	<property name="cronExpression" value="0 14 22 ? * *"/>
-    	<!-- <property name="cronExpression" value="0 41 10 ? * *"/> -->
+    	<property name="cronExpression" value="0 41 10 ? * *"/>
     </bean>
     
     <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
@@ -81,7 +81,7 @@
     			<ref bean="cronTrigger"/>
     		</list>
     	</property>
-    </bean>
+    </bean> -->
     
 	<tx:annotation-driven/>
 	<context:component-scan base-package="kr.co.thefesta"></context:component-scan>

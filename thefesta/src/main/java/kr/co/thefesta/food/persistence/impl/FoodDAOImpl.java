@@ -1,5 +1,7 @@
 package kr.co.thefesta.food.persistence.impl;
 
+import java.util.List;
+
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -26,4 +28,8 @@ public class FoodDAOImpl implements IFoodDAO {
 		session.delete("FoodMapper.delete");
 	}
 	
+	@Override
+	public List<ItemDTO> listAll() throws Exception {
+		return session.selectList("FoodMapper.select");
+	}
 }
