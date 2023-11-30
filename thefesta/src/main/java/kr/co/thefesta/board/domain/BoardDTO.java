@@ -38,9 +38,9 @@ public class BoardDTO {
 	private String id;
 	
 	// 게시글 조회수
-	private int viewcnt;
+	private int bviewcnt;
 	// 게시글 댓글수
-	private int replycnt;
+	private int breplycnt;
 	
 	// 게시글 이미지 리스트
 	private List<BoardImageDTO> attachList;

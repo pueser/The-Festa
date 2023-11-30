@@ -35,10 +35,12 @@ public class ReplyController {
         log.info("replyDto ===> " + replyDto);
 
         int insertResult = service.register(replyDto);
-
+        int replyCntResult = service.replyCntUpdate(replyDto.getBid());
+        
         log.info("Reply INSERT Result : " + insertResult);
+        log.info("Reply Count Result : " + replyCntResult);
 
-        return insertResult == 1
+        return insertResult == 1 && replyCntResult == 1
                 ? ResponseEntity.ok("success")
                 : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
@@ -81,4 +83,5 @@ public class ReplyController {
                 ? ResponseEntity.ok("success")
                 : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
+    
 }

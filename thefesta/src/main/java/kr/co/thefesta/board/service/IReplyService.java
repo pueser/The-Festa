@@ -12,4 +12,5 @@ public interface IReplyService {
 	public int modify(ReplyDTO replyDto);
 	public int remove(int brno);
 	public List<ReplyDTO> getList(Criteria cri, int bid);
+	public int replyCntUpdate(int bid);
 }

@@ -48,5 +48,11 @@ public class ReplyServiceImpl implements IReplyService {
 		return ReplyMapper.getListWithPaging(cri, bid);
 	}
 
+	@Override
+	public int replyCntUpdate(int bid) {
+		log.info("replyCntUpdate ......" + bid);
+		return ReplyMapper.replyCntUpdate(bid);
+	}
+
 }
 

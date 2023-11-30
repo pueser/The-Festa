@@ -13,26 +13,16 @@
 		VALUES(seq_brno.nextval, #{bid}, #{brcontent}, #{nickname}, {id})
 		
 	</insert>
-	
-	<update id="replyCntUpdate">
-		UPDATE board
-		SET breplycnt = (SELECT COUNT(*)
-           				FROM board_reply
-                		WHERE #{bid} = bid)
-		WHERE #{bid}
-	</update>
-	
 	<select id="read" resultType="kr.co.thefesta.board.domain.ReplyDTO">
 		SELECT *
 		FROM board_reply
-		WHERE brno = #{brno} AND brstatecode='Y'
+		WHERE brno = #{brno}
 	</select>
 	
-	<update id="delete">
-		UPDATE board_reply
-		SET brstatecode='N'
+	<delete id="delete">
+		DELETE FROM board_reply
 		WHERE brno = #{brno}
-	</update>
+	</delete>
 	
 	<update id="update">
 		UPDATE board_reply
@@ -48,8 +38,15 @@
 			   brregist,
 			   id
 		FROM board_reply
-		WHERE bid = #{bid} AND brstatecode='Y'
+		WHERE bid = #{bid}
 		ORDER BY brno ASC
 	</select>
+	<update id="replyCntUpdate">
+		UPDATE board bd
+		SET breplycnt = (SELECT COUNT(*)
+						FROM board_reply br
+						WHERE bd.bid = br.bid);
+		WHERE bd.bid = ${bid}
+	</update>
 </mapper>
   
