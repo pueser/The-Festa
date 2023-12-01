@@ -50,7 +50,7 @@ import kr.co.thefesta.member.domain.MemberDTO;
 import kr.co.thefesta.member.service.IMemberService;
 import lombok.extern.log4j.Log4j;
 
-@Controller
+@RestController
 @RequestMapping("/member")
 @CrossOrigin(origins = "*")
 @Log4j
