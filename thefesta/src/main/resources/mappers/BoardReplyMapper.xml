@@ -10,7 +10,7 @@
 	
 	<insert id="insert">
 		INSERT INTO board_reply(brno, bid, brcontent, nickname, id)
-		VALUES(seq_brno.nextval, #{bid}, #{brcontent}, #{nickname}, {id})
+		VALUES(seq_brno.nextval, #{bid}, #{brcontent}, #{nickname}, #{id})
 		
 	</insert>
 	<select id="read" resultType="kr.co.thefesta.board.domain.ReplyDTO">
@@ -45,8 +45,8 @@
 		UPDATE board bd
 		SET breplycnt = (SELECT COUNT(*)
 						FROM board_reply br
-						WHERE bd.bid = br.bid);
-		WHERE bd.bid = ${bid}
+						WHERE bd.bid = br.bid)
+		WHERE bd.bid = #{bid}
 	</update>
 </mapper>
   
