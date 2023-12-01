@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -28,11 +30,11 @@ public class BoardController {
 	
 	@Autowired
     private IBoardService service;
+	
 
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public ResponseEntity<Map<String, Object>> listAll(Criteria cri) throws Exception {
         log.info("show all list..................");
-
         Map<String, Object> result = new HashMap<>();
         result.put("list", service.listAll(cri));
 
@@ -40,6 +42,7 @@ public class BoardController {
         log.info(cri);
         log.info("total : " + total);
 
+        
         result.put("pageMaker", new PageDTO(cri, total));
 
         return new ResponseEntity<>(result, HttpStatus.OK);
@@ -66,14 +69,15 @@ public class BoardController {
 
         BoardDTO board = service.read(bid);
 
-        return new ResponseEntity<>(board, HttpStatus.OK);
+        return new ResponseEntity<BoardDTO>(board, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/modify", method = RequestMethod.POST)
     public ResponseEntity<String> modifyPost(@RequestBody BoardDTO bDto, @ModelAttribute("cri") Criteria cri) throws Exception {
-        log.info("modify post............." + service.modify(bDto));
+        log.info(bDto.toString());
+    	log.info("modify post............." + service.modify(bDto));
 
-        return new ResponseEntity<>("Board modified successfully", HttpStatus.OK);
+        return new ResponseEntity<String>("Board modified successfully", HttpStatus.OK);
     }
 
     @RequestMapping(value = "/remove", method = RequestMethod.POST)
@@ -83,5 +87,20 @@ public class BoardController {
         service.remove(bid);
 
         return new ResponseEntity<>("Board removed successfully", HttpStatus.OK);
+    }
+    
+ 
+    @PutMapping("/increaseViewCnt/{bid}")
+    public ResponseEntity<String> increaseViewCnt(@PathVariable int bid) {
+        try {
+        	log.info(bid);
+            service.increaseViewCnt(bid);
+            return new ResponseEntity<>("View count increased successfully", HttpStatus.OK);
+            
+        } catch (Exception e) {
+        	
+            log.error("Failed to increase view count", e);
+            return new ResponseEntity<>("Failed to increase view count", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

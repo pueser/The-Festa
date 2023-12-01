@@ -61,4 +61,10 @@ public class BoardServiceImpl implements IBoardService {
 		return bDao.getTotalCnt(cri);
 	}
 
+	@Override
+	public void increaseViewCnt(int bid) throws Exception {
+		bDao.increaseViewCnt(bid);
+		
+	}
+
 }

@@ -32,7 +32,7 @@ public class BoardDAOImpl implements IBoardDAO {
 
 	@Override
 	public int delete(int bid) throws Exception {
-		return session.update("BoardMapper.delete", bid);
+		return session.delete("BoardMapper.delete", bid);
 	}
 
 //	@Override
@@ -48,5 +48,11 @@ public class BoardDAOImpl implements IBoardDAO {
 	@Override
 	public int getTotalCnt(Criteria cri) throws Exception {
 		return session.selectOne("BoardMapper.getTotalCnt", cri);
+	}
+
+	@Override
+	public void increaseViewCnt(int bid) throws Exception {
+		session.update("BoardMapper.increaseViewCnt", bid);
+		
 	}
 }
