@@ -102,7 +102,7 @@
 	      stateCode = 3,
 	    </if>
 	    <if test="statecode == 4">
-	      nickname = "탈퇴회원",
+	      nickname = '탈퇴회원',
 	      stateCode = 4,
 	    </if>
 	  updatedate = sysdate
