@@ -5,9 +5,15 @@
  <mapper namespace="AdminMapper">
  	<!-- member 테이블 회원정보 list -->
  	<select id="memberList" resultType="kr.co.thefesta.member.domain.MemberDTO">
- 		SELECT id,nickname ,statecode, reportnum, finalaccess
-		FROM member
-		WHERE NOT statecode IN '0'
+	 	<![CDATA[
+	 		SELECT id, nickname ,statecode, reportnum, finalaccess
+	        FROM(
+	            SELECT rownum  as rn, id,nickname ,statecode, reportnum, finalaccess
+				FROM member
+				WHERE NOT statecode IN '0' AND rownum <= #{pageNum} * #{amount}
+	        )
+	        WHERE rn > (#{pageNum} -1) * #{amount}
+	     ]]>
  	</select>
  	
  	<!-- member 회원 디테일 정보 -->
@@ -18,6 +24,7 @@
 		INNER JOIN member
 		ON report.reported = member.id
 		WHERE member.id = #{id} AND report.reportstate = 2
+		ORDER BY report.reportid DESC
  	</select>
  	
  	<!-- 회원 신고내용 -->
@@ -29,9 +36,29 @@
  	
  	<!-- 신고 list -->
  	<select id="reportList" resultType="kr.co.thefesta.admin.domain.ReportDTO">
- 		SELECT reportid, reportcontent, reporter, rbid, rbrno, rfrno, reportdate
+	 	<![CDATA[
+	 		SELECT reportid, reportcontent, reporter, rbid, rbrno, rfrno, reportdate, reported
+			FROM (
+	    		SELECT rownum  as rn, reportid, reportcontent, reporter, rbid, rbrno, rfrno, reportdate, reported
+	   			FROM report
+	    		WHERE reportstate = '1' AND rownum <= #{pageNum} * #{amount}
+	    		ORDER BY reportid ASC
+			)
+			WHERE rn > (#{pageNum} -1) * #{amount}
+		]]>
+ 	</select>
+ 	
+ 	<!-- 신고 list 갯수 -->
+ 	<select id="reportListCnt" resultType="int">
+ 		SELECT count(*)
 		FROM report
-		WHERE reportstate = '1'
+ 	</select>
+ 	
+ 	<!-- member list 총 갯수 -->
+ 	<select id="memberListCnt" resultType="int">
+	 	 SELECT count(*)
+	     FROM member
+	     WHERE NOT statecode IN '0'
  	</select>
  	
  	<!-- 회원 신고글 삭제 -->
@@ -47,4 +74,39 @@
 		SET reportstate= 2
 		WHERE reportid = #{reportid}
  	</update>
+ 	
+ 	<!-- 회원 신고당한 횟수 update-->
+ 	<update  id="memberReportnumUpdate" parameterType="java.util.Map">
+ 		UPDATE member
+		SET reportnum = #{num} + 1
+		WHERE id=#{id}
+ 	</update>
+ 	
+ 	<!-- 회원 신고당한 횟수 select -->
+ 	<select id="memberReportnumRead" resultType="int">
+ 		SELECT reportnum
+		FROM member
+		WHERE id=#{id}
+ 	</select>
+ 	
+ 	
+ 	<!-- 축제list & 축제 문의list -->
+ 	<select id="festaList" resultType="arraylist">
+ 	<![CDATA[
+ 		SELECT title,eventstartdate,eventenddate,contentid, addrl, questioncount
+		FROM(
+    		SELECT title,eventstartdate,eventenddate,contentid, addrl, questioncount, rownum  as rn
+    		FROM (
+        		SELECT festa.title, festa.eventstartdate, festa.eventenddate, festa.contentid, festa.addrl, count(*) as questioncount
+        		FROM admin_question 
+        		INNER JOIN festa
+        		ON festa.contentid = admin_question.contentid
+        		GROUP BY  festa.title,festa.eventstartdate,festa.eventenddate,festa.contentid,festa.addrl
+        		ORDER BY festa.eventstartdate DESC
+    		)
+    		WHERE rownum <= #{pageNum} * #{amount}
+		)
+		WHERE rn > (#{pageNum} -1) * #{amount}
+	]]>
+ 	</select>
  </mapper>
