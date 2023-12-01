@@ -21,10 +21,12 @@ public class MemberDTO {
 	private String profileImg;
 	private String agreement;
 	private Date joindate;
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd", timezone = "GMT+9")
 	private Date finalaccess;
 	private Date withdrawdate;
 	private Integer reportnum;
 	private String statecode;
 	private Date updatedate;
+	
+	private String resetPassword;
 }

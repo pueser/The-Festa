@@ -59,24 +59,51 @@
 		WHERE id = #{id}
 	</update>
 	
+	
+<!-- 비밀번호 변경 -->
+	<update id="pwReset">
+		UPDATE member
+		SET password = #{password}
+		WHERE id = #{id}
+	</update>
+	
+	
+<!-- 회원 정보 변경 -->
+	<update id="memInfoReset" parameterType="kr.co.thefesta.member.domain.MemberDTO">
+        UPDATE MEMBER
+        <set>
+            <if test="nickname != null">nickname = #{nickname},</if>
+            <if test="profileImg != null">profileImg = #{profileImg},</if>
+            <if test="resetPassword != null">password = #{resetPassword}</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+	
+	<update id="updateImg" parameterType="hashMap">
+		UPDATE MEMBER
+		SET profileImg = #{profileImg}
+		WHERE id = #{id}
+	</update>
+
+
+
 
 <!-- 상태코드 변경 -->
-	<update id="updateState" parameterType="java.util.Map">
-
+	<update id="updateState">
 	  UPDATE member
-	  <trim prefix="SET" suffixOverrides=",">
-	     <choose>
-			<when test="statecode=='1'">
-			   nickname = null, statecode = '4',
-			</when>
-			<when test="statecode=='2'">
-			   statecode = '3',
-			</when>
-			<when test="statecode=='4'">
-			   statecode = '3',
-			</when>
-	     </choose>
-      	   </trim>
+	  <set>
+	    <if test="statecode == 1">
+	      nickname = null,
+	      stateCode = 4,
+	    </if>
+	    <if test="statecode == 2">
+	      stateCode = 3,
+	    </if>
+	    <if test="statecode == 4">
+	      stateCode = 3,
+	    </if>
+	  updatedate = sysdate
+	  </set>
 	  WHERE id = #{id}
 	</update>
 

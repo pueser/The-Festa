@@ -1,10 +1,14 @@
 package kr.co.thefesta.member.service;
 
+import java.util.Map;
+
+import org.springframework.web.multipart.MultipartFile;
+
 import kr.co.thefesta.member.domain.MemberDTO;
 
 public interface IMemberService {
 
-	public MemberDTO selMember(MemberDTO mDto) throws Exception;
+	public MemberDTO selMember(String id) throws Exception;
 	public MemberDTO login(MemberDTO mDto) throws Exception;
 	public void updateLogDate(String id) throws Exception;
 
@@ -16,5 +20,11 @@ public interface IMemberService {
 	
 	public void logout(String id) throws Exception;
 	
-	public void updateState(String id, String statecode) throws Exception;
+	public void pwReset(String id, String password);
+
+	public void memInfoReset(MemberDTO mDto);
+
+	public void updateImg(Map<String, Object> paramMap);
+	public void updateState(Map<String, Object> paramMap);
+	
 }

@@ -1,7 +1,13 @@
 package kr.co.thefesta.member.service.impl;
 
+import java.io.File;
+import java.util.Map;
+import java.util.UUID;
+
+import org.apache.http.entity.FileEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import kr.co.thefesta.member.domain.MemberDTO;
 import kr.co.thefesta.member.mapper.MemberMapper;
@@ -13,8 +19,8 @@ public class MemberServiceImpl implements IMemberService {
 	private MemberMapper mapper;
 	
 	@Override
-	public MemberDTO selMember(MemberDTO mDto) throws Exception {
-		return mapper.selMember(mDto);
+	public MemberDTO selMember(String id) throws Exception {
+		return mapper.selMember(id);
 	}
 	
 	@Override
@@ -57,10 +63,28 @@ public class MemberServiceImpl implements IMemberService {
 	public void logout(String id) throws Exception {
 		mapper.logout(id);
 	}
-	
+
 	
 	@Override
-	public void updateState(String id, String statecode) throws Exception {
-		mapper.updateState(id, statecode);
+	public void pwReset(String id, String password) {
+		mapper.pwReset(id, password);
 	}
+	
+	@Override
+	public void memInfoReset(MemberDTO mDto) {
+		mapper.memInfoReset(mDto);
+	}
+	
+
+	@Override
+	public void updateImg(Map<String, Object> paramMap) {
+		mapper.updateImg(paramMap);
+		
+	}
+
+	@Override
+	public void updateState(Map<String, Object> paramMap) {
+		mapper.updateState(paramMap);
+	}
+
 }
