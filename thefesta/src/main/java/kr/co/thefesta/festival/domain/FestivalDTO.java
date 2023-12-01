@@ -29,7 +29,6 @@ public class FestivalDTO {
 	private String firstimage2;
 	private int acode;
 	private int scode;
-	private int mlevel;
 	private double mapx;
 	private double mapy;
 	

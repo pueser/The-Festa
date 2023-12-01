@@ -12,6 +12,7 @@ import lombok.ToString;
 public class FestivalImageDTO {
 	private int ffileno;
 	private String contentid;
+	private String serialnum;
 	private String originimgurl;
 	private String smallimageurl;
 }

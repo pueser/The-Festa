@@ -13,17 +13,28 @@
  		VALUES(seq_ffileno.nextval, #{contentid}, #{serialnum}, #{originimgurl, jdbcType=VARCHAR}, #{smallimageurl, jdbcType=VARCHAR})
  	</insert>
  	
+ 	<select id="getImg" resultType="kr.co.thefesta.festival.domain.FestivalImageDTO">
+ 		SELECT *
+		FROM festa_image
+		WHERE contentid = #{contentid}
+ 	</select>
+ 	
  	<insert id="insertAreaCode">
  		INSERT INTO festa_area(ano, acode, aname, scode, sname)
  		VALUES(seq_ano.nextval, #{acode}, #{aname}, #{scode}, #{sname})
  	</insert>
  	
- 	<select id="readFestival" resultType="kr.co.thefesta.festival.domain.FestivalDTO">
+ 	<select id="getAreaCode" resultType="kr.co.thefesta.festival.domain.AreaCodeDTO">
+ 		SELECT *
+		FROM festa_area
+ 	</select>
+ 	
+<!--  	<select id="readFestival" resultType="kr.co.thefesta.festival.domain.FestivalDTO">
  		SELECT contentid, title, eventstartdate, eventenddate, addr1, eventintro, eventtext, homepage, agelimit, sponsor1, sponsor1tel, sponsor2, sponsor2tel, usetimefestival, playtime, firstimage, firstimage2, acode, scode
 		FROM festa
 		WHERE eventstartdate BETWEEN #{startdate} AND #{enddate}
 		ORDER BY eventstartdate
- 	</select>
+ 	</select> -->
  	
  	<select id="getListWithPaging" resultType="kr.co.thefesta.festival.domain.FestivalDTO">
 		<![CDATA[
@@ -48,5 +59,37 @@
 	<select id="getTotalCnt" resultType="int">
 		SELECT COUNT(*)
 		FROM festa
+	</select>
+	
+	<update id="updateFestival">
+		UPDATE festa
+		SET contentid=#{contentid},
+		 	title=#{title}, 
+		 	eventstartdate=#{eventstartdate}, 
+		 	eventenddate=#{eventenddate}, 
+		 	addr1=#{addr1, jdbcType=VARCHAR}, 
+		 	eventintro=#{eventintro, jdbcType=VARCHAR}, 
+		 	eventtext=#{eventtext, jdbcType=VARCHAR}, 
+		 	homepage=#{homepage, jdbcType=VARCHAR}, 
+		 	agelimit=#{agelimit, jdbcType=VARCHAR}, 
+		 	sponsor1=#{sponsor1, jdbcType=VARCHAR}, 
+		 	sponsor1tel=#{sponsor1tel, jdbcType=VARCHAR}, 
+		 	sponsor2=#{sponsor2, jdbcType=VARCHAR}, 
+		 	sponsor2tel=#{sponsor2tel, jdbcType=VARCHAR}, 
+		 	usetimefestival=#{usetimefestival, jdbcType=VARCHAR}, 
+		 	playtime=#{playtime, jdbcType=VARCHAR}, 
+		 	firstimage=#{firstimage, jdbcType=VARCHAR}, 
+		 	firstimage2=#{firstimage2, jdbcType=VARCHAR}, 
+		 	acode=#{acode, jdbcType=INTEGER}, 
+		 	scode=#{scode, jdbcType=INTEGER}, 
+		 	mapx=#{mapx, jdbcType=DOUBLE}, 
+		 	mapy=#{mapy, jdbcType=DOUBLE}
+		WHERE contentid = #{contentid}
+	</update>
+	
+	<select id="searchImg" resultType="int">
+		SELECT COUNT(*)
+		FROM festa_image
+		WHERE serialnum = #{serialnum}
 	</select>
  </mapper>

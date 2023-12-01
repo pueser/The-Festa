@@ -83,6 +83,30 @@
     	</property>
     </bean> -->
     
+    <!-- 축제 -->
+    <!-- <bean name="festivalJob" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+    	<property name="jobClass" value="kr.co.thefesta.festival.scheduler.FestivalJob"/>
+    	<property name="jobDataAsMap">
+    		<map>
+    			<entry key="festivalService" value-ref="festivalService"/>
+    		</map>
+    	</property>
+    	<property name="durability" value="true"/>
+    </bean>
+    
+    <bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+    	<property name="jobDetail" ref="festivalJob"/>
+    	<property name="cronExpression" value="0 45 17 ? * *"/>
+    </bean>
+    
+    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+    	<property name="triggers">
+    		<list>
+    			<ref bean="cronTrigger"/>
+    		</list>
+    	</property>
+    </bean> -->
+    
 	<tx:annotation-driven/>
 	<context:component-scan base-package="kr.co.thefesta"></context:component-scan>
 	<mybatis-spring:scan base-package="kr.co.thefesta.mapper"/>	

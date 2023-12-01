@@ -34,14 +34,14 @@ public class FestivalDAOImpl implements IFestivalDAO {
 		session.insert("FestivalMapper.insertAreaCode", aDto);	
 	}
 
-	@Override
-	public List<FestivalDTO> readFestival(String startdate, String enddate) throws Exception {
-		Map<String, String> date = new HashMap<>();
-		date.put("startdate", startdate);
-		date.put("enddate", enddate);
-		
-		return session.selectList("FestivalMapper.readFestival", date);
-	}
+//	@Override
+//	public List<FestivalDTO> readFestival(String startdate, String enddate) throws Exception {
+//		Map<String, String> date = new HashMap<>();
+//		date.put("startdate", startdate);
+//		date.put("enddate", enddate);
+//		
+//		return session.selectList("FestivalMapper.readFestival", date);
+//	}
 
 	@Override
 	public List<FestivalDTO> listAll(Criteria cri) throws Exception {
@@ -51,5 +51,25 @@ public class FestivalDAOImpl implements IFestivalDAO {
 	@Override
 	public int getTotalCnt(Criteria cri) throws Exception {
 		return session.selectOne("FestivalMapper.getTotalCnt", cri);
+	}
+
+	@Override
+	public int searchImg(String serialnum) throws Exception {
+		return session.selectOne("FestivalMapper.searchImg", serialnum);
+	}
+
+	@Override
+	public int updateFestival(FestivalDTO fDto) throws Exception {
+		return session.update("FestivalMapper.updateFestival", fDto);
+	}
+
+	@Override
+	public List<AreaCodeDTO> getAreaCode() throws Exception {
+		return session.selectList("FestivalMapper.getAreaCode");
+	}
+
+	@Override
+	public List<FestivalImageDTO> getImg(String contentid) throws Exception {
+		return session.selectList("FestivalMapper.getImg", contentid);
 	}
 }

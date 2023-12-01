@@ -34,10 +34,10 @@ public class FestivalServiceImpl implements IFestivalService {
 		fDao.insertAreaCode(aDto);
 	}
 
-	@Override
-	public List<FestivalDTO> readFestival(String startdate, String enddate) throws Exception {
-		return fDao.readFestival(startdate, enddate);
-	}
+//	@Override
+//	public List<FestivalDTO> readFestival(String startdate, String enddate) throws Exception {
+//		return fDao.readFestival(startdate, enddate);
+//	}
 
 	@Override
 	public List<FestivalDTO> listAll(Criteria cri) throws Exception {
@@ -46,8 +46,27 @@ public class FestivalServiceImpl implements IFestivalService {
 
 	@Override
 	public int getTotalCnt(Criteria cri) throws Exception {
-		// TODO Auto-generated method stub
 		return fDao.getTotalCnt(cri);
+	}
+
+	@Override
+	public int searchImg(String serialnum) throws Exception {
+		return fDao.searchImg(serialnum);
+	}
+
+	@Override
+	public boolean updateFestival(FestivalDTO fDto) throws Exception {
+		return fDao.updateFestival(fDto) == 1;
+	}
+
+	@Override
+	public List<AreaCodeDTO> getAreaCode() throws Exception {
+		return fDao.getAreaCode();
+	}
+
+	@Override
+	public List<FestivalImageDTO> getImg(String contentid) throws Exception {
+		return fDao.getImg(contentid);
 	}
 
 }

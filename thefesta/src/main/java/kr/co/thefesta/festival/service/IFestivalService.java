@@ -11,7 +11,11 @@ public interface IFestivalService {
 	public void insertApi(FestivalDTO fDto) throws Exception;
 	public void insertImg(FestivalImageDTO fiDto) throws Exception;
 	public void insertAreaCode(AreaCodeDTO aDto) throws Exception;
-	public List<FestivalDTO> readFestival(String startdate, String enddate) throws Exception;
+//	public List<FestivalDTO> readFestival(String startdate, String enddate) throws Exception;
 	public List<FestivalDTO> listAll(Criteria cri) throws Exception;
 	public int getTotalCnt(Criteria cri) throws Exception;
+	public boolean updateFestival(FestivalDTO fDto) throws Exception;
+	public int searchImg(String serialnum) throws Exception;
+	public List<AreaCodeDTO> getAreaCode() throws Exception;
+	public List<FestivalImageDTO> getImg(String contentid) throws Exception;
 }
