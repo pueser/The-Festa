@@ -8,7 +8,8 @@ import org.springframework.stereotype.Service;
 
 import kr.co.thefesta.festival.domain.AreaCodeDTO;
 import kr.co.thefesta.festival.domain.FestivalDTO;
-import kr.co.thefesta.scheduler.mapper.SchedulerMapper;
+import kr.co.thefesta.scheduler.domain.SchedulerCri;
+import kr.co.thefesta.scheduler.persistence.ISchedulerDAO;
 import kr.co.thefesta.scheduler.service.ISchedulerService;
 import lombok.extern.log4j.Log4j;
 
@@ -16,23 +17,23 @@ import lombok.extern.log4j.Log4j;
 @Log4j
 public class SchedulerServiceImpl implements ISchedulerService {
 	@Autowired
-	private SchedulerMapper sMapper;
+	private ISchedulerDAO sDao;
 	
 	@Override
-	public int getFestaCnt(int date) throws Exception {
-		return sMapper.getFestaCnt(date);
+	public int getFestaCnt(SchedulerCri sCri) throws Exception {
+		return sDao.getFestaCnt(sCri);
 	}
 
 	@Override
-	public List<FestivalDTO> getFestaList(int date) throws Exception {
-		return sMapper.getFestaList(date);
+	public List<FestivalDTO> getFestaList(SchedulerCri sCri) throws Exception {
+		return sDao.getFestaList(sCri);
 	}
 
 	@Override
-	public ArrayList<AreaCodeDTO> getDistrictSelectOptions(int acode) throws Exception {
-		log.info("getDistrictSelectOptionsServiceParam : " + acode);
-		ArrayList<AreaCodeDTO> result = new ArrayList<>();
-		result = sMapper.getDistrictSelectOptions(acode);
+	public List<AreaCodeDTO> getDistrictSelectOptions(AreaCodeDTO acDTO) throws Exception {
+		log.info("getDistrictSelectOptionsServiceParam : " + acDTO);
+		List<AreaCodeDTO> result = new ArrayList<>();
+		result = sDao.getDistrictSelectOptions(acDTO);
 		log.info("getDistrictSelectOptionsServiceReturen : " + result);
 		return result;
 	}
