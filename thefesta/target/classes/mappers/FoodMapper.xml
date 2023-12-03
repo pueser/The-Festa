@@ -64,8 +64,8 @@
   	</select>
   	
   	<insert id="insertLike">
-  		INSERT INTO food_like(lno, contentid, cat3, id)
-		VALUES(food_like_seq.nextval, #{contentid}, #{cat3}, #{id})
+  		INSERT INTO food_like(lno, contentid, title, cat3, id)
+		VALUES(food_like_seq.nextval, #{contentid}, #{title}, #{cat3}, #{id})
   	</insert>
   	
   	<delete id="deleteLike">
