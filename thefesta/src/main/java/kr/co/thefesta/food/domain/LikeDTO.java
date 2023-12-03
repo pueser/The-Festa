@@ -12,7 +12,8 @@ import lombok.ToString;
 public class LikeDTO {
 
 	private String contentid;
+	private String title;
 	private String cat3;
 	private String id;
-	// 음식점명도 추가
+	
 }
