@@ -5,16 +5,73 @@
   
   <mapper namespace="FoodMapper">
   	<insert id="insert">
-  		INSERT INTO Food(contentid, title, addr1, firstmenu, treatmenu, infocenterfood, parkingfood, opentimefood, restdatefood, overview, firstimage, firstimage2, mapx, mapy, areacode, sigungucode, cat3 )
+  		INSERT INTO food(contentid, title, addr1, firstmenu, treatmenu, infocenterfood, parkingfood, opentimefood, restdatefood, overview, firstimage, firstimage2, mapx, mapy, areacode, sigungucode, cat3 )
 		VALUES(#{contentid}, #{title}, #{addr1}, #{firstmenu}, #{treatmenu}, #{infocenterfood}, #{parkingfood}, #{opentimefood}, #{restdatefood}, #{overview}, #{firstimage}, #{firstimage2}, #{mapx}, #{mapy}, #{areacode}, #{sigungucode}, #{cat3})
   	</insert>
   	
   	<delete id="delete">
-  		DELETE FROM Food
+  		DELETE FROM food
   	</delete>
-  	<select id="select" resultType="kr.co.thefesta.food.domain.ItemDTO">
+  	
+  	<select id="selectFestaid" resultType="kr.co.thefesta.festival.domain.FestivalDTO">
   		SELECT *
-  		FROM Food
+		FROM festa
   	</select>
+  	
+  	<select id="selectAreacode" resultType="kr.co.thefesta.food.domain.AreacodeDTO">
+  		SELECT f.title,
+               f.acode,
+               f.scode,
+               a.aname AS,
+               s.sname AS
+        FROM festa f
+        JOIN festa_area a ON f.acode = a.acode
+        JOIN festa_sigungu s ON f.acode = s.acode AND f.scode = s.scode
+        WHERE f.contentid = 1799084
+  	</select>
+  	
+  	<select id="select" resultType="kr.co.thefesta.food.domain.RecommendDTO">
+  		SELECT fd.contentid,
+  			   fd.title,
+		       fd.firstimage2,
+		       fd.addr1,
+		       (SELECT COUNT(*) FROM food_like WHERE contentid = fd.contentid) AS likeCnt		       
+		FROM food fd JOIN festa f
+		ON fd.areacode = f.acode AND fd.sigungucode = f.scode
+		WHERE f.contentid = 1799084
+		ORDER BY likeCnt DESC
+  	</select>
+  	
+  	<select id="read" resultType="kr.co.thefesta.food.domain.ItemDTO">
+  		SELECT contentid,
+  			   title,
+  			   addr1,
+  			   infocenterfood,
+  			   firstmenu,
+  			   treatmenu,
+  			   opentimefood,
+  			   restdatefood,
+  			   parkingfood,
+  			   overview,
+  			   firstimage,
+  			   mapx,
+  			   mapy,
+  			   areacode,
+  			   sigungucode,
+  			   cat3
+  		FROM food
+  		WHERE contentid = #{contentid}
+  	</select>
+  	
+  	<insert id="insertLike">
+  		INSERT INTO food_like(lno, contentid, cat3, id)
+		VALUES(food_like_seq.nextval, #{contentid}, #{cat3}, #{id})
+  	</insert>
+  	
+  	<delete id="deleteLike">
+  		DELETE FROM food_like
+		WHERE contentid = #{contentid} AND id = #{id}
+  	</delete>
+  	
   </mapper>
   
