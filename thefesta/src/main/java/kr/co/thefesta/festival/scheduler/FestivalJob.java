@@ -64,7 +64,7 @@ public class FestivalJob extends QuartzJobBean{
 	
 	private void festivalInfoGET() {
 	    try {
-	    	int numOfRows = 100;
+	    	int numOfRows = 50;
 	        int pageNo = 1;
 
 	        while (true) {
@@ -146,7 +146,7 @@ public class FestivalJob extends QuartzJobBean{
 	    urlBuilder.append(apiName);
 	    urlBuilder.append("?" + URLEncoder.encode("ServiceKey", "UTF-8") + "=" + API_KEY);
 	    urlBuilder.append("&" + URLEncoder.encode("_type", "UTF-8") + "=json");
-	    urlBuilder.append("&" + URLEncoder.encode("numOfRows", "UTF-8") + "=100");
+	    urlBuilder.append("&" + URLEncoder.encode("numOfRows", "UTF-8") + "=50");
 	    urlBuilder.append("&" + URLEncoder.encode("MobileOS", "UTF-8") + "=ETC");
         urlBuilder.append("&" + URLEncoder.encode("MobileApp", "UTF-8") + "=TheFesta");
 
@@ -187,7 +187,14 @@ public class FestivalJob extends QuartzJobBean{
 
 	private String callAPI(String url) throws IOException {
 	    HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-	    try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+	    
+	    // 연결 시간 초과 및 읽기 시간 초과 설정 (예: 10초)
+	    int timeout = 10000; // 10초
+	    connection.setConnectTimeout(timeout);
+	    connection.setReadTimeout(timeout);
+	    
+	    try (
+    		BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
 	        StringBuilder resultBuilder = new StringBuilder();
 	        String line;
 	        while ((line = reader.readLine()) != null) {

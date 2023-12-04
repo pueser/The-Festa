@@ -12,6 +12,8 @@ import kr.co.thefesta.festival.domain.AreaCodeDTO;
 import kr.co.thefesta.festival.domain.Criteria;
 import kr.co.thefesta.festival.domain.FestivalDTO;
 import kr.co.thefesta.festival.domain.FestivalImageDTO;
+import kr.co.thefesta.festival.domain.FestivalReplyDTO;
+import kr.co.thefesta.festival.domain.LikeDTO;
 import kr.co.thefesta.festival.persistence.IFestivalDAO;
 
 @Repository
@@ -33,15 +35,6 @@ public class FestivalDAOImpl implements IFestivalDAO {
 	public void insertAreaCode(AreaCodeDTO aDto) throws Exception {
 		session.insert("FestivalMapper.insertAreaCode", aDto);	
 	}
-
-//	@Override
-//	public List<FestivalDTO> readFestival(String startdate, String enddate) throws Exception {
-//		Map<String, String> date = new HashMap<>();
-//		date.put("startdate", startdate);
-//		date.put("enddate", enddate);
-//		
-//		return session.selectList("FestivalMapper.readFestival", date);
-//	}
 
 	@Override
 	public List<FestivalDTO> listAll(Criteria cri) throws Exception {
@@ -71,5 +64,20 @@ public class FestivalDAOImpl implements IFestivalDAO {
 	@Override
 	public List<FestivalImageDTO> getImg(String contentid) throws Exception {
 		return session.selectList("FestivalMapper.getImg", contentid);
+	}
+
+	@Override
+	public int insertLike(LikeDTO lDto) throws Exception {
+		return session.insert("FestivalMapper.insertLike", lDto);
+	}
+
+	@Override
+	public int deleteLike(LikeDTO lDto) throws Exception {
+		return session.delete("FestivalMapper.deleteLike", lDto);
+	}
+
+	@Override
+	public List<LikeDTO> searchLike(LikeDTO lDto) throws Exception {
+		return session.selectList("FestivalMapper.searchLike", lDto);
 	}
 }

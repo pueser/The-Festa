@@ -29,12 +29,15 @@
 		FROM festa_area
  	</select>
  	
-<!--  	<select id="readFestival" resultType="kr.co.thefesta.festival.domain.FestivalDTO">
- 		SELECT contentid, title, eventstartdate, eventenddate, addr1, eventintro, eventtext, homepage, agelimit, sponsor1, sponsor1tel, sponsor2, sponsor2tel, usetimefestival, playtime, firstimage, firstimage2, acode, scode
-		FROM festa
-		WHERE eventstartdate BETWEEN #{startdate} AND #{enddate}
-		ORDER BY eventstartdate
- 	</select> -->
+ 	<sql id="criteria">
+	    <trim prefix="(" suffix=") AND " prefixOverrides="OR">
+	        <choose>
+	            <when test="keyword != null and keyword != ''">
+	                title LIKE '%' || #{keyword} || '%'
+	            </when>
+	        </choose>
+	    </trim>
+	</sql>
  	
  	<select id="getListWithPaging" resultType="kr.co.thefesta.festival.domain.FestivalDTO">
 		<![CDATA[
@@ -49,6 +52,7 @@
 			              ) a
 					WHERE 
 		]]>	
+		<include refid="criteria"></include>
 		<![CDATA[
 					rownum <= #{pageNum} * #{amount}
 				 )
@@ -59,6 +63,9 @@
 	<select id="getTotalCnt" resultType="int">
 		SELECT COUNT(*)
 		FROM festa
+		WHERE
+		<include refid="criteria"></include>
+		contentid > 0
 	</select>
 	
 	<update id="updateFestival">
@@ -92,4 +99,31 @@
 		FROM festa_image
 		WHERE serialnum = #{serialnum}
 	</select>
+	
+	<!-- 댓글 -->
+	<select id="getTime" resultType="string">
+		SELECT sysdate
+		FROM dual
+	</select>
+	
+	<select id="searchLike" resultType="kr.co.thefesta.festival.domain.LikeDTO">
+		SELECT *
+		FROM festa_like
+		WHERE id = #{id}
+	</select>
+	
+	<insert id="insertLike">
+		MERGE INTO festa_like f
+		USING (SELECT 1 FROM dual) dual_dummy
+		ON (f.contentid = #{contentid} AND f.id = #{id})
+		WHEN NOT MATCHED THEN
+		INSERT (lno, contentid, id)
+		VALUES(seq_lno.nextval, #{contentid}, #{id})
+	</insert>
+	
+	<delete id="deleteLike">
+		DELETE FROM festa_like
+		WHERE id=#{id}
+		AND contentid = #{contentid}
+	</delete>
  </mapper>

@@ -9,6 +9,8 @@ import kr.co.thefesta.festival.domain.AreaCodeDTO;
 import kr.co.thefesta.festival.domain.Criteria;
 import kr.co.thefesta.festival.domain.FestivalDTO;
 import kr.co.thefesta.festival.domain.FestivalImageDTO;
+import kr.co.thefesta.festival.domain.FestivalReplyDTO;
+import kr.co.thefesta.festival.domain.LikeDTO;
 import kr.co.thefesta.festival.persistence.IFestivalDAO;
 import kr.co.thefesta.festival.service.IFestivalService;
 
@@ -33,11 +35,6 @@ public class FestivalServiceImpl implements IFestivalService {
 	public void insertAreaCode(AreaCodeDTO aDto) throws Exception {
 		fDao.insertAreaCode(aDto);
 	}
-
-//	@Override
-//	public List<FestivalDTO> readFestival(String startdate, String enddate) throws Exception {
-//		return fDao.readFestival(startdate, enddate);
-//	}
 
 	@Override
 	public List<FestivalDTO> listAll(Criteria cri) throws Exception {
@@ -67,6 +64,21 @@ public class FestivalServiceImpl implements IFestivalService {
 	@Override
 	public List<FestivalImageDTO> getImg(String contentid) throws Exception {
 		return fDao.getImg(contentid);
+	}
+
+	@Override
+	public int insertLike(LikeDTO lDto) throws Exception {
+		return fDao.insertLike(lDto);
+	}
+
+	@Override
+	public boolean deleteLike(LikeDTO lDto) throws Exception {
+		return fDao.deleteLike(lDto) == 1;
+	}
+
+	@Override
+	public List<LikeDTO> searchLike(LikeDTO lDto) throws Exception {
+		return fDao.searchLike(lDto);
 	}
 
 }

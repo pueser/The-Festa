@@ -6,12 +6,16 @@ import kr.co.thefesta.festival.domain.AreaCodeDTO;
 import kr.co.thefesta.festival.domain.Criteria;
 import kr.co.thefesta.festival.domain.FestivalDTO;
 import kr.co.thefesta.festival.domain.FestivalImageDTO;
+import kr.co.thefesta.festival.domain.FestivalReplyDTO;
+import kr.co.thefesta.festival.domain.LikeDTO;
 
 public interface IFestivalDAO {
 	public void insertApi(FestivalDTO fDto) throws Exception;
 	public void insertImg(FestivalImageDTO fiDto) throws Exception;
 	public void insertAreaCode(AreaCodeDTO aDto) throws Exception;
-//	public List<FestivalDTO> readFestival(String startdate, String enddate) throws Exception;
+	public int insertLike(LikeDTO lDto) throws Exception;
+	public int deleteLike(LikeDTO lDto) throws Exception;
+	public List<LikeDTO> searchLike(LikeDTO lDto) throws Exception;
 	public List<FestivalDTO> listAll(Criteria cri) throws Exception;
 	public int getTotalCnt(Criteria cri) throws Exception;
 	public int updateFestival(FestivalDTO fDto) throws Exception;

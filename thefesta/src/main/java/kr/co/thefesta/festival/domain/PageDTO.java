@@ -6,10 +6,11 @@ import lombok.Data;
 public class PageDTO {
 	private int startPage;
 	private int endPage;
+	private int realEnd;
 	private boolean prev, next;
 	
 	private int total;
-	private Criteria cri; // 클래스 안에 클래스를 멤버변수로 담아온ㄷ...ㅏ........?..............................
+	private Criteria cri;
 	
 	public PageDTO(Criteria cri, int total) {
 		this.cri = cri;
@@ -19,13 +20,13 @@ public class PageDTO {
 		
 		this.startPage = this.endPage - 4;
 		
-		int realEnd = (int) (Math.ceil(total * 1.0 / cri.getAmount()));
+		this.realEnd = (int) (Math.ceil(total * 1.0 / cri.getAmount()));
 		
-		if (realEnd <= this.endPage) {
-			this.endPage = realEnd;
+		if (this.realEnd <= this.endPage) {
+			this.endPage = this.realEnd;
 		}
 		
 		this.prev = this.startPage > 1;
-		this.next = this.endPage < realEnd;
+		this.next = this.endPage < this.realEnd;
 	}
 }
