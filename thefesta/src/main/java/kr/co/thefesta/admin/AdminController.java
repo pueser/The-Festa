@@ -15,12 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import kr.co.thefesta.admin.domain.Criteria;
 import kr.co.thefesta.admin.domain.PageDTO;
+import kr.co.thefesta.admin.domain.QuestionDTO;
 import kr.co.thefesta.admin.domain.ReportDTO;
 import kr.co.thefesta.admin.service.IAdminService;
-
-
+import kr.co.thefesta.festival.service.IFestivalService;
 import kr.co.thefesta.member.domain.MemberDTO;
+import kr.co.thefesta.member.service.IMemberService;
 import lombok.extern.log4j.Log4j;
+import oracle.ons.CreatePermission;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -29,6 +31,12 @@ import lombok.extern.log4j.Log4j;
 public class AdminController {
 	@Autowired
 	public IAdminService service;
+	
+	@Autowired
+	private IFestivalService festivalService;
+	
+	@Autowired
+	private IMemberService memberService;
 	
 	
 	//member 테이블 회원정보 list
@@ -159,9 +167,11 @@ public class AdminController {
 		log.info("reportstateChange get...");
 		log.info("리액트에서 받은 reportid값 = " + reportid);
 		log.info("리액트에서 받은 id값 = " + id);
-		int num = service.reportstateChange(reportid, id);
 		
 		String result;
+		
+
+		int num = service.reportstateChange(reportid, id);
 		
 		//결과 
 		if(num == 1) {
@@ -172,56 +182,139 @@ public class AdminController {
 			result = reportid + "번 신고글 승인이 실패하였습니다.";
 		}
 		
+		
 		return result;
 	}
 	
-	//member 테이블 회원정보 list
-//		@RequestMapping(value = "/memberList", method = RequestMethod.GET)
-//		public Map<String, Object> memberGet(Criteria cri)throws Exception{
-//			log.info("memberlist Get....");
-//			log.info("cri = " + cri);
-//			Map<String, Object> result = new HashMap<>();
-//			
-//			List<MemberDTO> memberList = service.memberList(cri);
-//			
-//			
-//			for (MemberDTO member : memberList) {
-//				if(member.getStatecode().equals("1")) {
-//					member.setStatecode("일반");
-//				}else if(member.getStatecode().equals("2")) {
-//					member.setStatecode("탈퇴");
-//				}else if(member.getStatecode().equals("3")) {
-//					member.setStatecode("재가입 가능");
-//				}else {
-//					member.setStatecode("강퇴");
-//				}
-//			}
-//			result.put("list", memberList);
-//			int total = service.memberListCnt();
-//			
-//			 
-//		     log.info("total : " + total);
-//		     
-//		     result.put("pageMaker", new PageDTO(cri, total));
-//			
-//			return result;
-//		}
+	//신고 누적횟수 
+	@RequestMapping(value = "/memberReportnumRead", method = RequestMethod.GET)
+	public int memberReportnumRead(Integer reportid, String id)throws Exception{
+		log.info("memberReportnumRead get...");
+		log.info("리액트에서 받은 reportid값 = " + reportid);
+		log.info("리액트에서 받은 id값 = " + id);
+		int reportnum = service.memberReportnumRead(id);
+		
+		return reportnum;
+	}
+	
 	
 	//축제list & 축제 문의list
 	@RequestMapping(value = "/festaList", method = RequestMethod.GET)
-	public Map<String, Object> festaList(Criteria cri)throws Exception{
+	public Map<String, Object> festaList(kr.co.thefesta.festival.domain.Criteria cri)throws Exception{
 		log.info("festaList Get....");
 		log.info("cri = "+ cri.toString());
-		service.festaList(cri);
-		return null;
+		List<Object> festaList = service.festaList(cri);
+		
+		Map<String, Object> result = new HashMap<>();
+		
+		result.put("questionDto", festaList);
+		int total = festivalService.getTotalCnt(cri);
+		
+		 
+	    log.info("total : " + total);
+	     
+	    result.put("pageMaker", new kr.co.thefesta.festival.domain.PageDTO(cri, total));
+		return result;
 	}
 	
+	//축제 건의내용 list
+	@RequestMapping(value = "/questionList", method = RequestMethod.GET)
+	public Map<String, Object> questionList(Criteria cri, Integer contentid)throws Exception{
+		log.info("questionList get...");
+		log.info("받은 값 = " + contentid);
+		log.info("받은 값 = " + cri.toString());
+		
+		List<QuestionDTO> list = service.questionList(cri, contentid);
+		log.info("list = " + list.toString());
+		
+		Map<String, Object> result = new HashMap<>();
+		
+		result.put("list", list);
+		int total = service.questionListCnt(contentid);
+		
+		 log.info("total : " + total);
+	     
+		 result.put("pageMaker", new PageDTO(cri, total));
+		
+		return result;
+	}
 	
+	//축제 삭제
+	@RequestMapping(value = "/festaDelete", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public String festaDelete(Integer contentid) throws Exception{
+		log.info("festaDelete post...");
+		log.info("받은 값" + contentid);
+		
+		int delete = service.festaDelete(contentid);
+		
+		String result;
+		if(delete == 1) {
+			result = contentid + "번이 삭제되었습니다.";
+		}else {
+			result = contentid + "번이 삭제 실패하였습니다.";
+		}
+		
+		log.info("result = " + result);
+		
+		return result;
+	}
+	
+	//축제 건의내용 저장
+	@RequestMapping(value = "questionRegister", method = RequestMethod.POST)
+	public void questionCreate(QuestionDTO questionDto) throws Exception{
+		log.info("questionCreate post...");
+		
+		log.info("받은 값 = " + questionDto.toString());
+		
+		service.questionRegister(questionDto);
+	}
+	
+	//축제 댓글 신고(parameter : reportcontent, reporter, reported, rfrno)
+	@RequestMapping(value = "/festaReplyReport", method = RequestMethod.POST)
+	public void festaReplyReport(ReportDTO reportDto) throws Exception{
+		log.info("festaReplyReport post...");
+		log.info("받은 값 = " + reportDto.toString());
+		
+		service.festaReplyReport(reportDto);
+	}
+	
+	//게시글 댓글 신고(parameter : reportcontent, reporter, reported, rbrno)
+	@RequestMapping(value = "/boardReplyReport", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public String boardReplyReport(ReportDTO reportDto) throws Exception{
+		log.info("boardReplyReport post ...");
+		String num = memberService.stateCodeCheck(reportDto.getReported());
+		log.info("받은 값 = " + reportDto.toString());
+		log.info("회원 상태코드 = " + num);
+		
+		if(num.equals("1")) {
+			int result = service.boardReplyReport(reportDto);
+			return result + "댓글이 신고 되었습니다.";
+		}else {
+			return "회원은 현재 사이트의 회원이 아닙니다. 신고가 불가능 합니다. 관리자에게 문의 바람니다.";
+		}
+	}
+	
+	//게시글 신고 (parameter : reportcontent, reporter, reported, rbid)
+	@RequestMapping(value = "boardReport", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public String boardReport(ReportDTO reportDto) throws Exception{
+		log.info("boardReport post ...");
+		String num = memberService.stateCodeCheck(reportDto.getReported());
+		log.info("받은 값 = " + reportDto.toString());
+		log.info("회원 상태코드 = " + num);
+		
+		if(num.equals("1")) {
+			int result = service.boardReport(reportDto);
+			return result + "게시글이 신고 되었습니다.";
+		}else {
+			return "회원은 현재 사이트의 회원이 아닙니다. 신고가 불가능 합니다. 관리자에게 문의 바람니다.";
+		}
+	}
+	 
 	//회원 상태코드 변경
-	@RequestMapping(value = "/memberState", method = RequestMethod.POST)
-	public String memberStatePost(String statecode, String id)throws Exception {
-		log.info("statecode = " + statecode);
-		log.info("id = " + id);
-		return null;
-	}
+//	@RequestMapping(value = "/memberState", method = RequestMethod.POST)
+//	public String memberStatePost(String statecode, String id)throws Exception {
+//		log.info("statecode = " + statecode);
+//		log.info("id = " + id);
+//		return null;
+//	}
 }

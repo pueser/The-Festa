@@ -34,6 +34,7 @@
 		WHERE reportid = #{reportid}
  	</select>
  	
+ 	
  	<!-- 신고 list -->
  	<select id="reportList" resultType="kr.co.thefesta.admin.domain.ReportDTO">
 	 	<![CDATA[
@@ -91,17 +92,17 @@
  	
  	
  	<!-- 축제list & 축제 문의list -->
- 	<select id="festaList" resultType="arraylist">
+ 	<select id="festaList" resultType="kr.co.thefesta.admin.domain.QuestionDTO">
  	<![CDATA[
- 		SELECT title,eventstartdate,eventenddate,contentid, addrl, questioncount
+ 		SELECT title,eventstartdate,eventenddate,contentid, addr1, questioncount
 		FROM(
-    		SELECT title,eventstartdate,eventenddate,contentid, addrl, questioncount, rownum  as rn
+    		SELECT title,eventstartdate,eventenddate,contentid, addr1, questioncount, rownum  as rn
     		FROM (
-        		SELECT festa.title, festa.eventstartdate, festa.eventenddate, festa.contentid, festa.addrl, count(*) as questioncount
+        		SELECT festa.title, festa.eventstartdate, festa.eventenddate, festa.contentid, festa.addr1, count(*) as questioncount
         		FROM admin_question 
         		INNER JOIN festa
         		ON festa.contentid = admin_question.contentid
-        		GROUP BY  festa.title,festa.eventstartdate,festa.eventenddate,festa.contentid,festa.addrl
+        		GROUP BY  festa.title,festa.eventstartdate,festa.eventenddate,festa.contentid,festa.addr1
         		ORDER BY festa.eventstartdate DESC
     		)
     		WHERE rownum <= #{pageNum} * #{amount}
@@ -109,4 +110,136 @@
 		WHERE rn > (#{pageNum} -1) * #{amount}
 	]]>
  	</select>
+ 	
+ 	<!-- 축제 list -->
+ 	<select id="festaListAll" resultType="kr.co.thefesta.admin.domain.QuestionDTO">
+	 	<![CDATA[
+	 		SELECT title, eventstartdate, eventenddate, contentid, addr1
+       		FROM(
+            	SELECT title, eventstartdate, eventenddate, contentid, addr1, rownum  as rn
+            	FROM festa 
+            	WHERE contentid not in(
+                	SELECT contentid
+                	FROM admin_question
+            	) AND rownum <= #{pageNum} * #{amount}
+            	ORDER BY festa.eventstartdate DESC
+        	)
+        	WHERE rn > (#{pageNum} -1) * #{amount}
+	    ]]>
+ 	</select>
+ 	
+ 	<!-- 건의 list -->
+ 	<select id="questionList" resultType="kr.co.thefesta.admin.domain.QuestionDTO">
+ 	<![CDATA[
+ 		SELECT questionid, questioncontent, questiondate, id, contentid
+		FROM(
+    		SELECT questionid, questioncontent, questiondate, id, rownum  as rn, contentid
+    		FROM(
+        		SELECT admin_question.questionid, admin_question.questioncontent, admin_question.questiondate, admin_question.id, festa.contentid
+		        FROM admin_question 
+		        INNER JOIN festa
+		        ON admin_question.contentid = festa.contentid
+		        WHERE festa.contentid = #{contentid}
+   			)
+    		WHERE rownum <= #{pageNum} * #{amount}
+		)
+		WHERE rn > (#{pageNum} -1) * #{amount}
+	]]>
+ 	</select>
+ 	
+ 	<!-- 건의 갯수 -->
+ 	<select id="questionListCnt" resultType="int">
+	 	SELECT count(*)
+		FROM admin_question
+		WHERE contentid = #{contentid}
+ 	</select>
+ 	
+ 	<!-- 축제 삭제 -->
+ 	<delete id="festaDelete">
+ 		DELETE
+		FROM festa
+		WHERE contentid = #{contentid}
+ 	</delete>
+ 	
+ 	<!-- 축제 이미지 삭제 -->
+ 	<delete id="festaImageDelete">
+ 		DELETE
+		FROM festa_image
+		WHERE contentid = #{contentid}
+ 	</delete>
+ 	
+ 	<!-- 축제 좋아요 삭제 -->
+ 	<delete id="festaLikeDelete">
+ 		DELETE
+		FROM festa_like
+		WHERE contentid = #{contentid}
+ 	</delete>
+ 	
+ 	<!-- 축제 건의 삭제 -->
+ 	<delete id="questionDelete">
+ 		DELETE
+		FROM admin_question
+		WHERE contentid = #{contentid}
+ 	</delete>
+ 	
+ 	<!-- 축제 댓글 -->
+ 	<delete id="festaReplyDelete">
+ 		DELETE
+		FROM festa_reply
+		WHERE contentid = #{contentid}
+ 	</delete>
+ 	
+ 	<!-- 삭제할 축제 댓글 번호 -->
+ 	<select id="deleteReportidSelect" resultType="kr.co.thefesta.festival.domain.FestivalReplyDTO">
+	 	SELECT festa_reply.frno
+	    FROM    festa_reply
+	    INNER JOIN festa
+	    ON  festa_reply.contentid = festa.contentid
+	    WHERE  festa_reply.contentid = #{contentid}
+ 	</select>
+ 	
+ 	<!-- 축제 댓글 신고삭제 -->
+ 	<delete id="reportFrnoDelete" parameterType="java.util.ArrayList">
+ 		DELETE
+		FROM report
+		<trim prefix="WHERE rfrno in (" suffix=") " suffixOverrides=",">
+			<foreach collection="list" item="item" >
+					#{item.frno},
+			</foreach>
+		</trim>
+ 	</delete>
+ 	
+ 	<!-- 건의 등록 -->
+ 	<insert id="questionRegister">
+ 		INSERT INTO admin_question(questionid, questioncontent, id, contentid)
+		VALUES (seq_questionid.nextval, #{questioncontent}, #{id}, #{contentid})
+ 	</insert>
+ 	
+ 	<!-- 축제 댓글 신고등록 -->
+ 	<insert id="festaReplyReport">
+ 		INSERT INTO report(reportid, reportcontent, reporter, reported, rfrno)
+		VALUES (seq_reportid.nextval, #{reportcontent}, #{reporter}, #{reported}, #{rfrno})
+ 	</insert>
+ 	
+ 	<!-- 게시글 댓글 신고등록 -->
+ 	<insert id="boardReplyReport">
+ 		INSERT INTO report(reportid, reportcontent, reporter, reported, rbrno)
+		VALUES (seq_reportid.nextval, #{reportcontent}, #{reporter}, #{reported}, #{rbrno})
+		<selectKey keyProperty="rbrno" resultType="int" order="AFTER">
+         SELECT brno 
+         FROM board_reply
+         WHERE brno = #{rbrno}
+      </selectKey>
+ 	</insert>
+ 	
+ 	<!-- 게시글 신고등록 -->
+ 	<insert id="boardReport">
+ 		INSERT INTO report(reportid, reportcontent, reporter, reported, rbid)
+		VALUES (seq_reportid.nextval, #{reportcontent}, #{reporter}, #{reported}, #{rbid})
+		<selectKey keyProperty="rbid" resultType="int" order="AFTER">
+         SELECT bno 
+         FROM board
+         WHERE bid = #{rbid}
+      </selectKey>
+ 	</insert>
  </mapper>

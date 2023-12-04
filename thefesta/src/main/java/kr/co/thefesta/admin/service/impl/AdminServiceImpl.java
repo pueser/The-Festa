@@ -7,6 +7,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import kr.co.thefesta.admin.domain.Criteria;
+import kr.co.thefesta.admin.domain.QuestionDTO;
+import kr.co.thefesta.admin.domain.ReportDTO;
+import kr.co.thefesta.admin.persistence.IAdminDAO;
+import kr.co.thefesta.admin.service.IAdminService;
+import kr.co.thefesta.member.domain.MemberDTO;
+
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.co.thefesta.admin.domain.Criteria;
 import kr.co.thefesta.admin.domain.ReportDTO;
 import kr.co.thefesta.admin.persistence.IAdminDAO;
 import kr.co.thefesta.admin.service.IAdminService;
@@ -43,6 +57,12 @@ public class AdminServiceImpl implements IAdminService {
 		
 	}
 	
+	//회원 신고당한 횟수
+	@Override
+	public int memberReportnumRead(String id) throws Exception {
+		return adminDao.memberReportnumRead(id);
+	}
+	
 	//신고 list
 	@Override
 	public List<ReportDTO> reportList(Criteria cri) throws Exception {
@@ -67,11 +87,57 @@ public class AdminServiceImpl implements IAdminService {
 		return adminDao.memberListCnt();
 	}
 	
-	//축제list & 축제 문의list
+	//축제list
 	@Override
-	public Map<String, Object> festaList(Criteria cri) throws Exception {
+	public List<Object> festaList(kr.co.thefesta.festival.domain.Criteria cri) throws Exception {
 		return adminDao.festaList(cri);
 	}
+
+	//건의 list
+	@Override
+	public List<QuestionDTO> questionList(Criteria cri, Integer contentid) throws Exception {
+		return adminDao.questionList(cri, contentid);
+	}
+	
+	//건의 총갯수
+	@Override
+	public int questionListCnt(Integer contentid) throws Exception {
+		return adminDao.questionListCnt(contentid);
+	}
+	
+	//축제 삭제
+	@Override
+	public int festaDelete(Integer contentid) throws Exception {
+		return adminDao.festaDelete(contentid);
+		
+	}
+	
+	//건의 등록
+	@Override
+	public void questionRegister(QuestionDTO questionDto) throws Exception {
+		 adminDao.questionRegister(questionDto);
+	}
+	
+	//축제 댓글 신고 저장
+	@Override
+	public void festaReplyReport(ReportDTO reportDto) throws Exception {
+		adminDao.festaReplyReport(reportDto);
+		
+	}
+	
+	//게시글 댓글 등록
+	@Override
+	public int boardReplyReport(ReportDTO reportDto) throws Exception {
+		return adminDao.boardReplyReport(reportDto);
+		
+	}
+	
+	//게시글 신고 등록
+	@Override
+	public int boardReport(ReportDTO reportDto) throws Exception {
+		return adminDao.boardReport(reportDto);
+	}
+
 
 	
 	
