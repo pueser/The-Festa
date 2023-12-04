@@ -76,11 +76,7 @@ public class MemberDAOImpl implements IMemberDAO {
 	
 	
 	@Override
-	public void updateState(String id, String statecode) {
-		Map<String, Object> paramMap = new HashMap<>();
-		
-		paramMap.put("id", id);
-		paramMap.put("statecode", statecode);
-		sqlSession.update(namespace + ".updateState", paramMap);
+	public void updateState(MemberDTO mDto) {
+		sqlSession.update(namespace + ".updateState", mDto);
 	}
 }

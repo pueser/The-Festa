@@ -17,5 +17,5 @@ public interface IMemberDAO {
 	
 	public void logout(String id);
 	
-	public void updateState(String id, String statecode);
+	public void updateState(MemberDTO mDto);
 }

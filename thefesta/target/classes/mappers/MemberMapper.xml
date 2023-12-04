@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
- <mapper namespace="kr.co.thefesta.member.mapper.MemberMapper">
+ <mapper namespace="MemberMapper">
  
  <!-- 로그인 -->
 	<select id="getTime" resultType="string">
@@ -102,7 +102,6 @@
 	      stateCode = 3,
 	    </if>
 	    <if test="statecode == 4">
-	      nickname = "탈퇴회원",
 	      stateCode = 4,
 	    </if>
 	  updatedate = sysdate
