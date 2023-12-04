@@ -27,7 +27,7 @@
         FROM festa f
         JOIN festa_area a ON f.acode = a.acode
         JOIN festa_sigungu s ON f.acode = s.acode AND f.scode = s.scode
-        WHERE f.contentid = 1799084
+        WHERE f.contentid = #{contentid}
   	</select>
   	
   	<select id="select" resultType="kr.co.thefesta.food.domain.RecommendDTO">
@@ -38,7 +38,7 @@
 		       (SELECT COUNT(*) FROM food_like WHERE contentid = fd.contentid) AS likeCnt		       
 		FROM food fd JOIN festa f
 		ON fd.areacode = f.acode AND fd.sigungucode = f.scode
-		WHERE f.contentid = 1799084
+		WHERE f.contentid = #{contentid}
 		ORDER BY likeCnt DESC
   	</select>
   	

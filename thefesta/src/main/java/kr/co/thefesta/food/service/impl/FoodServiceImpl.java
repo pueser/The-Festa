@@ -37,8 +37,8 @@ public class FoodServiceImpl implements IFoodService {
 	}
 
 	@Override
-	public List<RecommendDTO> listAll() throws Exception {
-		List<RecommendDTO> recDto = fDao.listAll();
+	public List<RecommendDTO> listAll(String contentid) throws Exception {
+		List<RecommendDTO> recDto = fDao.listAll(contentid);
 //		log.info("listAll data : " + itemDto);
 		return recDto;
 	}
@@ -55,8 +55,8 @@ public class FoodServiceImpl implements IFoodService {
 	}
 
 	@Override
-	public AreacodeDTO selectArea() throws Exception {
-		AreacodeDTO areaDto = fDao.selectArea();
+	public AreacodeDTO selectArea(String contentid) throws Exception {
+		AreacodeDTO areaDto = fDao.selectArea(contentid);
 		return areaDto;
 	}
 

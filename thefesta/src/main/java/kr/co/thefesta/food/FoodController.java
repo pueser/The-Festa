@@ -49,11 +49,11 @@ public class FoodController {
 
 	// 음식점 추천 목록
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
-	public ResponseEntity<Map<String, Object>> getFoodList() throws Exception {
+	public ResponseEntity<Map<String, Object>> getFoodList(@RequestParam("contentid") String contentid) throws Exception {
 		log.info("food list connect.....");
-
-		List<RecommendDTO> recDto = service.listAll();
-		AreacodeDTO areaCodeDto = service.selectArea();
+		log.info("contentid: " + contentid);
+		List<RecommendDTO> recDto = service.listAll(contentid);
+		AreacodeDTO areaCodeDto = service.selectArea(contentid);
 
 		Map<String, Object> responseMap = new HashMap<>();
 		responseMap.put("recommendDTOList", recDto);

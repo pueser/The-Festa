@@ -32,8 +32,8 @@ public class FoodDAOImpl implements IFoodDAO {
 	}
 
 	@Override
-	public List<RecommendDTO> listAll() throws Exception {
-		return session.selectList("FoodMapper.select");
+	public List<RecommendDTO> listAll(String contentid) throws Exception {
+		return session.selectList("FoodMapper.select", contentid);
 	}
 
 	@Override
@@ -47,8 +47,8 @@ public class FoodDAOImpl implements IFoodDAO {
 	}
 
 	@Override
-	public AreacodeDTO selectArea() throws Exception {
-		return session.selectOne("FoodMapper.selectAreacode");
+	public AreacodeDTO selectArea(String contentid) throws Exception {
+		return session.selectOne("FoodMapper.selectAreacode", contentid);
 	}
 
 	@Override
