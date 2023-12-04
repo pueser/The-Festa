@@ -9,14 +9,16 @@ import org.springframework.stereotype.Repository;
 
 import kr.co.thefesta.member.domain.MemberDTO;
 import kr.co.thefesta.member.persistence.IMemberDAO;
+import lombok.extern.log4j.Log4j;
 
+@Log4j
 @Repository
 public class MemberDAOImpl implements IMemberDAO {
 
 	@Autowired
 	private SqlSession sqlSession;
 	
-	private static final String namespace = "kr.co.thefesta.memberMapper";
+	private static final String namespace = "MemberMapper";
 	
 	@Override
 	public MemberDTO selMember(MemberDTO mDto) {
@@ -70,6 +72,12 @@ public class MemberDAOImpl implements IMemberDAO {
 
 	
 	@Override
+	public void pwReset(Map<String, Object> paramMap) {
+		sqlSession.update(namespace + ".pwReset", paramMap);
+	}
+	
+	
+	@Override
 	public void logout(String id) {
 		sqlSession.update(namespace + ".logout", id);
 	}
@@ -78,5 +86,15 @@ public class MemberDAOImpl implements IMemberDAO {
 	@Override
 	public void updateState(MemberDTO mDto) {
 		sqlSession.update(namespace + ".updateState", mDto);
+	}
+
+	@Override
+	public void updateImg(String profileImg, String id) {
+		Map<String, Object> paramMap = new HashMap<>();
+		log.info("테스트" + profileImg + id);
+		paramMap.put("profileImg", profileImg);
+		paramMap.put("id", id);
+		sqlSession.update(namespace + ".updateImg", paramMap);
+		
 	}
 }
