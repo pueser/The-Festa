@@ -48,23 +48,12 @@ public class AdminController {
 		
 		List<MemberDTO> memberList = service.memberList(cri);
 		
-		
-		for (MemberDTO member : memberList) {
-			if(member.getStatecode().equals("1")) {
-				member.setStatecode("일반");
-			}else if(member.getStatecode().equals("2")) {
-				member.setStatecode("탈퇴");
-			}else if(member.getStatecode().equals("3")) {
-				member.setStatecode("재가입 가능");
-			}else {
-				member.setStatecode("강퇴");
-			}
-		}
 		result.put("list", memberList);
 		int total = service.memberListCnt();
 		
 		 
 	     log.info("total : " + total);
+	     log.info("memberList" + memberList.toString());
 	     
 	     result.put("pageMaker", new PageDTO(cri, total));
 		
@@ -74,10 +63,12 @@ public class AdminController {
 	
 	//회원 상세페이지(신고 list 페이지)
 	@RequestMapping(value = "/memberDetail", method = RequestMethod.GET)
-	public List<ReportDTO> memberDetailGet(String id)throws Exception{
+	public Map<String, Object> memberDetailGet(String id, Criteria cri)throws Exception{
 		log.info("memberDetail Get...");
 		log.info("회원 상세 id값 = " + id);
-		List<ReportDTO> reportList = service.memberDetail(id);
+		log.info("회원 상세 cri값 = " + cri.toString());
+		Map<String, Object> result = new HashMap<>();
+		List<ReportDTO> reportList = service.memberDetail(id, cri);
 		
 		//ReportDTO rbno,rfrno,rbid를 reportnumber(화면표시글자로) 변경 
 		for (ReportDTO reportDTO : reportList) {
@@ -92,8 +83,15 @@ public class AdminController {
 			}
 		}
 		
+		result.put("list", reportList);
+		int total = service.memberReportCnt(id);
+		
+		 
+	    log.info("total : " + total);
+	     
+	    result.put("pageMaker", new PageDTO(cri, total));
 		log.info("reportList = " + reportList.toString());
-		return reportList;
+		return result;
 	}
 	
 	//신고내용 표시
@@ -163,27 +161,22 @@ public class AdminController {
 	
 	//신고처리상태 변경(reportstate->2)
 	@RequestMapping(value = "/reportstateChange", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public String reportstateChange(Integer reportid, String id)throws Exception{
+	public int reportstateChange(Integer reportid)throws Exception{
+		log.info("reportstateChange post...");
+		service.reportstateChange(reportid);
+		
+		return reportid;
+	}
+	
+	//회원 신고누적 count
+	@RequestMapping(value = "/memberReportnumCnt", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	public int reportstateChange(String id, Integer reportid)throws Exception{
 		log.info("reportstateChange get...");
-		log.info("리액트에서 받은 reportid값 = " + reportid);
 		log.info("리액트에서 받은 id값 = " + id);
-		
-		String result;
-		
 
-		int num = service.reportstateChange(reportid, id);
+		service.memberReportnumCnt(id,reportid);
 		
-		//결과 
-		if(num == 1) {
-			log.info(reportid + "번 신고글이 승인 되었습니다.");
-			result = reportid + "번 신고글이 승인 되었습니다.";
-		}else {
-			log.info(reportid + "번 신고글 승인이 실패하였습니다.");
-			result = reportid + "번 신고글 승인이 실패하였습니다.";
-		}
-		
-		
-		return result;
+		return reportid;
 	}
 	
 	//신고 누적횟수 
@@ -200,7 +193,7 @@ public class AdminController {
 	
 	//축제list & 축제 문의list
 	@RequestMapping(value = "/festaList", method = RequestMethod.GET)
-	public Map<String, Object> festaList(kr.co.thefesta.festival.domain.Criteria cri)throws Exception{
+	public Map<String, Object> festaList(Criteria cri)throws Exception{
 		log.info("festaList Get....");
 		log.info("cri = "+ cri.toString());
 		List<Object> festaList = service.festaList(cri);
@@ -208,12 +201,13 @@ public class AdminController {
 		Map<String, Object> result = new HashMap<>();
 		
 		result.put("questionDto", festaList);
-		int total = festivalService.getTotalCnt(cri);
+		//int total = festivalService.getTotalCnt();
+		int total = service.festaListCnt();
 		
 		 
 	    log.info("total : " + total);
 	     
-	    result.put("pageMaker", new kr.co.thefesta.festival.domain.PageDTO(cri, total));
+	    result.put("pageMaker", new PageDTO(cri, total));
 		return result;
 	}
 	

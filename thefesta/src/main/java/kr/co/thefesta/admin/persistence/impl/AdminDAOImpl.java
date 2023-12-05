@@ -1,5 +1,6 @@
 package kr.co.thefesta.admin.persistence.impl;
 
+import java.security.Provider.Service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +18,8 @@ import kr.co.thefesta.admin.domain.ReportDTO;
 import kr.co.thefesta.admin.persistence.IAdminDAO;
 import kr.co.thefesta.festival.mapper.FestivalMapper;
 import kr.co.thefesta.member.domain.MemberDTO;
+import kr.co.thefesta.member.mapper.MemberMapper;
+import kr.co.thefesta.member.persistence.IMemberDAO;
 import lombok.extern.log4j.Log4j;
 
 
@@ -26,9 +29,15 @@ public class AdminDAOImpl implements IAdminDAO {
 	//admin mapper
 	@Autowired
 	private SqlSession session;
-	//member mapper
+	
+	//member IMemberDAO
 	@Autowired
-	private kr.co.thefesta.member.mapper.MemberMapper memberSession;
+	private IMemberDAO memberDao;
+	//member Mapper
+	@Autowired
+	private MemberMapper memberMapper;
+	
+	
 	//festival mapper 이거 안됨ㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠㅠ
 	@Autowired
 	private FestivalMapper festivalSession;
@@ -42,8 +51,13 @@ public class AdminDAOImpl implements IAdminDAO {
 	
 	//member 회원 디테일 정보
 	@Override
-	public List<ReportDTO> memberDetail(String id) throws Exception {
-		return session.selectList("AdminMapper.memberDetail", id);
+	public List<ReportDTO> memberDetail(String id, Criteria cri) throws Exception {
+		Map<String, Object> map = new HashMap<>();
+		map.put("id", id);
+		map.put("pageNum", cri.getPageNum());
+		map.put("amount", cri.getAmount());
+		
+		return session.selectList("AdminMapper.memberDetail", map);
 	}
 	
 	//회원 신고내용
@@ -72,9 +86,15 @@ public class AdminDAOImpl implements IAdminDAO {
 	}
 	
 	//신고처리상태 변경(reportstate->2)
+	@Override
+	public int reportstateChange(Integer reportid) throws Exception {
+		return session.update("AdminMapper.reportstateChange", reportid);
+	}
+	
+	//회원 신고 누적
 	@Transactional
 	@Override
-	public int reportstateChange(Integer reportid, String id) throws Exception {
+	public int memberReportnumCnt(String id, Integer reportid) throws Exception {
 		int num = session.selectOne("AdminMapper.memberReportnumRead", id);// 회원 reportnum 횟수
 		log.info("기존의 누적 갯수 = "+ num);
 		
@@ -82,20 +102,20 @@ public class AdminDAOImpl implements IAdminDAO {
 		map.put("num" , num);
 		map.put("id", id);
 		
-		Map<String, Object> paramMap = new HashMap<>();
-		paramMap.put("id", id);
-		paramMap.put("statecode", 4);
+		MemberDTO mDto = new MemberDTO(); 
+		mDto.setId(id);
+		mDto.setStatecode("4");
+
 		
 		//num갯수가 4번이면 reportnum 추가 후 , state코드 4번(강퇴) 변경
 		if((num+1) == 5) {
-			session.update("AdminMapper.memberReportnumUpdate", map);// 회원 reportnum + 1
-			
-			memberSession.updateState(paramMap); //회원 상태코드 4번 변경
-			return session.update("AdminMapper.reportstateChange", reportid); // 신고처리상태 변경(reportstate->2)
+			memberDao.updateState(mDto);//멤버의 상태코드 변경
+			session.delete("AdminMapper.memberReportAllDelete", id); //신고글 모두 삭제
+			return session.update("AdminMapper.memberReportnumUpdate", map);// 회원 reportnum + 1
 			
 		}else {
-			session.update("AdminMapper.memberReportnumUpdate", map);// 회원 reportnum + 1
-			return session.update("AdminMapper.reportstateChange", reportid);// 신고처리상태 변경(reportstate->2)
+			session.delete("AdminMapper.memberReportDelete", reportid); //신고글 삭제
+			return session.update("AdminMapper.memberReportnumUpdate", map);// 회원 reportnum + 1
 		}
 		
 	}
@@ -109,7 +129,7 @@ public class AdminDAOImpl implements IAdminDAO {
 	
 	//축제list
 	@Override
-	public List<Object> festaList(kr.co.thefesta.festival.domain.Criteria cri) throws Exception {
+	public List<Object> festaList(Criteria cri) throws Exception {
 		List<Object> list = new ArrayList<>();
 		
 		List<QuestionDTO> list1 = session.selectList("AdminMapper.festaList", cri); //건의 갯수 있는 축제list
@@ -128,6 +148,13 @@ public class AdminDAOImpl implements IAdminDAO {
 		
 		return list;
 	}
+	
+	//축제 count
+	@Override
+	public int festaListCnt() throws Exception {
+		return session.selectOne("AdminMapper.festaListCnt");
+	}
+
 	
 	//회원 신고당한 횟수
 	@Override
@@ -197,7 +224,14 @@ public class AdminDAOImpl implements IAdminDAO {
 	public int boardReport(ReportDTO reportDto) throws Exception {
 		return session.insert("AdminMapper.boardReport", reportDto);
 	}
+	
+	//회원 신고 내역 갯수
+	@Override
+	public int memberReportCnt(String id) throws Exception {
+		return session.selectOne("AdminMapper.memberReportCnt", id);
+	}
 
+	
 	
 	
 }

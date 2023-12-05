@@ -40,8 +40,8 @@ public class AdminServiceImpl implements IAdminService {
 	
 	//member 회원 디테일 정보
 	@Override
-	public List<ReportDTO> memberDetail(String id) throws Exception {
-		return adminDao.memberDetail(id);
+	public List<ReportDTO> memberDetail(String id, Criteria cri) throws Exception {
+		return adminDao.memberDetail(id,cri);
 	}
 	
 	//회원 신고내용
@@ -77,8 +77,14 @@ public class AdminServiceImpl implements IAdminService {
 	
 	//신고처리상태 변경(reportstate->2)
 	@Override
-	public int reportstateChange(Integer reportid, String id) throws Exception {
-		return adminDao.reportstateChange(reportid, id);
+	public int reportstateChange(Integer reportid) throws Exception {
+		return adminDao.reportstateChange(reportid);
+	}
+	
+	//회원 신고누적 count
+	@Override
+	public int memberReportnumCnt(String id, Integer reportid) throws Exception {
+		return adminDao.memberReportnumCnt(id, reportid);
 	}
 	
 	//member list 총 갯수
@@ -89,7 +95,7 @@ public class AdminServiceImpl implements IAdminService {
 	
 	//축제list
 	@Override
-	public List<Object> festaList(kr.co.thefesta.festival.domain.Criteria cri) throws Exception {
+	public List<Object> festaList(Criteria cri) throws Exception {
 		return adminDao.festaList(cri);
 	}
 
@@ -136,6 +142,18 @@ public class AdminServiceImpl implements IAdminService {
 	@Override
 	public int boardReport(ReportDTO reportDto) throws Exception {
 		return adminDao.boardReport(reportDto);
+	}
+	
+	//회원 신고 내역 갯수
+	@Override
+	public int memberReportCnt(String id) throws Exception {
+		return adminDao.memberReportCnt(id);
+	}
+	
+	//축제 count
+	@Override
+	public int festaListCnt() throws Exception {
+		return adminDao.festaListCnt();
 	}
 
 

@@ -6,25 +6,41 @@
  	<!-- member 테이블 회원정보 list -->
  	<select id="memberList" resultType="kr.co.thefesta.member.domain.MemberDTO">
 	 	<![CDATA[
-	 		SELECT id, nickname ,statecode, reportnum, finalaccess
-	        FROM(
-	            SELECT rownum  as rn, id,nickname ,statecode, reportnum, finalaccess
-				FROM member
-				WHERE NOT statecode IN '0' AND rownum <= #{pageNum} * #{amount}
-	        )
-	        WHERE rn > (#{pageNum} -1) * #{amount}
+	 		SELECT id,statecode,finalaccess, reportnum, reportstate
+			FROM(
+    			SELECT rownum  as rn,id,statecode,finalaccess, reportnum, reportstate
+    			FROM(
+			        SELECT  member.id, member.statecode, member.finalaccess, report.reportstate, count(*) as reportnum
+			        FROM member
+			        INNER JOIN report
+			        ON report.reported = member.id
+			        GROUP BY  member.id, member.statecode, member.finalaccess, report.reportstate
+    			)
+   			 	WHERE reportstate = 2 AND rownum <= #{pageNum} * #{amount}
+			)
+			WHERE rn>(#{pageNum} -1) * #{amount}
 	     ]]>
  	</select>
  	
  	<!-- member 회원 디테일 정보 -->
- 	<select id="memberDetail" resultType="kr.co.thefesta.admin.domain.ReportDTO">
- 		SELECT  report.reportid, report.reportcontent, report.reporter, report.rbrno, report.rfrno, report.rbid, report.reportdate,
+ 	<select id="memberDetail" resultType="kr.co.thefesta.admin.domain.ReportDTO" parameterType="java.util.Map">
+ 	<![CDATA[
+ 		SELECT reportid,reportcontent,reporter,reported, rbrno, rfrno, rbid, reportdate
+		FROM(
+    		SELECT reportid,reportcontent,reporter,reported, rbrno, rfrno, rbid, reportdate, rownum  as rn
+    		FROM (
+        		SELECT  report.reportid, report.reportcontent, report.reporter, report.reported, report.rbrno, report.rfrno, report.rbid, report.reportdate,
         		member.statecode, member.finalaccess
-		FROM report
-		INNER JOIN member
-		ON report.reported = member.id
-		WHERE member.id = #{id} AND report.reportstate = 2
-		ORDER BY report.reportid DESC
+				FROM report
+				INNER JOIN member
+				ON report.reported = member.id
+				WHERE member.id = #{id} AND report.reportstate = 2
+				ORDER BY report.reportid DESC
+    		)
+    		WHERE rownum<=#{pageNum} * #{amount}
+		)
+		WHERE rn>(#{pageNum} -1) * #{amount}
+	]]>
  	</select>
  	
  	<!-- 회원 신고내용 -->
@@ -34,9 +50,15 @@
 		WHERE reportid = #{reportid}
  	</select>
  	
+ 	<!-- 회원 신고 갯수 -->
+ 	<select id="memberReportCnt" resultType="int">
+ 	SELECT count(*)
+	FROM report
+	WHERE reportstate = 2 AND reported = #{id}
+ 	</select>
  	
  	<!-- 신고 list -->
- 	<select id="reportList" resultType="kr.co.thefesta.admin.domain.ReportDTO">
+ 	<select id="reportList" resultType="kr.co.thefesta.admin.domain.ReportDTO" >
 	 	<![CDATA[
 	 		SELECT reportid, reportcontent, reporter, rbid, rbrno, rfrno, reportdate, reported
 			FROM (
@@ -53,13 +75,20 @@
  	<select id="reportListCnt" resultType="int">
  		SELECT count(*)
 		FROM report
+		WHERE reportstate = '1'
  	</select>
  	
  	<!-- member list 총 갯수 -->
  	<select id="memberListCnt" resultType="int">
-	 	 SELECT count(*)
-	     FROM member
-	     WHERE NOT statecode IN '0'
+	 	SELECT count(*)
+		FROM(
+  			SELECT  member.id,count(*),member.statecode
+   			FROM member
+		    INNER JOIN report
+		    ON report.reported = member.id
+		    WHERE report.reportstate = 2
+   			GROUP BY  member.id,member.statecode
+		)
  	</select>
  	
  	<!-- 회원 신고글 삭제 -->
@@ -90,6 +119,12 @@
 		WHERE id=#{id}
  	</select>
  	
+ 	<delete id="memberReportAllDelete">
+ 		DELETE 
+		FROM report
+		WHERE reported = #{id}
+ 	</delete>
+ 	
  	
  	<!-- 축제list & 축제 문의list -->
  	<select id="festaList" resultType="kr.co.thefesta.admin.domain.QuestionDTO">
@@ -111,7 +146,7 @@
 	]]>
  	</select>
  	
- 	<!-- 축제 list -->
+ 	<!-- 축제 list & 축제 문의 없음-->
  	<select id="festaListAll" resultType="kr.co.thefesta.admin.domain.QuestionDTO">
 	 	<![CDATA[
 	 		SELECT title, eventstartdate, eventenddate, contentid, addr1
@@ -126,6 +161,13 @@
         	)
         	WHERE rn > (#{pageNum} -1) * #{amount}
 	    ]]>
+ 	</select>
+ 	
+ 	<!-- 축제 count -->
+ 	<select id="festaListCnt" resultType="int">
+ 		SELECT count(*)
+ 		FROM festa
+ 		WHERE contentid > 0
  	</select>
  	
  	<!-- 건의 list -->
