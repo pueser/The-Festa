@@ -74,6 +74,7 @@ public class MemberDAOImpl implements IMemberDAO {
 	@Override
 	public void pwReset(Map<String, Object> paramMap) {
 		sqlSession.update(namespace + ".pwReset", paramMap);
+		d
 	}
 	
 	
