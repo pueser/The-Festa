@@ -106,7 +106,7 @@ public class FestivalController {
 	}
 	
 	@GetMapping("/likeSearch")
-	public ResponseEntity<List<LikeDTO>> likeSearch(@RequestParam("contentid") String contentid,
+	public ResponseEntity<Integer> likeSearch(@RequestParam("contentid") String contentid,
 		    @RequestParam("id") String id) throws Exception {
 		log.info("likeSearch----------");
 		
@@ -117,14 +117,14 @@ public class FestivalController {
 		lDto.setId(id);
 		
 		try {
-			List<LikeDTO> result = service.searchLike(lDto);
+			int result = service.searchLike(lDto);
 			
 			log.info("Like List Result : " + result);
 			
-			return new ResponseEntity<List<LikeDTO>>(result, HttpStatus.OK);
+			return new ResponseEntity<>(result, HttpStatus.OK);
 		} catch (Exception e) {
-			e.printStackTrace();
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+			
 	}
 }

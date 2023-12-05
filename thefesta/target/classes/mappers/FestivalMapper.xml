@@ -100,16 +100,16 @@
 		WHERE serialnum = #{serialnum}
 	</select>
 	
-	<!-- 댓글 -->
 	<select id="getTime" resultType="string">
 		SELECT sysdate
 		FROM dual
 	</select>
 	
-	<select id="searchLike" resultType="kr.co.thefesta.festival.domain.LikeDTO">
-		SELECT *
+	<select id="searchLike" resultType="int">
+		SELECT count(*)
 		FROM festa_like
 		WHERE id = #{id}
+		AND contentid = #{contentid}
 	</select>
 	
 	<insert id="insertLike">

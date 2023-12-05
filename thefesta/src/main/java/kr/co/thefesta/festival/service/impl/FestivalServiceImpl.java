@@ -77,7 +77,7 @@ public class FestivalServiceImpl implements IFestivalService {
 	}
 
 	@Override
-	public List<LikeDTO> searchLike(LikeDTO lDto) throws Exception {
+	public int searchLike(LikeDTO lDto) throws Exception {
 		return fDao.searchLike(lDto);
 	}
 

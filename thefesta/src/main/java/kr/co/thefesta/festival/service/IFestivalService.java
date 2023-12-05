@@ -15,7 +15,7 @@ public interface IFestivalService {
 	public void insertAreaCode(AreaCodeDTO aDto) throws Exception;
 	public int insertLike(LikeDTO lDto) throws Exception;
 	public boolean deleteLike(LikeDTO lDto) throws Exception;
-	public List<LikeDTO> searchLike(LikeDTO lDto) throws Exception;
+	public int searchLike(LikeDTO lDto) throws Exception;
 	public List<FestivalDTO> listAll(Criteria cri) throws Exception;
 	public int getTotalCnt(Criteria cri) throws Exception;
 	public boolean updateFestival(FestivalDTO fDto) throws Exception;

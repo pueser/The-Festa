@@ -1,6 +1,7 @@
 package kr.co.thefesta.festival.domain;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -19,11 +20,10 @@ public class FestivalReplyDTO {
 	private String id;
 	private String nickname;
 	private String frcontent;
-	private char frstatecode;
 	
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd HH:mm:ss", timezone = "GMT+9")
-	private Date frregist;
+	private Timestamp frregist;
 	
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd HH:mm:ss", timezone = "GMT+9")
-	private Date fredit;
+	private Timestamp fredit;
 }

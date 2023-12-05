@@ -4,8 +4,8 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
  <mapper namespace="FestivalReplyMapper">
 	<insert id="insertReply">
-		INSERT INTO festa_reply(frno, contentid, frcontent, id, nickname, frstatecode)
-		VALUES(seq_frno.nextval, #{contentid}, #{frcontent}, #{id}, #{nickname}, 'Y')
+		INSERT INTO festa_reply(frno, contentid, frcontent, id, nickname)
+		VALUES(seq_frno.nextval, #{contentid}, #{frcontent}, #{id}, #{nickname})
 	</insert>
 	
 	<select id="getListWithPaging" resultType="kr.co.thefesta.festival.domain.FestivalReplyDTO">
@@ -16,8 +16,7 @@
  				   nickname, 
  				   frcontent, 
  				   frregist, 
- 				   fredit,
- 				   frstatecode
+ 				   fredit
  			FROM (SELECT rownum rn, 
  				         frno, 
  				   		 contentid, 
@@ -25,12 +24,10 @@
  				   		 nickname, 
  				   		 frcontent, 
  				   		 frregist, 
- 				   		 fredit,
- 				   		 frstatecode 
+ 				   		 fredit
  				  FROM festa_reply 
  				  WHERE contentid = #{contentid} 
  				  AND frno > 0 
- 				  AND frstatecode = 'Y'
  				  AND rownum <= #{cri.pageNum} * #{cri.amount}) 
  			WHERE rn > (#{cri.pageNum} -1) * #{cri.amount} 
  		]]> 
@@ -50,9 +47,9 @@
 		WHERE frno = #{frno}
 	</update>
 	
- 	<update id="deleteReply">
-		UPDATE festa_reply
-		SET frstatecode = 'N'
-		WHERE frno = #{frno}
-	</update>
+	<delete id="deleteReply">
+		DELETE FROM festa_reply
+		WHERE id = #{id}
+		AND frno = #{frno}
+	</delete>
  </mapper>

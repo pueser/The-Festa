@@ -77,7 +77,7 @@ public class FestivalDAOImpl implements IFestivalDAO {
 	}
 
 	@Override
-	public List<LikeDTO> searchLike(LikeDTO lDto) throws Exception {
-		return session.selectList("FestivalMapper.searchLike", lDto);
+	public int searchLike(LikeDTO lDto) throws Exception {
+		return session.selectOne("FestivalMapper.searchLike", lDto);
 	}
 }
