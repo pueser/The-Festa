@@ -26,7 +26,7 @@
                s.sname AS
         FROM festa f
         JOIN festa_area a ON f.acode = a.acode
-        JOIN festa_sigungu s ON f.acode = s.acode AND f.scode = s.scode
+        JOIN food fd ON f.acode = fd.areacode AND f.scode = fd.sigungucode
         WHERE f.contentid = #{contentid}
   	</select>
   	
