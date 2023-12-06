@@ -8,6 +8,8 @@ import java.util.Random;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -49,20 +51,17 @@ public class MemberController {
 
 	
 	@GetMapping("/logout")
-	public void logout(HttpSession session) throws Exception {
-		log.info("logout......");
-		Object obj = session.getAttribute("loginInfo");
-		
-		if (obj != null) {
-			
-			MemberDTO memInfo = (MemberDTO) obj;
-	        String id = memInfo.getId();
-	        
-			service.updateLogDate(id);
-			
-			session.removeAttribute("loginInfo");
-			session.invalidate();
-		}
+	public ResponseEntity<String> logout(@RequestParam String id, HttpSession session) {
+	    log.info("logout......");
+	    log.info(id);
+
+	    try {
+	        service.updateFinalaccess(id);
+	        return ResponseEntity.ok("success");
+	    } catch (Exception e) {
+	        log.error("로그아웃 중 오류 발생: " + e.getMessage());
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("fail");
+	    }
 	}
 	
 	
