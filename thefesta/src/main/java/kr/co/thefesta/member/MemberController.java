@@ -39,12 +39,9 @@ public class MemberController {
 		MemberDTO memInfo = service.login(mDto);
 		log.info("MemberDTO ==> " + memInfo);
 		
-		if (memInfo == null) {
-//			return "redirect:/member/login"; 리액트에서 처리
-		} else {
+		if (memInfo != null) {
 			session.setAttribute("loginInfo", memInfo);
 			log.info("session......" + session.getAttribute("loginInfo").toString());
-//			return "redirect:/member/login"; 리액트에서 처리
 		}
 		return memInfo;
 	}
@@ -99,14 +96,10 @@ public class MemberController {
 		}
 	}
 	
-	// 멤버 상태코드를 조회해 아이디 중복검사 진행
 	@RequestMapping(value = "/selMember", method = RequestMethod.POST)
-	public String selMember(@RequestBody String id) throws Exception {
+	public MemberDTO selMember(@RequestBody String id) throws Exception {
 		MemberDTO selMember = service.selMember(id);
-		String stateCode = selMember.getStatecode();
-//		int idCheck = service.idCheck(id);
-		
-		return stateCode;
+		return selMember;
 	}
 	
 	@RequestMapping(value = "/mailSend", method = RequestMethod.POST)
@@ -152,7 +145,7 @@ public class MemberController {
 	
 	
 	@PostMapping(value = "/memInfoReset")
-	public String memInfoReset(@RequestBody MemberDTO mDto, HttpSession session) throws Exception {
+	public void memInfoReset(@RequestBody MemberDTO mDto, HttpSession session) throws Exception {
 		
 		log.info(mDto);
 		
@@ -161,11 +154,10 @@ public class MemberController {
 			mDto.setNickname(nickname);
 	    }
 		if (mDto.getResetPassword() != null) {
-			String resetPassword = (String) session.getAttribute("resetPassword");
-			mDto.setResetPassword(resetPassword);
+			String password = (String) session.getAttribute("password");
+			mDto.setPassword(password);
 		}
 		service.memInfoReset(mDto);
-		return ""; // 수정 필요
 	}
 	
 
@@ -180,7 +172,6 @@ public class MemberController {
 	        log.info("파일 저장" + saveImg);
 	        file.transferTo(new File(saveImg));
 
-	        // 파일이 실제로 저장되었는지 확인
 	        File savedFile = new File(saveImg);
 	        if (savedFile.exists()) {
 	            log.info("파일이 성공적으로 저장되었습니다.");
@@ -203,8 +194,6 @@ public class MemberController {
 	
 	@PostMapping(value = "/updateState")
 	public void updateState(@RequestBody MemberDTO mDto) throws Exception {
-		String id = mDto.getId();
-		String statecode = mDto.getStatecode();
 		
 		service.updateState(mDto);
 		log.info(mDto);

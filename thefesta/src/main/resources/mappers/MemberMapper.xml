@@ -68,8 +68,7 @@
         UPDATE MEMBER
         <set>
             <if test="nickname != null">nickname = #{nickname},</if>
-            <if test="profileImg != null">profileImg = #{profileImg},</if>
-            <if test="resetPassword != null">password = #{resetPassword}</if>
+            <if test="password != null">password = #{password}</if>
         </set>
         WHERE id = #{id}
     </update>
