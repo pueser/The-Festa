@@ -22,11 +22,10 @@
   		SELECT f.title,
                f.acode,
                f.scode,
-               a.aname AS,
-               s.sname AS
-        FROM festa f
-        JOIN festa_area a ON f.acode = a.acode
-        JOIN food fd ON f.acode = fd.areacode AND f.scode = fd.sigungucode
+               a.aname,
+               a.sname
+        FROM festa_area a
+        JOIN festa f ON f.acode = a.acode AND f.scode = a.scode
         WHERE f.contentid = #{contentid}
   	</select>
   	
