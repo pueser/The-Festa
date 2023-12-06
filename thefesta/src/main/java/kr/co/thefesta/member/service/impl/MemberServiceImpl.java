@@ -1,173 +1,82 @@
 package kr.co.thefesta.member.service.impl;
 
-import java.io.File;
 import java.util.Map;
-import java.util.UUID;
 
-import org.apache.http.entity.FileEntity;
-import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import kr.co.thefesta.member.domain.MemberDTO;
-import kr.co.thefesta.member.mapper.MemberMapper;
+import kr.co.thefesta.member.persistence.IMemberDAO;
 import kr.co.thefesta.member.service.IMemberService;
+import lombok.extern.log4j.Log4j;
 
+@Log4j
 @Service
 public class MemberServiceImpl implements IMemberService {
 	
 	@Autowired
-	private SqlSession session;
+	private IMemberDAO mDao;
 
 	@Override
 	public MemberDTO selMember(String id) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		return mDao.selMember(id);
 	}
 
 	@Override
 	public MemberDTO login(MemberDTO mDto) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		return mDao.login(mDto);
 	}
 
 	@Override
 	public void updateLogDate(String id) throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public String stateCodeCheck(String nickname) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		mDao.updateLogDate(id);
 	}
 
 	@Override
 	public int nicknameCheck(String nickname) throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
+		log.info(nickname);
+		return mDao.nicknameCheck(nickname);
 	}
 
 	@Override
 	public int idCheck(String id) throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
+		return mDao.idCheck(id);
 	}
 
 	@Override
 	public void join(MemberDTO mDto) throws Exception {
-		// TODO Auto-generated method stub
-		
+		mDao.join(mDto);
 	}
 
 	@Override
 	public void reJoin(MemberDTO mDto) throws Exception {
-		// TODO Auto-generated method stub
-		
+		mDao.reJoin(mDto);
 	}
 
 	@Override
 	public void logout(String id) throws Exception {
-		// TODO Auto-generated method stub
-		
+		mDao.logout(id);
 	}
 
 	@Override
-	public void pwReset(String id, String password) {
-		// TODO Auto-generated method stub
-		
+	public void pwReset(Map<String, Object> paramMap) {
+		log.info("도착" + paramMap);
+		mDao.pwReset(paramMap);
 	}
 
 	@Override
 	public void memInfoReset(MemberDTO mDto) {
-		// TODO Auto-generated method stub
-		
+		mDao.memInfoReset(mDto);
 	}
 
 	@Override
 	public void updateImg(Map<String, Object> paramMap) {
-		// TODO Auto-generated method stub
-		
+		mDao.updateImg(paramMap);
 	}
-
 	
 	@Override
-	public void updateState(Map<String, Object> paramMap) {
-		session.update("MemberMapper.updateState", paramMap);
+	public void updateState(MemberDTO mDto) {
+		mDao.updateState(mDto);
 	}
 	
-//	@Autowired
-//	private MemberMapper mapper;
-//	
-//	@Override
-//	public MemberDTO selMember(String id) throws Exception {
-//		return mapper.selMember(id);
-//	}
-//	
-//	@Override
-//	public MemberDTO login(MemberDTO mDto) throws Exception {
-//		return mapper.login(mDto);
-//	}
-//
-//	@Override
-//	public void updateLogDate(String id) throws Exception {
-//		mapper.updateLogDate(id);
-//	}
-//	
-//	
-//	@Override
-//	public String stateCodeCheck(String nickname) throws Exception {
-//		return mapper.stateCodeCheck(nickname);
-//	}
-//	
-//	@Override
-//	public int nicknameCheck(String nickname) throws Exception {
-//		return mapper.nicknameCheck(nickname);
-//	}
-//	
-//	@Override
-//	public int idCheck(String id) throws Exception {
-//		return mapper.idCheck(id);
-//	}
-//	
-//	@Override
-//	public void join(MemberDTO mDto) throws Exception {
-//		mapper.join(mDto);
-//	}
-//	
-//	public void reJoin(MemberDTO mDto) throws Exception {
-//		mapper.reJoin(mDto);
-//	}
-//
-//
-//	@Override
-//	public void logout(String id) throws Exception {
-//		mapper.logout(id);
-//	}
-//
-//	
-//	@Override
-//	public void pwReset(String id, String password) {
-//		mapper.pwReset(id, password);
-//	}
-//	
-//	@Override
-//	public void memInfoReset(MemberDTO mDto) {
-//		mapper.memInfoReset(mDto);
-//	}
-//	
-//
-//	@Override
-//	public void updateImg(Map<String, Object> paramMap) {
-//		mapper.updateImg(paramMap);
-//		
-//	}
-//
-//	@Override
-//	public void updateState(Map<String, Object> paramMap) {
-//		mapper.updateState(paramMap);
-//	}
-
 }

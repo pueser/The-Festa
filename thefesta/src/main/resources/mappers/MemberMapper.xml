@@ -25,11 +25,6 @@
 	
 	
 <!-- 회원가입 -->
-	<select id="stateCodeCheck" resultType="string">
-		SELECT statecode FROM member
-		WHERE id = #{id}
-	</select>
-	
 	<select id="nicknameCheck" resultType="int">
 		SELECT COUNT(*) FROM member
 		WHERE nickname = #{nickname}
@@ -61,7 +56,7 @@
 	
 	
 <!-- 비밀번호 변경 -->
-	<update id="pwReset">
+	<update id="pwReset" parameterType="hashMap">
 		UPDATE member
 		SET password = #{password}
 		WHERE id = #{id}
@@ -87,7 +82,6 @@
 
 
 
-
 <!-- 상태코드 변경 -->
 	<update id="updateState">
 	  UPDATE member
@@ -102,6 +96,7 @@
 	      stateCode = 3,
 	    </if>
 	    <if test="statecode == 4">
+	      nickname = null,
 	      stateCode = 4,
 	    </if>
 	  updatedate = sysdate

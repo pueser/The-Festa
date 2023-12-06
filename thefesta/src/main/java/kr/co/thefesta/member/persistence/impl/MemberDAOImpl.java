@@ -18,16 +18,14 @@ public class MemberDAOImpl implements IMemberDAO {
 	@Autowired
 	private SqlSession sqlSession;
 	
-	private static final String namespace = "MemberMapper";
-	
 	@Override
-	public MemberDTO selMember(MemberDTO mDto) {
-		return sqlSession.selectOne(namespace + ".selMember", mDto);
+	public MemberDTO selMember(String id) {
+		return sqlSession.selectOne("MemberMapper.selMember", id);
 	}
 
 	@Override
 	public MemberDTO login(MemberDTO mDto) {
-		return sqlSession.selectOne(namespace + ".login", mDto);
+		return sqlSession.selectOne("MemberMapper.login", mDto);
 	}
 	
 	@Override
@@ -36,65 +34,64 @@ public class MemberDAOImpl implements IMemberDAO {
 		
 		paramMap.put("id", id);
 		paramMap.put("password", password);
-		return sqlSession.selectOne(namespace + ".selLoginInfo", paramMap);
+		return sqlSession.selectOne("MemberMapper.selLoginInfo", paramMap);
 	}
 
 	
 	@Override
 	public void updateLogDate(String id) {
-		sqlSession.update(namespace + ".loginUpdate", id);
-	}
-
-	@Override
-	public String stateCodeCheck(String nickname) {
-		return sqlSession.selectOne(namespace + ".stateCodeCheck", nickname);
+		sqlSession.update("MemberMapper.updateLogDate", id);
 	}
 
 	@Override
 	public int nicknameCheck(String nickname) {
-		return sqlSession.selectOne(namespace + ".nicknameCheck", nickname);
+		log.info(nickname);
+		int result = sqlSession.selectOne("MemberMapper.nicknameCheck", nickname);
+		log.info("닉네임 중복 ====> " + result);
+		return sqlSession.selectOne("MemberMapper.nicknameCheck", nickname);
 	}
 
 	@Override
 	public int idCheck(String id) {
-		return sqlSession.selectOne(namespace + ".idCheck", id);
+		return sqlSession.selectOne("MemberMapper.idCheck", id);
 	}
 
 	@Override
 	public void join(MemberDTO mDto) {
-		sqlSession.selectOne(namespace + ".join", mDto);
+		log.info(mDto);
+		sqlSession.selectOne("MemberMapper.join", mDto);
 	}
 
 	@Override
 	public void reJoin(MemberDTO mDto) {
-		sqlSession.selectOne(namespace + ".reJoin", mDto);
+		sqlSession.selectOne("MemberMapper.reJoin", mDto);
 	}
 
 	
 	@Override
 	public void pwReset(Map<String, Object> paramMap) {
-		sqlSession.update(namespace + ".pwReset", paramMap);
+		sqlSession.update("MemberMapper.pwReset", paramMap);
 	}
 	
 	
 	@Override
 	public void logout(String id) {
-		sqlSession.update(namespace + ".logout", id);
+		sqlSession.update("MemberMapper.logout", id);
 	}
-	
 	
 	@Override
 	public void updateState(MemberDTO mDto) {
-		sqlSession.update(namespace + ".updateState", mDto);
+		sqlSession.update("MemberMapper.updateState", mDto);
 	}
 
 	@Override
-	public void updateImg(String profileImg, String id) {
-		Map<String, Object> paramMap = new HashMap<>();
-		log.info("테스트" + profileImg + id);
-		paramMap.put("profileImg", profileImg);
-		paramMap.put("id", id);
-		sqlSession.update(namespace + ".updateImg", paramMap);
+	public void updateImg(Map<String, Object> paramMap) {
+		sqlSession.update("MemberMapper.updateImg", paramMap);
 		
+	}
+
+	@Override
+	public void memInfoReset(MemberDTO mDto) {
+		sqlSession.update("MemberMapper.memInfoReset", mDto);
 	}
 }

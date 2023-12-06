@@ -1,53 +1,26 @@
 package kr.co.thefesta.member;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.nio.file.Files;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
-import java.util.UUID;
 
-import javax.mail.Session;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController; // RestController
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import kr.co.thefesta.member.until.MailUtil;
 import kr.co.thefesta.member.domain.MemberDTO;
 import kr.co.thefesta.member.service.IMemberService;
+import kr.co.thefesta.member.until.MailUtil;
 import lombok.extern.log4j.Log4j;
 
 @RestController
@@ -58,8 +31,6 @@ public class MemberController {
 
 	@Autowired
 	private IMemberService service;
-	
-	private String uploadPath = "D:\\workspace\\spring4-4.10.0.RELEASE\\thefestaTest\\src\\main\\webapp\\resources\\fileUpload";
 	
 	@PostMapping(value = "/loginPost") // o
 	public MemberDTO loginPost(@RequestBody MemberDTO mDto, HttpSession session) throws Exception {
@@ -78,7 +49,7 @@ public class MemberController {
 
 	
 	@GetMapping("/logout")
-	public ResponseEntity<String> logout(HttpSession session) throws Exception {
+	public void logout(HttpSession session) throws Exception {
 		log.info("logout......");
 		Object obj = session.getAttribute("loginInfo");
 		
@@ -91,37 +62,43 @@ public class MemberController {
 			
 			session.removeAttribute("loginInfo");
 			session.invalidate();
-//			log.info("sessionRemove......" + session.getAttribute("loginInfo").toString()); 세션 삭제 확인용
-			return ResponseEntity.ok("success");
 		}
-		
-		return ResponseEntity.status(401).body("fail");
 	}
 	
-	
-	
-	@PostMapping("/join")
-	public void join(@RequestBody MemberDTO mDto){
-		log.info("join......" + mDto);
-		
-	}
 	
 	@RequestMapping(value = "/nicknameCheck", method = RequestMethod.POST)
-    public ResponseEntity<String> nicknameCheck(@RequestBody String nickname) throws Exception {
-        int nicknameCheck = service.nicknameCheck(nickname);
-//        String stateCodeCheck = service.stateCodeCheck(nickname);
+    public String nicknameCheck(@RequestBody MemberDTO mDto) throws Exception {
+        String nickname = mDto.getNickname();
+		int nicknameCheck = service.nicknameCheck(nickname);
         String nickCheckResult = "fail";
         
         if(nicknameCheck != 0) {
         	log.info("fail");
-        	return ResponseEntity.status(409).body("fail");
+        	return nickCheckResult;
 
 		} else {
 			log.info("success");
 			nickCheckResult = "success";
-			return ResponseEntity.ok("success");
+			return nickCheckResult;
 		}
     }
+	
+	@RequestMapping(value = "/idCheck", method = RequestMethod.POST)
+	public String idCheck(@RequestBody MemberDTO mDto) throws Exception {
+		String id = mDto.getId();
+		int idCheck = service.idCheck(id);
+		String idResult = "fail";
+		
+		if(idCheck != 0) {
+			log.info("fail");
+			return idResult;
+			
+		} else {
+			log.info("success");
+			idResult = "success";
+			return idResult;
+		}
+	}
 	
 	// 멤버 상태코드를 조회해 아이디 중복검사 진행
 	@RequestMapping(value = "/selMember", method = RequestMethod.POST)
@@ -134,8 +111,9 @@ public class MemberController {
 	}
 	
 	@RequestMapping(value = "/mailSend", method = RequestMethod.POST)
-	public String sendMail(@RequestBody String id) throws Exception {
+	public String sendMail(@RequestBody MemberDTO mDto) throws Exception {
 		String randomCode = randomCode();
+		String id = mDto.getId();
 		
 		String title = "TheFesta 인증번호 전송";
 		String from = "dain7362@naver.com";
@@ -154,23 +132,22 @@ public class MemberController {
     }
 	
 	@PostMapping(value = "/joinPost")
-	public String joinPost(@RequestBody MemberDTO mDto) throws Exception {
+	public void joinPost(@RequestBody MemberDTO mDto) throws Exception {
 		service.join(mDto);			
-		
-		return "redirect:/member/login"; // 수정 필요
 	}
 	
 	
-	
 	@PostMapping(value = "/pwReset")
-	public String pwReset(@RequestBody MemberDTO mDto) throws Exception {
+	public void pwReset(@RequestBody MemberDTO mDto) throws Exception {
+		Map<String, Object> paramMap = new HashMap<>();
 		
 		String id = mDto.getId();
 		String password = mDto.getPassword();
 		
-		service.pwReset(id, password);
+		paramMap.put("id", id);
+		paramMap.put("password", password);
 		
-		return ""; // 수정 필요
+		service.pwReset(paramMap);
 	}
 	
 	
@@ -193,78 +170,36 @@ public class MemberController {
 	}
 	
 
-	@PostMapping("/editProfilePost")
-	public String addFile(@RequestParam String id, @RequestParam MultipartFile file) throws Exception {
-		log.info("id" + id);
-		
-		Map<String, Object> paramMap = new HashMap<>();
-		
-		if (!file.isEmpty()) {
-			String profileImg = "/D:\\workspace\\spring4-4.10.0.RELEASE\\thefestaTest\\src\\main\\webapp\\resources\\fileUpload\\" + file.getOriginalFilename();
-			log.info("파일 저장" + profileImg);
-			file.transferTo(new File(profileImg));
-			
-			log.info("테스트" + profileImg + id);
-			paramMap.put("profileImg", profileImg);
-			paramMap.put("id", id);
-			
-			service.updateImg(paramMap);
-		}
-		
-		return "member/register";
+	@PostMapping("/updateImg")
+	public String updateImg(@RequestParam String id, @RequestParam MultipartFile file) throws Exception {
+	    log.info("id" + id);
+
+	    Map<String, Object> paramMap = new HashMap<>();
+
+	    if (!file.isEmpty()) {
+	        String saveImg = "D:\\workspace\\spring4-4.10.0.RELEASE\\thefestaTest\\src\\main\\webapp\\resources\\fileUpload\\" + file.getOriginalFilename();
+	        log.info("파일 저장" + saveImg);
+	        file.transferTo(new File(saveImg));
+
+	        // 파일이 실제로 저장되었는지 확인
+	        File savedFile = new File(saveImg);
+	        if (savedFile.exists()) {
+	            log.info("파일이 성공적으로 저장되었습니다.");
+
+	            String profileImg = "http://localhost:9090/resources/fileUpload/" + file.getOriginalFilename();
+	            log.info("테스트" + profileImg + id);
+	            paramMap.put("profileImg", profileImg);
+	            paramMap.put("id", id);
+	            service.updateImg(paramMap);
+	            log.info(paramMap);
+
+	            return profileImg;
+	        } else {
+	            log.error("파일 저장에 실패했습니다.");
+	        }
+	    }
+	    return "파일이 비어있습니다.";
 	}
-	
-	
-	
-	
-//	@PostMapping(value = "/memInfoReset")
-//	public String memInfoReset(@RequestBody MemberDTO mDto) throws Exception {
-//		
-//		MemberDTO resetData = service.memInfoReset(mDto);
-//		
-//		if (mDto.getNickname() != null) {
-//			resetData.setNickname(resetData.getNickname());
-//		}
-//		if (mDto.getProfileImg() != null) {
-//			resetData.setProfileImg(resetData.getProfileImg());
-//		}
-//		if (mDto.getPassword() != null) {
-//			resetData.setPassword(resetData.getPassword());
-//		}
-//		return ""; // 수정 필요
-//	}
-//	
-//	@GetMapping(value = "/register")
-//	public String main() {
-//		log.info("infoview .............");
-//		return "member/register";
-//	}
-//	
-//	@PostMapping("/registerPost")
-//	public String addFile(@RequestParam String id, @RequestParam MultipartFile file) throws Exception {
-//		log.info("id" + id);
-//		
-//		Map<String, Object> paramMap = new HashMap<>();
-//		
-//		if (!file.isEmpty()) {
-//			String profileImg = "/D:\\workspace\\spring4-4.10.0.RELEASE\\thefestaTest\\src\\main\\webapp\\resources\\fileUpload\\" + file.getOriginalFilename();
-//			log.info("파일 저장" + profileImg);
-//			file.transferTo(new File(profileImg));
-//			
-//			log.info("테스트" + profileImg + id);
-//			paramMap.put("profileImg", profileImg);
-//			paramMap.put("id", id);
-//			
-//			service.updateImg(paramMap);
-//		}
-//		
-//		return "member/register";
-//	}
-	
-	
-	
-	
-	
 	
 	
 	@PostMapping(value = "/updateState")
@@ -272,12 +207,7 @@ public class MemberController {
 		String id = mDto.getId();
 		String statecode = mDto.getStatecode();
 		
-		Map<String, Object> paramMap = new HashMap<>();
-		paramMap.put("id", id);
-		paramMap.put("statecode", statecode);
-		
-		service.updateState(paramMap);
-		
-		log.info(paramMap);
+		service.updateState(mDto);
+		log.info(mDto);
 	}
 }

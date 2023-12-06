@@ -12,7 +12,6 @@ public interface IMemberService {
 	public MemberDTO login(MemberDTO mDto) throws Exception;
 	public void updateLogDate(String id) throws Exception;
 
-	public String stateCodeCheck(String nickname) throws Exception;
 	public int nicknameCheck(String nickname) throws Exception;
 	public int idCheck(String id) throws Exception;
 	public void join(MemberDTO mDto) throws Exception;
@@ -20,11 +19,10 @@ public interface IMemberService {
 	
 	public void logout(String id) throws Exception;
 	
-	public void pwReset(String id, String password);
+	public void pwReset(Map<String, Object> paramMap);
 
 	public void memInfoReset(MemberDTO mDto);
 
 	public void updateImg(Map<String, Object> paramMap);
-	public void updateState(Map<String, Object> paramMap);
-	
+	public void updateState(MemberDTO mDto);
 }
