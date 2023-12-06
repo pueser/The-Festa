@@ -5,14 +5,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import kr.co.thefesta.admin.domain.AdminDTO;
 import kr.co.thefesta.admin.domain.Criteria;
 import kr.co.thefesta.admin.domain.PageDTO;
 import kr.co.thefesta.admin.domain.QuestionDTO;
@@ -22,7 +21,6 @@ import kr.co.thefesta.festival.service.IFestivalService;
 import kr.co.thefesta.member.domain.MemberDTO;
 import kr.co.thefesta.member.service.IMemberService;
 import lombok.extern.log4j.Log4j;
-import oracle.ons.CreatePermission;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -43,13 +41,13 @@ public class AdminController {
 	@RequestMapping(value = "/memberList", method = RequestMethod.GET)
 	public Map<String, Object> memberGet(Criteria cri)throws Exception{
 		log.info("memberlist Get....");
-		log.info("cri = " + cri);
+		log.info("cri = " + cri.toString());
 		Map<String, Object> result = new HashMap<>();
 		
-		List<MemberDTO> memberList = service.memberList(cri);
+		List<AdminDTO> memberList = service.memberList(cri);
 		
 		result.put("list", memberList);
-		int total = service.memberListCnt();
+		int total = service.memberCnt();
 		
 		 
 	     log.info("total : " + total);
@@ -70,18 +68,6 @@ public class AdminController {
 		Map<String, Object> result = new HashMap<>();
 		List<ReportDTO> reportList = service.memberDetail(id, cri);
 		
-		//ReportDTO rbno,rfrno,rbid를 reportnumber(화면표시글자로) 변경 
-		for (ReportDTO reportDTO : reportList) {
-			if(reportDTO.getRbrno() > 0) {
-				reportDTO.setReportnumber("게시글 댓글 코드");
-			}else if(reportDTO.getRfrno() > 0) {
-				reportDTO.setReportnumber("축제 댓글 코드");
-			}else if(reportDTO.getRbid() > 0){
-				reportDTO.setReportnumber("게시글 코드");
-			}else {
-				reportDTO.setReportnumber("해당 글은 삭제되었습니다.(회원탈퇴)");// 회원(reported)이 탈퇴한 경우
-			}
-		}
 		
 		result.put("list", reportList);
 		int total = service.memberReportCnt(id);
@@ -92,6 +78,17 @@ public class AdminController {
 	    result.put("pageMaker", new PageDTO(cri, total));
 		log.info("reportList = " + reportList.toString());
 		return result;
+	}
+	
+	//회원 닉네임 표시
+	@RequestMapping(value = "/memberNickName", method = RequestMethod.GET)
+	public MemberDTO MemberDTO(String id)throws Exception{
+		log.info("memberNickName get...");
+		log.info("받은 값 id = " + id);
+		MemberDTO memberDto = memberService.selMember(id);
+		log.info("memberDto" + memberDto.toString());
+		
+		return memberDto;
 	}
 	
 	//신고내용 표시
@@ -106,24 +103,14 @@ public class AdminController {
 	
 	//신고내용 삭제
 	@RequestMapping(value = "/memberReportDelete", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public String memberReportDelete(Integer reportid)throws Exception {
+	public int memberReportDelete(Integer reportid)throws Exception {
 		log.info("memberReportDelete post...");
 		log.info("react에서 받은 값 : " + reportid);
 		
-		int num = service.memberReportDelete(reportid);
-		String result;
+		service.memberReportDelete(reportid);
 		
-		//결과 
-		if(num == 1) {
-			log.info(reportid + "번 신고글이 삭제 되었습니다.");
-			result = (reportid + "번 신고글이 삭제 되었습니다.");
-			
-		}else {
-			log.info(reportid + "번 신고글 삭제 실패하였습니다.");
-			result = (reportid + "번 신고글 삭제 실패하였습니다.");
-		}
 		
-		return result;
+		return reportid;
 	}
 	
 	//신고 list
@@ -171,7 +158,7 @@ public class AdminController {
 	//회원 신고누적 count
 	@RequestMapping(value = "/memberReportnumCnt", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public int reportstateChange(String id, Integer reportid)throws Exception{
-		log.info("reportstateChange get...");
+		log.info("memberReportnumCnt get...");
 		log.info("리액트에서 받은 id값 = " + id);
 
 		service.memberReportnumCnt(id,reportid);
@@ -196,12 +183,11 @@ public class AdminController {
 	public Map<String, Object> festaList(Criteria cri)throws Exception{
 		log.info("festaList Get....");
 		log.info("cri = "+ cri.toString());
-		List<Object> festaList = service.festaList(cri);
+		List<QuestionDTO> festaList = service.festaList(cri);
 		
 		Map<String, Object> result = new HashMap<>();
 		
 		result.put("questionDto", festaList);
-		//int total = festivalService.getTotalCnt();
 		int total = service.festaListCnt();
 		
 		 
@@ -233,24 +219,25 @@ public class AdminController {
 		return result;
 	}
 	
+	//축제 건의 삭제
+	@RequestMapping(value = "/questionDelete", method = RequestMethod.POST)
+	public String questionDelete(String questionid)throws Exception{
+		log.info("questionDelete post");
+		log.info("받은 questionid 값 = " + questionid);
+		service.questionDelete(questionid);
+		
+		return questionid;
+	}
+	
 	//축제 삭제
-	@RequestMapping(value = "/festaDelete", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public String festaDelete(Integer contentid) throws Exception{
+	@RequestMapping(value = "/festaDelete", method = RequestMethod.POST)
+	public int festaDelete(Integer contentid) throws Exception{
 		log.info("festaDelete post...");
 		log.info("받은 값" + contentid);
 		
-		int delete = service.festaDelete(contentid);
+		service.festaDelete(contentid);
 		
-		String result;
-		if(delete == 1) {
-			result = contentid + "번이 삭제되었습니다.";
-		}else {
-			result = contentid + "번이 삭제 실패하였습니다.";
-		}
-		
-		log.info("result = " + result);
-		
-		return result;
+		return contentid;
 	}
 	
 	//축제 건의내용 저장
@@ -276,7 +263,8 @@ public class AdminController {
 	@RequestMapping(value = "/boardReplyReport", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String boardReplyReport(ReportDTO reportDto) throws Exception{
 		log.info("boardReplyReport post ...");
-		String num = memberService.stateCodeCheck(reportDto.getReported());
+		MemberDTO memberDto = memberService.selMember(reportDto.getReported());
+		String num = memberDto.getStatecode();
 		log.info("받은 값 = " + reportDto.toString());
 		log.info("회원 상태코드 = " + num);
 		
@@ -284,7 +272,7 @@ public class AdminController {
 			int result = service.boardReplyReport(reportDto);
 			return result + "댓글이 신고 되었습니다.";
 		}else {
-			return "회원은 현재 사이트의 회원이 아닙니다. 신고가 불가능 합니다. 관리자에게 문의 바람니다.";
+			return "해당 댓글 작성자는 현재 사이트의 회원이 아닙니다. 신고가 불가능 합니다. 관리자에게 문의 바람니다.";
 		}
 	}
 	
@@ -292,7 +280,8 @@ public class AdminController {
 	@RequestMapping(value = "boardReport", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String boardReport(ReportDTO reportDto) throws Exception{
 		log.info("boardReport post ...");
-		String num = memberService.stateCodeCheck(reportDto.getReported());
+		MemberDTO memberDto = memberService.selMember(reportDto.getReported());
+		String num = memberDto.getStatecode();
 		log.info("받은 값 = " + reportDto.toString());
 		log.info("회원 상태코드 = " + num);
 		
@@ -300,15 +289,9 @@ public class AdminController {
 			int result = service.boardReport(reportDto);
 			return result + "게시글이 신고 되었습니다.";
 		}else {
-			return "회원은 현재 사이트의 회원이 아닙니다. 신고가 불가능 합니다. 관리자에게 문의 바람니다.";
+			return "해당 게시글 작성자는 현재 사이트의 회원이 아닙니다. 신고가 불가능 합니다. 관리자에게 문의 바람니다.";
 		}
 	}
 	 
-	//회원 상태코드 변경
-//	@RequestMapping(value = "/memberState", method = RequestMethod.POST)
-//	public String memberStatePost(String statecode, String id)throws Exception {
-//		log.info("statecode = " + statecode);
-//		log.info("id = " + id);
-//		return null;
-//	}
+
 }

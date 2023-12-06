@@ -1,30 +1,16 @@
 package kr.co.thefesta.admin.service.impl;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import kr.co.thefesta.admin.domain.AdminDTO;
 import kr.co.thefesta.admin.domain.Criteria;
 import kr.co.thefesta.admin.domain.QuestionDTO;
 import kr.co.thefesta.admin.domain.ReportDTO;
 import kr.co.thefesta.admin.persistence.IAdminDAO;
 import kr.co.thefesta.admin.service.IAdminService;
-import kr.co.thefesta.member.domain.MemberDTO;
-
-
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import kr.co.thefesta.admin.domain.Criteria;
-import kr.co.thefesta.admin.domain.ReportDTO;
-import kr.co.thefesta.admin.persistence.IAdminDAO;
-import kr.co.thefesta.admin.service.IAdminService;
-import kr.co.thefesta.member.domain.MemberDTO;
 
 
 @Service
@@ -34,7 +20,7 @@ public class AdminServiceImpl implements IAdminService {
 	
 	@Override
 	//member 테이블 회원정보 list
-	public List<MemberDTO> memberList(Criteria cri) throws Exception {
+	public List<AdminDTO> memberList(Criteria cri) throws Exception {
 		return adminDao.memberList(cri);
 	}
 	
@@ -87,6 +73,13 @@ public class AdminServiceImpl implements IAdminService {
 		return adminDao.memberReportnumCnt(id, reportid);
 	}
 	
+	//member 총 갯수
+	@Override
+	public int memberCnt() throws Exception {
+		return adminDao.memberCnt();
+	}
+
+	
 	//member list 총 갯수
 	@Override
 	public int memberListCnt() throws Exception {
@@ -95,7 +88,7 @@ public class AdminServiceImpl implements IAdminService {
 	
 	//축제list
 	@Override
-	public List<Object> festaList(Criteria cri) throws Exception {
+	public List<QuestionDTO> festaList(Criteria cri) throws Exception {
 		return adminDao.festaList(cri);
 	}
 
@@ -122,6 +115,13 @@ public class AdminServiceImpl implements IAdminService {
 	@Override
 	public void questionRegister(QuestionDTO questionDto) throws Exception {
 		 adminDao.questionRegister(questionDto);
+	}
+	
+	//건의 삭제
+	@Override
+	public void questionDelete(String questionid) throws Exception {
+		 adminDao.questionDelete(questionid);
+		
 	}
 	
 	//축제 댓글 신고 저장
@@ -155,6 +155,9 @@ public class AdminServiceImpl implements IAdminService {
 	public int festaListCnt() throws Exception {
 		return adminDao.festaListCnt();
 	}
+
+	
+	
 
 
 	

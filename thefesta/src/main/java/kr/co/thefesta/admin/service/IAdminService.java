@@ -1,18 +1,17 @@
 package kr.co.thefesta.admin.service;
 
 import java.util.List;
-import java.util.Map;
 
+import kr.co.thefesta.admin.domain.AdminDTO;
 import kr.co.thefesta.admin.domain.Criteria;
 import kr.co.thefesta.admin.domain.QuestionDTO;
 import kr.co.thefesta.admin.domain.ReportDTO;
-
 import kr.co.thefesta.member.domain.MemberDTO;
 
 public interface IAdminService {
 	
 	//member 테이블 회원정보 list
-	public List<MemberDTO> memberList(Criteria cri)throws Exception;
+	public List<AdminDTO> memberList(Criteria cri)throws Exception;
 	//member 회원 디테일 정보
 	public List<ReportDTO> memberDetail(String id, Criteria cri)throws Exception;
 	//회원 신고내용
@@ -31,16 +30,20 @@ public interface IAdminService {
 	public int reportstateChange(Integer reportid)throws Exception;
 	//회원신고 누적
 	public int memberReportnumCnt(String id, Integer reportid)throws Exception;
+	//member 총 갯수
+	public int memberCnt()throws Exception;
 	//member list 총 갯수
 	public int memberListCnt() throws Exception;
 	//축제list
-	public List<Object> festaList(Criteria cri) throws Exception;
+	public List<QuestionDTO> festaList(Criteria cri) throws Exception;
 	//건의 list
 	public List<QuestionDTO> questionList(Criteria cri, Integer contentid)throws Exception;
 	//건의 총 갯수
 	public int questionListCnt(Integer contentid)throws Exception;
 	//건의 등록
 	public void questionRegister(QuestionDTO questionDto)throws Exception;
+	//건의 삭제
+	public void questionDelete(String questionid)throws Exception;
 	//축제 삭제
 	public int festaDelete(Integer contentid)throws Exception;
 	//축제 count

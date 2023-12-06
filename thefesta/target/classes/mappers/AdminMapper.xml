@@ -4,33 +4,34 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
  <mapper namespace="AdminMapper">
  	<!-- member 테이블 회원정보 list -->
- 	<select id="memberList" resultType="kr.co.thefesta.member.domain.MemberDTO">
+ 	<select id="memberList" resultType="kr.co.thefesta.admin.domain.AdminDTO">
 	 	<![CDATA[
-	 		SELECT id,statecode,finalaccess, reportnum, reportstate
-			FROM(
-    			SELECT rownum  as rn,id,statecode,finalaccess, reportnum, reportstate
-    			FROM(
-			        SELECT  member.id, member.statecode, member.finalaccess, report.reportstate, count(*) as reportnum
-			        FROM member
-			        INNER JOIN report
-			        ON report.reported = member.id
-			        GROUP BY  member.id, member.statecode, member.finalaccess, report.reportstate
-    			)
-   			 	WHERE reportstate = 2 AND rownum <= #{pageNum} * #{amount}
-			)
-			WHERE rn>(#{pageNum} -1) * #{amount}
+	 		SELECT  id, statecode, finalaccess, reportnum, totalreportnum
+				FROM (
+	    			SELECT id, statecode, finalaccess, reportnum, totalreportnum, rownum  as rn
+	    			FROM (
+				        SELECT *
+				        FROM admin_member_a
+				        UNION
+				        SELECT *
+				        FROM admin_member_b
+	    			)
+				    WHERE rownum <= #{pageNum} * #{amount} AND statecode <> '0'
+				)
+			WHERE rn > (#{pageNum} -1) * #{amount}
+			ORDER BY totalreportnum DESC
 	     ]]>
  	</select>
  	
  	<!-- member 회원 디테일 정보 -->
  	<select id="memberDetail" resultType="kr.co.thefesta.admin.domain.ReportDTO" parameterType="java.util.Map">
  	<![CDATA[
- 		SELECT reportid,reportcontent,reporter,reported, rbrno, rfrno, rbid, reportdate
+ 		SELECT reportid,reportcontent,reporter,reported, rbrno, rfrno, rbid, reportdate, reportnum
 		FROM(
-    		SELECT reportid,reportcontent,reporter,reported, rbrno, rfrno, rbid, reportdate, rownum  as rn
+    		SELECT reportid,reportcontent,reporter,reported, rbrno, rfrno, rbid, reportdate, reportnum, rownum  as rn
     		FROM (
         		SELECT  report.reportid, report.reportcontent, report.reporter, report.reported, report.rbrno, report.rfrno, report.rbid, report.reportdate,
-        		member.statecode, member.finalaccess
+        		member.statecode, member.finalaccess, member.reportnum
 				FROM report
 				INNER JOIN member
 				ON report.reported = member.id
@@ -42,6 +43,29 @@
 		WHERE rn>(#{pageNum} -1) * #{amount}
 	]]>
  	</select>
+ 	
+ 	<!-- 회원 총 갯수 -->
+ 	<select id="memberCnt" resultType="int">
+ 	<![CDATA[
+ 		SELECT count(*)
+		FROM member
+		WHERE statecode <> '0'
+	]]>
+ 	</select>
+ 	
+ 	<!-- member 디테일 list  총 갯수 -->
+ 	<select id="memberListCnt" resultType="int">
+	 	SELECT count(*)
+		FROM(
+  			SELECT  member.id,count(*),member.statecode
+   			FROM member
+		    INNER JOIN report
+		    ON report.reported = member.id
+		    WHERE report.reportstate = 2
+   			GROUP BY  member.id,member.statecode
+		)
+ 	</select>
+ 	
  	
  	<!-- 회원 신고내용 -->
  	<select id="memberReport" resultType="String">
@@ -78,18 +102,7 @@
 		WHERE reportstate = '1'
  	</select>
  	
- 	<!-- member list 총 갯수 -->
- 	<select id="memberListCnt" resultType="int">
-	 	SELECT count(*)
-		FROM(
-  			SELECT  member.id,count(*),member.statecode
-   			FROM member
-		    INNER JOIN report
-		    ON report.reported = member.id
-		    WHERE report.reportstate = 2
-   			GROUP BY  member.id,member.statecode
-		)
- 	</select>
+ 	
  	
  	<!-- 회원 신고글 삭제 -->
  	<delete id="memberReportDelete">
@@ -119,6 +132,7 @@
 		WHERE id=#{id}
  	</select>
  	
+ 	<!--회원 신고글 모두 삭제(강퇴 당할 때) -->
  	<delete id="memberReportAllDelete">
  		DELETE 
 		FROM report
@@ -126,42 +140,26 @@
  	</delete>
  	
  	
- 	<!-- 축제list & 축제 문의list -->
+ 	<!-- 축제list & 축제 문의 -->
  	<select id="festaList" resultType="kr.co.thefesta.admin.domain.QuestionDTO">
  	<![CDATA[
- 		SELECT title,eventstartdate,eventenddate,contentid, addr1, questioncount
-		FROM(
-    		SELECT title,eventstartdate,eventenddate,contentid, addr1, questioncount, rownum  as rn
+ 		SELECT  title, eventstartdate, eventenddate, contentid, addr1, questioncount
+		FROM (
+    		SELECT title, eventstartdate, eventenddate, contentid, addr1, questioncount, rownum  as rn
     		FROM (
-        		SELECT festa.title, festa.eventstartdate, festa.eventenddate, festa.contentid, festa.addr1, count(*) as questioncount
-        		FROM admin_question 
-        		INNER JOIN festa
-        		ON festa.contentid = admin_question.contentid
-        		GROUP BY  festa.title,festa.eventstartdate,festa.eventenddate,festa.contentid,festa.addr1
-        		ORDER BY festa.eventstartdate DESC
+		        SELECT *
+		        FROM admin_festa_a
+		        UNION
+		        SELECT *
+		        FROM admin_festa_b
     		)
-    		WHERE rownum <= #{pageNum} * #{amount}
+		    WHERE rownum <= #{pageNum} * #{amount}
+		    ORDER BY eventstartdate DESC
 		)
 		WHERE rn > (#{pageNum} -1) * #{amount}
 	]]>
  	</select>
  	
- 	<!-- 축제 list & 축제 문의 없음-->
- 	<select id="festaListAll" resultType="kr.co.thefesta.admin.domain.QuestionDTO">
-	 	<![CDATA[
-	 		SELECT title, eventstartdate, eventenddate, contentid, addr1
-       		FROM(
-            	SELECT title, eventstartdate, eventenddate, contentid, addr1, rownum  as rn
-            	FROM festa 
-            	WHERE contentid not in(
-                	SELECT contentid
-                	FROM admin_question
-            	) AND rownum <= #{pageNum} * #{amount}
-            	ORDER BY festa.eventstartdate DESC
-        	)
-        	WHERE rn > (#{pageNum} -1) * #{amount}
-	    ]]>
- 	</select>
  	
  	<!-- 축제 count -->
  	<select id="festaListCnt" resultType="int">
@@ -171,7 +169,7 @@
  	</select>
  	
  	<!-- 건의 list -->
- 	<select id="questionList" resultType="kr.co.thefesta.admin.domain.QuestionDTO">
+ 	<select id="questionList" parameterType="java.util.Map" resultType="kr.co.thefesta.admin.domain.QuestionDTO">
  	<![CDATA[
  		SELECT questionid, questioncontent, questiondate, id, contentid
 		FROM(
@@ -196,6 +194,13 @@
 		WHERE contentid = #{contentid}
  	</select>
  	
+ 	<!-- 건의 삭제 -->
+ 	<delete id="questionDelete">
+ 		DELETE
+		FROM    admin_question
+		WHERE   questionid = #{questionid}
+ 	</delete>
+ 	
  	<!-- 축제 삭제 -->
  	<delete id="festaDelete">
  		DELETE
@@ -218,7 +223,7 @@
  	</delete>
  	
  	<!-- 축제 건의 삭제 -->
- 	<delete id="questionDelete">
+ 	<delete id="festaQuestionDelete">
  		DELETE
 		FROM admin_question
 		WHERE contentid = #{contentid}
@@ -250,6 +255,9 @@
 			</foreach>
 		</trim>
  	</delete>
+ 	
+ 	
+ 	
  	
  	<!-- 건의 등록 -->
  	<insert id="questionRegister">
