@@ -28,8 +28,8 @@ public class MemberServiceImpl implements IMemberService {
 	}
 
 	@Override
-	public void updateLogDate(String id) throws Exception {
-		mDao.updateLogDate(id);
+	public void updateFinalaccess(String id) throws Exception {
+		mDao.updateFinalaccess(id);
 	}
 
 	@Override

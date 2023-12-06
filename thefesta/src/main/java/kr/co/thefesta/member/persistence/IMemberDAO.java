@@ -8,7 +8,7 @@ public interface IMemberDAO {
 
 	public MemberDTO selMember(String id);
 	public MemberDTO login(MemberDTO mDto);
-	public void updateLogDate(String id);
+	public void updateFinalaccess(String id);
 	public MemberDTO selLoginInfo(String id, String password) throws Exception;
 
 	public int nicknameCheck(String nickname);

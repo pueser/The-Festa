@@ -10,7 +10,7 @@ public interface IMemberService {
 
 	public MemberDTO selMember(String id) throws Exception;
 	public MemberDTO login(MemberDTO mDto) throws Exception;
-	public void updateLogDate(String id) throws Exception;
+	public void updateFinalaccess(String id) throws Exception;
 
 	public int nicknameCheck(String nickname) throws Exception;
 	public int idCheck(String id) throws Exception;

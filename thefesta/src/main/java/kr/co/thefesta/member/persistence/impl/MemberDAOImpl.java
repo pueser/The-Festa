@@ -39,8 +39,8 @@ public class MemberDAOImpl implements IMemberDAO {
 
 	
 	@Override
-	public void updateLogDate(String id) {
-		sqlSession.update("MemberMapper.updateLogDate", id);
+	public void updateFinalaccess(String id) {
+		sqlSession.update("MemberMapper.updateFinalaccess", id);
 	}
 
 	@Override
