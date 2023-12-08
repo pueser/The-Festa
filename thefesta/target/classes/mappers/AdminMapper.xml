@@ -17,9 +17,10 @@
 				        FROM admin_member_b
 	    			)
 				    WHERE rownum <= #{pageNum} * #{amount} AND statecode <> '0'
+				   
 				)
 			WHERE rn > (#{pageNum} -1) * #{amount}
-			ORDER BY totalreportnum DESC
+			
 	     ]]>
  	</select>
  	

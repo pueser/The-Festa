@@ -26,6 +26,8 @@ public class AdminDTO {
 	private Date finalaccess;
 	//회원 총 신고누적갯수
 	private Integer totalreportnum;
+	//
+	private String newStatecode;
 
 	
 	

@@ -46,6 +46,7 @@ public class AdminController {
 		
 		List<AdminDTO> memberList = service.memberList(cri);
 		
+		
 		result.put("list", memberList);
 		int total = service.memberCnt();
 		
