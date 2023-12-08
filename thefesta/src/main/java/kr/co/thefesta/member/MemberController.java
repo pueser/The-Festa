@@ -110,7 +110,7 @@ public class MemberController {
 		String id = mDto.getId();
 		
 		String title = "TheFesta 인증번호 전송";
-		String from = "dain7362@naver.com";
+		String from = "festa1228@naver.com";
 		String text = "인증번호는 " + randomCode + " 입니다.";
 		String to = id;
 		String cc = "";
