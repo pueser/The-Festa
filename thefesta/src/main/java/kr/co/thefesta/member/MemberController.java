@@ -97,8 +97,10 @@ public class MemberController {
 	}
 	
 	@RequestMapping(value = "/selMember", method = RequestMethod.POST)
-	public MemberDTO selMember(@RequestBody String id) throws Exception {
+	public MemberDTO selMember(@RequestBody MemberDTO mDto) throws Exception {
+		String id = mDto.getId();
 		MemberDTO selMember = service.selMember(id);
+		log.info(selMember);
 		return selMember;
 	}
 	
@@ -145,19 +147,14 @@ public class MemberController {
 	
 	
 	@PostMapping(value = "/memInfoReset")
-	public void memInfoReset(@RequestBody MemberDTO mDto, HttpSession session) throws Exception {
-		
+	public ResponseEntity<String> memInfoReset(@RequestBody MemberDTO mDto) {
 		log.info(mDto);
-		
-		if (mDto.getNickname() == null) {
-			String nickname = (String) session.getAttribute("nickname");
-			mDto.setNickname(nickname);
+	    try {
+	        service.memInfoReset(mDto);
+	        return ResponseEntity.ok("success");
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("fail");
 	    }
-		if (mDto.getResetPassword() != null) {
-			String password = (String) session.getAttribute("password");
-			mDto.setPassword(password);
-		}
-		service.memInfoReset(mDto);
 	}
 	
 
@@ -168,7 +165,7 @@ public class MemberController {
 	    Map<String, Object> paramMap = new HashMap<>();
 
 	    if (!file.isEmpty()) {
-	        String saveImg = "D:\\workspace\\spring4-4.10.0.RELEASE\\thefestaTest\\src\\main\\webapp\\resources\\fileUpload\\" + file.getOriginalFilename();
+	        String saveImg = "C:\\Users\\dain7\\git\\TheFesta\\thefesta\\src\\main\\webapp\\resources\\fileUpload\\" + file.getOriginalFilename();
 	        log.info("파일 저장" + saveImg);
 	        file.transferTo(new File(saveImg));
 
@@ -183,12 +180,10 @@ public class MemberController {
 	            service.updateImg(paramMap);
 	            log.info(paramMap);
 
-	            return profileImg;
-	        } else {
-	            log.error("파일 저장에 실패했습니다.");
+	            return "success";
 	        }
 	    }
-	    return "파일이 비어있습니다.";
+	    return "fail";
 	}
 	
 	
