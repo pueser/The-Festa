@@ -6,30 +6,35 @@
  	<!-- member 테이블 회원정보 list -->
  	<select id="memberList" resultType="kr.co.thefesta.admin.domain.AdminDTO">
 	 	<![CDATA[
-	 		SELECT  id, statecode, finalaccess, reportnum, totalreportnum
+			SELECT  id, statecode, finalaccess, reportnum, totalreportnum, rn
 				FROM (
 	    			SELECT id, statecode, finalaccess, reportnum, totalreportnum, rownum  as rn
 	    			FROM (
-				        SELECT *
-				        FROM admin_member_a
-				        UNION
-				        SELECT *
-				        FROM admin_member_b
+                        SELECT *
+                        FROM(
+                            SELECT id,statecode,finalaccess, reportnum, totalreportnum
+                            FROM admin_member_reportstate_2
+                            UNION
+                            SELECT id,statecode,finalaccess, reportnum, totalreportnum
+                            FROM admin_member_reportstate_1
+                            UNION
+                            SELECT id,statecode,finalaccess, reportnum, totalreportnum
+                            FROM admin_member_reportstate_0
+                        )
+				       ORDER BY totalreportnum DESC
 	    			)
 				    WHERE rownum <= #{pageNum} * #{amount} AND statecode <> '0'
-				   
 				)
 			WHERE rn > (#{pageNum} -1) * #{amount}
-			
 	     ]]>
  	</select>
  	
  	<!-- member 회원 디테일 정보 -->
  	<select id="memberDetail" resultType="kr.co.thefesta.admin.domain.ReportDTO" parameterType="java.util.Map">
  	<![CDATA[
- 		SELECT reportid,reportcontent,reporter,reported, rbrno, rfrno, rbid, reportdate, reportnum
+ 		SELECT reportid,reportcontent,reporter,reported, rbrno, rfrno, rbid, reportdate, reportnum, statecode, finalaccess
 		FROM(
-    		SELECT reportid,reportcontent,reporter,reported, rbrno, rfrno, rbid, reportdate, reportnum, rownum  as rn
+    		SELECT reportid,reportcontent,reporter,reported, rbrno, rfrno, rbid, reportdate, reportnum, statecode, finalaccess, rownum  as rn
     		FROM (
         		SELECT  report.reportid, report.reportcontent, report.reporter, report.reported, report.rbrno, report.rfrno, report.rbid, report.reportdate,
         		member.statecode, member.finalaccess, member.reportnum

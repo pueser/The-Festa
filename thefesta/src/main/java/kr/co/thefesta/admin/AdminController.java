@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,13 +50,11 @@ public class AdminController {
 		
 		result.put("list", memberList);
 		int total = service.memberCnt();
-		
 		 
 	     log.info("total : " + total);
-	     log.info("memberList" + memberList.toString());
 	     
 	     result.put("pageMaker", new PageDTO(cri, total));
-		
+	     log.info("result" + result.toString());
 		return result;
 	}
 	
@@ -73,10 +72,13 @@ public class AdminController {
 		result.put("list", reportList);
 		int total = service.memberReportCnt(id);
 		
+		
 		 
 	    log.info("total : " + total);
+	    
 	     
 	    result.put("pageMaker", new PageDTO(cri, total));
+	    
 		log.info("reportList = " + reportList.toString());
 		return result;
 	}
@@ -253,7 +255,7 @@ public class AdminController {
 	
 	//축제 댓글 신고(parameter : reportcontent, reporter, reported, rfrno)
 	@RequestMapping(value = "/festaReplyReport", method = RequestMethod.POST)
-	public void festaReplyReport(ReportDTO reportDto) throws Exception{
+	public void festaReplyReport(@RequestBody ReportDTO reportDto) throws Exception{
 		log.info("festaReplyReport post...");
 		log.info("받은 값 = " + reportDto.toString());
 		
