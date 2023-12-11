@@ -2,6 +2,60 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
- <mapper namespace="kr.co.springstudy.mapper.Sample1Mapper">
- 	
+ <mapper namespace="SchedulerMapper">
+ 	<sql id="search">
+		<trim prefix="(" suffix=") AND " prefixOverrides="AND">
+			<foreach item="keyword" collection="keywordArr">
+					<if test="keyword != ''">
+						AND (title 		LIKE '%'||#{keyword}||'%'
+						OR	ADDR1 		LIKE '%'||#{keyword}||'%'
+						OR	EVENTINTRO 	LIKE '%'||#{keyword}||'%'
+						OR	EVENTTEXT 	LIKE '%'||#{keyword}||'%')
+					</if>
+					<if test="countyValue!=0">
+						AND acode = #{countyValue}
+					</if>
+					<if test="districtValue!=0">
+						AND scode = #{districtValue}
+					</if>
+			</foreach>
+		</trim>
+	</sql>
+
+ 	<select id="getFestaCnt" resultType="int">
+ 		<![CDATA[
+			SELECT	COUNT(*)
+			FROM	festa
+			WHERE	TO_NUMBER(eventstartdate) <= #{date}
+			AND	
+		]]>
+		<include refid="search"></include>
+		<![CDATA[
+			#{date} <= TO_NUMBER(eventenddate)
+		]]>
+	</select>
+	<select id="getFestaList" resultType="kr.co.thefesta.festival.domain.FestivalDTO">
+		<![CDATA[
+			SELECT	*
+			FROM	festa
+			WHERE	TO_NUMBER(eventstartdate) <= #{date}
+			AND	
+		]]>
+		<include refid="search"></include>
+		<![CDATA[
+			#{date} <= TO_NUMBER(eventenddate)
+		]]>
+	</select>
+	<select id="getDistrictSelectOptions" resultType="kr.co.thefesta.festival.domain.AreaCodeDTO">
+		<![CDATA[
+			SELECT	ano,
+					acode,
+					aname,
+					scode,
+					sname
+			FROM	festa_area
+			WHERE	#{acode} = acode
+			ORDER BY scode
+		]]>
+	</select>
  </mapper>

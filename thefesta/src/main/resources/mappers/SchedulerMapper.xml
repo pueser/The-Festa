@@ -36,10 +36,7 @@
 	</select>
 	<select id="getFestaList" resultType="kr.co.thefesta.festival.domain.FestivalDTO">
 		<![CDATA[
-			SELECT	contentid,
-					title,
-					eventstartdate,
-					eventenddate
+			SELECT	*
 			FROM	festa
 			WHERE	TO_NUMBER(eventstartdate) <= #{date}
 			AND	
