@@ -23,7 +23,7 @@ public class PageDTO {
 	    this.startPage = this.endPage - 4;
 
 	    // 전체 페이지 수를 계산합니다.
-	    int realEnd = (int) (Math.ceil(total * 1.0) / cri.getAmount());
+	    int realEnd = (int) (Math.ceil(total * 1.0 / cri.getAmount()));
 
 	    // 만약 계산된 실제 끝 페이지가 endPage보다 작거나 같으면 endPage를 조정합니다.
 	    if (realEnd <= this.endPage) {
