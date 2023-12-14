@@ -21,7 +21,7 @@ public class MailUtil {
 
 	public static int mailSend(String title, String from, String text, String to, String cc) {
 		if (from == null || from.equals("")) {
-			from = "dain7362@naver.com";
+			from = "festa1228@naver.com";
 		}
 
 		try {

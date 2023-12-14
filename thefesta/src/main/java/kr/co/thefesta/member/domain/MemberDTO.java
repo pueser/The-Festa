@@ -16,13 +16,15 @@ import lombok.ToString;
 public class MemberDTO {
 
 	private String id;
-	private String password;
 	private String nickname;
+	private String password;
 	private String profileImg;
 	private String agreement;
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd", timezone = "GMT+9")
 	private Date joindate;
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd", timezone = "GMT+9")
 	private Date finalaccess;
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd", timezone = "GMT+9")
 	private Date withdrawdate;
 	private Integer reportnum;
 	private String statecode;

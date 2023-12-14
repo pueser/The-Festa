@@ -100,7 +100,7 @@ public class MemberController {
 	public MemberDTO selMember(@RequestBody MemberDTO mDto) throws Exception {
 		String id = mDto.getId();
 		MemberDTO selMember = service.selMember(id);
-		log.info(selMember);
+		log.info("selMember" + selMember);
 		return selMember;
 	}
 	

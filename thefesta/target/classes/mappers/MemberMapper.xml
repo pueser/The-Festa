@@ -37,7 +37,7 @@
 	
 	<insert id="join">
 		INSERT INTO member (id, password, nickname, agreement, statecode)
-		VALUES(#{id}, #{password}, #{nickname}, 'o', '0')
+		VALUES(#{id}, #{password}, #{nickname}, 'o', '1')
 	</insert>
 	
 	<update id="reJoin">
@@ -68,7 +68,8 @@
         UPDATE MEMBER
         <set>
             <if test="nickname != null">nickname = #{nickname},</if>
-            <if test="password != null">password = #{password}</if>
+            <if test="password != null">password = #{password},</if>
+            <if test="statecode != null">statecode = #{statecode}</if>
         </set>
         WHERE id = #{id}
     </update>
@@ -86,16 +87,17 @@
 	  UPDATE member
 	  <set>
 	    <if test="statecode == 1">
-	      stateCode = 1,
+	      statecode = 1,
 	    </if>
 	    <if test="statecode == 2">
-	      stateCode = 2,
+	      statecode = 2,
 	    </if>
 	    <if test="statecode == 3">
-	      stateCode = 3,
+	      statecode = 3,
 	    </if>
 	    <if test="statecode == 4">
-	      stateCode = 4,
+	      nickname = null,
+	      statecode = 4,
 	    </if>
 	  updatedate = sysdate
 	  </set>
