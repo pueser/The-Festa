@@ -178,18 +178,19 @@ public class AdminServiceImpl implements IAdminService {
 	public int adminQuestionListCnt() throws Exception {
 		return adminDao.adminQuestionListCnt();
 	}
-	
+
 	
 	
 	
 	
 	//축제 자동삭제처리(1년기준)
 	@Override
-	public void festivalSchdulerDelete(LocalDateTime time) throws Exception {
+	public void festivalSchdulerDelete(String time) throws Exception {
 		 adminDao.festivalSchdulerDelete(time);
 		
 	}
 
+	
 	
 
 	

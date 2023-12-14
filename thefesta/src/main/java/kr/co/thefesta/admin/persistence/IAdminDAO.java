@@ -64,5 +64,5 @@ public interface IAdminDAO {
 	//문의사항 갯수
 	public int adminQuestionListCnt()throws Exception;
 	//축제 자동삭제처리(1년기준)
-	public void festivalSchdulerDelete(LocalDateTime time)throws Exception;
+	public void festivalSchdulerDelete(String time)throws Exception;
 }

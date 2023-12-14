@@ -99,14 +99,14 @@ public class AdminDAOImpl implements IAdminDAO {
 		mDto.setStatecode("4");
 
 		
-		//num갯수가 4번이면 reportnum 추가 후 , state코드 4번(강퇴) 변경
+		//num갯수가 4번이면 reportnum 1추가 , 회원state코드 4번(강퇴), 신고글 statecode 4 변경
 		if((num+1) == 5) {
 			memberDao.updateState(mDto);//멤버의 상태코드 변경
-			session.delete("AdminMapper.memberReportAllDelete", id); //신고글 모두 삭제
+			session.delete("AdminMapper.memberReportstateChange4", id); //신고글 모두 상태코드4변경
 			return session.update("AdminMapper.memberReportnumUpdate", map);// 회원 reportnum + 1
 			
 		}else {
-			session.delete("AdminMapper.memberReportDelete", reportid); //신고글 삭제
+			session.update("AdminMapper.memberReportstateChange3", reportid);//회원 신고글 3번변경
 			return session.update("AdminMapper.memberReportnumUpdate", map);// 회원 reportnum + 1
 		}
 		
@@ -247,17 +247,21 @@ public class AdminDAOImpl implements IAdminDAO {
 	public int adminQuestionListCnt() throws Exception {
 		return session.selectOne("AdminMapper.adminQuestionListCnt");
 	}
-
 	
 	
 	//축제 자동삭제처리(1년기준)
 	@Override
-	public void festivalSchdulerDelete(LocalDateTime time) throws Exception {
+	public void festivalSchdulerDelete(String time) throws Exception {
 		log.info("전달 받은 값 = " + time);
-		List<FestivalDTO> list = session.selectList("AdminMapper.festivalSchdulerDelete", time);
-		log.info("FestivalDTO=" + list);
+		
+		session.delete("AdminMapper.festivalSchdulerDelete", time);//축제 삭제(1년이 지난경우)
+		session.selectList("AdminMapper.boardSchuderList");//게시글 (신고누적이 없는) list
+		
+		
 		
 	}
+
+	
 
 	
 	

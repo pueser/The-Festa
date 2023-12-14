@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -301,6 +302,25 @@ public class AdminController {
 	     
 		return result;
 	}
+	
+	
+	//DB 자동삭제 처리
+	//@Scheduled(fixedRate = 3000)//3초
+	public void DBdataDelete() throws Exception {
+		log.info("DBdataDelete is started");
+		
+		String stringTime = LocalDateTime.now().minusYears(1).toString();
+		String replaceTiem = stringTime.replace("-", "");
+		//현재 서버 기준 날짜(YYYMMDD)
+		String time = replaceTiem.substring(0,8);
+		
+		service.festivalSchdulerDelete(time);
+
+	}
+	
+	
+	
+	
 	
 	
 	

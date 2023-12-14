@@ -138,11 +138,17 @@
 		WHERE id=#{id}
  	</select>
  	
- 	<!--회원 신고글 모두 삭제(강퇴 당할 때) -->
- 	<delete id="memberReportAllDelete">
- 		DELETE 
-		FROM report
+ 	<!--회원 신고글 상태변경(4) -->
+ 	<delete id="memberReportstateChange4">
+ 		UPDATE report
+		SET reportstate = 4
 		WHERE reported = #{id}
+ 	</delete>
+ 	<!--회원 신고글 상태변경(4) -->
+ 	<delete id="memberReportstateChange3">
+ 		UPDATE report
+		SET reportstate = 3
+		WHERE reportid = #{reportid}
  	</delete>
  	
  	
@@ -261,56 +267,12 @@
 	FROM    board
 	WHERE   bno = 3 AND bstatecode= 'Y'
  	</select>
- 	
- 	<!-- 축제 이미지 삭제
- 	<delete id="festaImageDelete">
- 	
- 		DELETE
-		FROM festa_image
-		WHERE contentid = #{contentid}
- 	</delete>
- 	
- 	축제 좋아요 삭제
- 	<delete id="festaLikeDelete">
- 		DELETE
-		FROM festa_like
-		WHERE contentid = #{contentid}
- 	</delete>
- 	
- 	축제 건의 삭제
- 	<delete id="festaQuestionDelete">
- 		DELETE
-		FROM admin_question
-		WHERE contentid = #{contentid}
- 	</delete>
- 	
- 	축제 댓글
- 	<delete id="festaReplyDelete">
- 		DELETE
-		FROM festa_reply
-		WHERE contentid = #{contentid}
- 	</delete>
- 	
- 	삭제할 축제 댓글 번호
- 	<select id="deleteReportidSelect" resultType="kr.co.thefesta.festival.domain.FestivalReplyDTO">
-	 	SELECT festa_reply.frno
-	    FROM    festa_reply
-	    INNER JOIN festa
-	    ON  festa_reply.contentid = festa.contentid
-	    WHERE  festa_reply.contentid = #{contentid}
- 	</select>
- 	
- 	축제 댓글 신고삭제
- 	<delete id="reportFrnoDelete" parameterType="java.util.ArrayList">
- 		DELETE
-		FROM report
-		<trim prefix="WHERE rfrno in (" suffix=") " suffixOverrides=",">
-			<foreach collection="list" item="item" >
-					#{item.frno},
-			</foreach>
-		</trim>
- 	</delete> -->
- 	
+ 	<!--문의사항 statecode 변경 -->
+ 	<update id="adminQuestionStatecodeChange">
+ 		UPDATE admin_question
+		SET questionstatecode = 'Y'
+		WHERE questionid = #{questionid}
+ 	</update>
  	
  	
  	
@@ -350,10 +312,23 @@
  	
  	
  	<!-- 축제 자동삭제처리(1년기준) -->
- 	<select id="festivalSchdulerDelete" resultType="kr.co.thefesta.festival.domain.FestivalDTO">
- 		SELECT 	*
-		FROM	festa_ex
-		WHERE creationDate = #{time}
-		
+ 	<delete id="festivalSchdulerDelete">
+ 		DELETE 
+ 		FROM	festa
+ 		WHERE	eventenddate = #{time}
+ 	</delete>
+ 	<!-- 신고누적이 없는 게시글 list -->
+ 	<select id="boardSchuderList" resultType="kr.co.thefesta.board.domain.BoardDTO">
+ 		SELECT board.bid
+		FROM board
+		LEFT JOIN report
+		ON board.bid = report.rbid
+		WHERE report.rbid is NULL AND board.bstatecode = 'N'
  	</select>
+ 	<!-- 게시글 자동삭제처리(1년기준) -->
+ 	<!-- 게시글 report신고 댓글 삭제 -->
+ 	
+ 	<!-- 게시글 자동삭제처리(1년기준) -->
+ 	
+ 	
  </mapper>
