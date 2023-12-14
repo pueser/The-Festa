@@ -1,6 +1,8 @@
 package kr.co.thefesta.food.persistence.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import kr.co.thefesta.food.domain.AreacodeDTO;
 import kr.co.thefesta.food.domain.ItemDTO;
 import kr.co.thefesta.food.domain.LikeDTO;
 import kr.co.thefesta.food.domain.RecommendDTO;
+import kr.co.thefesta.food.domain.UserDTO;
 import kr.co.thefesta.food.persistence.IFoodDAO;
 import lombok.extern.log4j.Log4j;
 
@@ -35,6 +38,11 @@ public class FoodDAOImpl implements IFoodDAO {
 	public List<RecommendDTO> listAll(String contentid) throws Exception {
 		return session.selectList("FoodMapper.select", contentid);
 	}
+	
+	@Override
+	public List<RecommendDTO> listAllUser(UserDTO userDto) throws Exception {
+		return session.selectList("FoodMapper.selectUser", userDto);
+	} 
 
 	@Override
 	public ItemDTO read(String contentid) throws Exception {
@@ -59,6 +67,8 @@ public class FoodDAOImpl implements IFoodDAO {
 	@Override
 	public void delete(LikeDTO likeDto) throws Exception {
 		session.delete("FoodMapper.deleteLike", likeDto);
-	} 
+	}
+
+	
 	
 }
