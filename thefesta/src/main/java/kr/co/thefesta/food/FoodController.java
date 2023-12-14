@@ -35,7 +35,6 @@ import kr.co.thefesta.food.domain.ItemDTO;
 import kr.co.thefesta.food.domain.LikeDTO;
 import kr.co.thefesta.food.domain.RecommendDTO;
 import kr.co.thefesta.food.domain.ResultDTO;
-import kr.co.thefesta.food.domain.UserDTO;
 import kr.co.thefesta.food.service.IFoodService;
 import lombok.extern.log4j.Log4j;
 
@@ -47,41 +46,20 @@ public class FoodController {
 
 	@Autowired
 	IFoodService service;
-	
+
 	// 음식점 추천 목록
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
-	public ResponseEntity<Map<String, Object>> getFoodList(@RequestParam("contentid") String contentid, @RequestParam(name ="id", required = false) String id, @RequestBody(required = false) UserDTO userDto) throws Exception {
+	public ResponseEntity<Map<String, Object>> getFoodList(@RequestParam("contentid") String contentid) throws Exception {
 		log.info("food list connect.....");
 		log.info("contentid: " + contentid);
-		log.info("Id: " + id);
-		
-		if (id != null) { //회원(로그인)
-			
-			userDto = new UserDTO(contentid, id);
-			
-			List<RecommendDTO> recDto = service.listAllUser(userDto);
-			AreacodeDTO areaCodeDto = service.selectArea(userDto.getContentid());
-			
-			Map<String, Object> responseMap = new HashMap<>();
-			responseMap.put("recommendDTOList", recDto);
-			responseMap.put("areacodeDTO", areaCodeDto);
-			log.info("recDto: " + recDto);
-			log.info("areaDto : " + areaCodeDto);
-			return new ResponseEntity<>(responseMap, HttpStatus.OK);
-			
-		} else { //비회원(비로그인)
-			
-			List<RecommendDTO> recDto = service.listAll(contentid);
-			AreacodeDTO areaCodeDto = service.selectArea(contentid);
-			
-			Map<String, Object> responseMap = new HashMap<>();
-			responseMap.put("recommendDTOList", recDto);
-			responseMap.put("areacodeDTO", areaCodeDto);
-			log.info("recDto: " + recDto);
-			log.info("areaDto : " + areaCodeDto);
-			return new ResponseEntity<>(responseMap, HttpStatus.OK);
-			
-		}
+		List<RecommendDTO> recDto = service.listAll(contentid);
+		AreacodeDTO areaCodeDto = service.selectArea(contentid);
+
+		Map<String, Object> responseMap = new HashMap<>();
+		responseMap.put("recommendDTOList", recDto);
+		responseMap.put("areacodeDTO", areaCodeDto);
+		log.info("recDto: " + recDto);
+		return new ResponseEntity<>(responseMap, HttpStatus.OK);
 	}
 
 	// 음식점 상세 페이지
