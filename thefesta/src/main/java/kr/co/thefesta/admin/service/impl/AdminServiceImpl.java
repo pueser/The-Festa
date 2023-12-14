@@ -1,5 +1,6 @@
 package kr.co.thefesta.admin.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import kr.co.thefesta.admin.domain.QuestionDTO;
 import kr.co.thefesta.admin.domain.ReportDTO;
 import kr.co.thefesta.admin.persistence.IAdminDAO;
 import kr.co.thefesta.admin.service.IAdminService;
+import kr.co.thefesta.board.domain.BoardDTO;
 
 
 @Service
@@ -155,12 +157,44 @@ public class AdminServiceImpl implements IAdminService {
 	public int festaListCnt() throws Exception {
 		return adminDao.festaListCnt();
 	}
-
+	
+	//게시글list(자유, 리뷰)
+	@Override
+	public List<BoardDTO> boardlist(Criteria cri) throws Exception {
+		return adminDao.boardlist(cri);
+	}
+	//게시글 갯수(자유, 리뷰)
+	@Override
+	public int boardListCnt() throws Exception {
+		return adminDao.boardListCnt();
+	}
+	//문의사항list
+	@Override
+	public List<BoardDTO> adminQuestionList(Criteria cri) throws Exception {
+		return adminDao.adminQuestionList(cri);
+	}
+	//문의사항 갯수
+	@Override
+	public int adminQuestionListCnt() throws Exception {
+		return adminDao.adminQuestionListCnt();
+	}
 	
 	
-
-
 	
 	
+	
+	//축제 자동삭제처리(1년기준)
+	@Override
+	public void festivalSchdulerDelete(LocalDateTime time) throws Exception {
+		 adminDao.festivalSchdulerDelete(time);
+		
+	}
 
+	
+
+	
+
+	
+
+	
 }

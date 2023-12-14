@@ -2,6 +2,8 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:context="http://www.springframework.org/schema/context"
+		
+    xmlns:task="http://www.springframework.org/schema/task"
 	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
 	xmlns:mvc="http://www.springframework.org/schema/mvc"
 	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
@@ -11,7 +13,8 @@
 		http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
 		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
-		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
+		http://www.springframework.org/schema/task	http://www.springframework.org/schema/task/spring-task-4.0.xsd">
 	
 	<!-- Root Context: defines shared resources visible to all other web components -->
 <!-- HikariCP Oracle 설정 -->
@@ -84,7 +87,7 @@
     </bean> -->
     
     <!-- 축제 -->
-    <!-- <bean name="festivalJob" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+   <!--  <bean name="festivalJob" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
     	<property name="jobClass" value="kr.co.thefesta.festival.scheduler.FestivalJob"/>
     	<property name="jobDataAsMap">
     		<map>
@@ -96,7 +99,7 @@
     
     <bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
     	<property name="jobDetail" ref="festivalJob"/>
-    	<property name="cronExpression" value="0 45 17 ? * *"/>
+    	<property name="cronExpression" value="0 46 23 ? * *"/>
     </bean>
     
     <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
@@ -106,6 +109,11 @@
     		</list>
     	</property>
     </bean> -->
+    
+    
+    <!-- admin Scheduler -->
+	<task:annotation-driven/>
+	
     
 	<tx:annotation-driven/>
 	<context:component-scan base-package="kr.co.thefesta"></context:component-scan>

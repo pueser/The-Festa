@@ -1,11 +1,13 @@
 package kr.co.thefesta.admin.persistence;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import kr.co.thefesta.admin.domain.AdminDTO;
 import kr.co.thefesta.admin.domain.Criteria;
 import kr.co.thefesta.admin.domain.QuestionDTO;
 import kr.co.thefesta.admin.domain.ReportDTO;
+import kr.co.thefesta.board.domain.BoardDTO;
 import kr.co.thefesta.member.domain.MemberDTO;
 
 public interface IAdminDAO {
@@ -53,4 +55,14 @@ public interface IAdminDAO {
 	public int boardReplyReport(ReportDTO reportDto)throws Exception;
 	//게시글 신고 등록
 	public int boardReport(ReportDTO reportDto)throws Exception;
+	//게시글list(자유, 리뷰)
+	public List<BoardDTO> boardlist(Criteria cri)throws Exception;
+	//게시글 갯수(자유, 리뷰)
+	public int boardListCnt()throws Exception;
+	//문의사항list
+	public List<BoardDTO> adminQuestionList(Criteria cri)throws Exception;
+	//문의사항 갯수
+	public int adminQuestionListCnt()throws Exception;
+	//축제 자동삭제처리(1년기준)
+	public void festivalSchdulerDelete(LocalDateTime time)throws Exception;
 }

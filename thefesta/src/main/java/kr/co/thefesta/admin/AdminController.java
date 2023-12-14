@@ -1,5 +1,6 @@
 package kr.co.thefesta.admin;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import kr.co.thefesta.admin.domain.PageDTO;
 import kr.co.thefesta.admin.domain.QuestionDTO;
 import kr.co.thefesta.admin.domain.ReportDTO;
 import kr.co.thefesta.admin.service.IAdminService;
+import kr.co.thefesta.board.domain.BoardDTO;
 import kr.co.thefesta.festival.service.IFestivalService;
 import kr.co.thefesta.member.domain.MemberDTO;
 import kr.co.thefesta.member.service.IMemberService;
@@ -55,6 +57,8 @@ public class AdminController {
 	     
 	     result.put("pageMaker", new PageDTO(cri, total));
 	     log.info("result" + result.toString());
+	     
+	     
 		return result;
 	}
 	
@@ -197,6 +201,7 @@ public class AdminController {
 	    log.info("total : " + total);
 	     
 	    result.put("pageMaker", new PageDTO(cri, total));
+	    
 		return result;
 	}
 	
@@ -244,7 +249,7 @@ public class AdminController {
 	}
 	
 	//축제 건의내용 저장
-	@RequestMapping(value = "questionRegister", method = RequestMethod.POST)
+	@RequestMapping(value = "/questionRegister", method = RequestMethod.POST)
 	public void questionCreate(QuestionDTO questionDto) throws Exception{
 		log.info("questionCreate post...");
 		
@@ -252,6 +257,52 @@ public class AdminController {
 		
 		service.questionRegister(questionDto);
 	}
+	
+	//게시판 list(자유 &리뷰)
+	@RequestMapping(value = "/boardlist", method = RequestMethod.GET)
+	public Map<String, Object> boardlist(Criteria cri)throws Exception{
+		log.info("boardlist Get....");
+		log.info("cri = " + cri.toString());
+		Map<String, Object> result = new HashMap<>();
+		
+		List<BoardDTO> boardlist = service.boardlist(cri);
+		
+		
+		result.put("list", boardlist);
+		int total = service.boardListCnt();
+		 
+	     log.info("total : " + total);
+	     
+	     result.put("pageMaker", new PageDTO(cri, total));
+	     log.info("result" + result.toString());
+	     
+	     
+		return result;
+	}
+	
+	//문의사항 list
+	@RequestMapping(value = "/adminQuestionList", method = RequestMethod.GET)
+	public Map<String, Object> adminQuestionList(Criteria cri)throws Exception{
+		log.info("adminQuestionList Get....");
+		log.info("cri = " + cri.toString());
+		Map<String, Object> result = new HashMap<>();
+		
+		List<BoardDTO> adminQuestionList = service.adminQuestionList(cri);
+		
+		
+		result.put("list", adminQuestionList);
+		int total = service.adminQuestionListCnt();
+		 
+	     log.info("total : " + total);
+	     
+	     result.put("pageMaker", new PageDTO(cri, total));
+	     log.info("result" + result.toString());
+	     
+	     
+		return result;
+	}
+	
+	
 	
 	//축제 댓글 신고(parameter : reportcontent, reporter, reported, rfrno)
 	@RequestMapping(value = "/festaReplyReport", method = RequestMethod.POST)

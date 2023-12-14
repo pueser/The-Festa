@@ -1,5 +1,6 @@
 package kr.co.thefesta.admin.persistence.impl;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,9 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import kr.co.thefesta.admin.domain.AdminDTO;
 import kr.co.thefesta.admin.domain.Criteria;
+
 import kr.co.thefesta.admin.domain.QuestionDTO;
 import kr.co.thefesta.admin.domain.ReportDTO;
 import kr.co.thefesta.admin.persistence.IAdminDAO;
+import kr.co.thefesta.board.domain.BoardDTO;
+import kr.co.thefesta.festival.domain.FestivalDTO;
 import kr.co.thefesta.member.domain.MemberDTO;
 import kr.co.thefesta.member.persistence.IMemberDAO;
 import lombok.extern.log4j.Log4j;
@@ -178,14 +182,14 @@ public class AdminDAOImpl implements IAdminDAO {
 	@Transactional
 	@Override
 	public int festaDelete(Integer contentid) throws Exception {
-		session.delete("AdminMapper.festaImageDelete", contentid); //축제 이미지 삭제
-		session.delete("AdminMapper.festaLikeDelete", contentid);// 축제 좋아요 삭제
-		session.delete("AdminMapper.festaQuestionDelete", contentid);// 축제 건의 삭제
-		List<ReportDTO> list = session.selectList("AdminMapper.deleteReportidSelect", contentid);// 삭제할 축제댓글
-		log.info("reportidList " + list.toString());
-		
-		session.delete("AdminMapper.reportFrnoDelete", list);// 축제댓글 신고 삭제
-		session.delete("AdminMapper.festaReplyDelete", contentid);// 축제 댓글 삭제
+//		session.delete("AdminMapper.festaImageDelete", contentid); //축제 이미지 삭제
+//		session.delete("AdminMapper.festaLikeDelete", contentid);// 축제 좋아요 삭제
+//		session.delete("AdminMapper.festaQuestionDelete", contentid);// 축제 건의 삭제
+//		List<ReportDTO> list = session.selectList("AdminMapper.deleteReportidSelect", contentid);// 삭제할 축제댓글
+//		log.info("reportidList " + list.toString());
+//		
+//		session.delete("AdminMapper.reportFrnoDelete", list);// 축제댓글 신고 삭제
+//		session.delete("AdminMapper.festaReplyDelete", contentid);// 축제 댓글 삭제
 		
 		return session.delete("AdminMapper.festaDelete", contentid);// 축제 삭제
 		
@@ -222,10 +226,42 @@ public class AdminDAOImpl implements IAdminDAO {
 	public int memberReportCnt(String id) throws Exception {
 		return session.selectOne("AdminMapper.memberReportCnt", id);
 	}
+	
+	//게시글list(자유, 리뷰)
+	@Override
+	public List<BoardDTO> boardlist(Criteria cri) throws Exception {
+		return session.selectList("AdminMapper.boardlist", cri);
+	}
+	//게시글 갯수(자유, 리뷰)
+	@Override
+	public int boardListCnt() throws Exception {
+		return session.selectOne("AdminMapper.boardListCnt");
+	}
+	//문의사항list
+	@Override
+	public List<BoardDTO> adminQuestionList(Criteria cri) throws Exception {
+		return session.selectList("AdminMapper.adminQuestionList", cri);
+	}
+	//문의사항 갯수
+	@Override
+	public int adminQuestionListCnt() throws Exception {
+		return session.selectOne("AdminMapper.adminQuestionListCnt");
+	}
+
+	
+	
+	//축제 자동삭제처리(1년기준)
+	@Override
+	public void festivalSchdulerDelete(LocalDateTime time) throws Exception {
+		log.info("전달 받은 값 = " + time);
+		List<FestivalDTO> list = session.selectList("AdminMapper.festivalSchdulerDelete", time);
+		log.info("FestivalDTO=" + list);
+		
+	}
 
 	
 	
 	
 	
-	
+
 }

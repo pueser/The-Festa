@@ -214,35 +214,84 @@
 		WHERE contentid = #{contentid}
  	</delete>
  	
- 	<!-- 축제 이미지 삭제 -->
+ 	<!-- 게시판list(리뷰, 자유) -->
+ 	<select id="boardlist" resultType="kr.co.thefesta.board.domain.BoardDTO">
+ 	<![CDATA[
+ 		SELECT bid, bno, btitle, bcontent, bregist, id
+		FROM(
+    		SELECT bid, bno, btitle, bcontent, bregist, id, bstatecode, rownum as rn
+        	FROM(
+	            SELECT bid, bno, btitle, bcontent, bregist, id, bstatecode
+	            FROM board
+	            ORDER BY bregist DESC
+        	)
+    		WHERE bstatecode = 'Y' AND (bno = 1 OR bno = 2) AND rownum <= #{pageNum} * #{amount}
+		)
+		WHERE rn > (#{pageNum} -1) * #{amount}
+	]]>
+ 	</select>
+ 	
+ 	<!-- 게시판list(리뷰, 자유) 갯수 -->
+ 	<select id="boardListCnt" resultType="int">
+ 		SELECT count(*)
+		FROM    board
+		WHERE   (bno = 1 OR bno = 2) AND bstatecode = 'Y'
+ 	</select>
+ 	
+ 	<!-- 문의사항list -->
+ 	<select id="adminQuestionList" resultType="kr.co.thefesta.board.domain.BoardDTO">
+ 	<![CDATA[
+	 	SELECT bid, bno, btitle, bcontent, bregist, id
+		FROM(
+    		SELECT bid, bno, btitle, bcontent, bregist, id, bstatecode, rownum as rn
+        	FROM(
+            	SELECT bid, bno, btitle, bcontent, bregist, id, bstatecode
+            	FROM board
+            	ORDER BY bregist DESC
+        	)
+    		WHERE bstatecode = 'Y' AND bno = 3 AND rownum <= #{pageNum} * #{amount}
+		)
+		WHERE rn > (#{pageNum} -1) * #{amount}
+	]]>
+ 	</select>
+ 	
+ 	<!-- 문의사항 갯수 -->
+ 	<select id="adminQuestionListCnt" resultType="int">
+ 	SELECT count(*)
+	FROM    board
+	WHERE   bno = 3 AND bstatecode= 'Y'
+ 	</select>
+ 	
+ 	<!-- 축제 이미지 삭제
  	<delete id="festaImageDelete">
+ 	
  		DELETE
 		FROM festa_image
 		WHERE contentid = #{contentid}
  	</delete>
  	
- 	<!-- 축제 좋아요 삭제 -->
+ 	축제 좋아요 삭제
  	<delete id="festaLikeDelete">
  		DELETE
 		FROM festa_like
 		WHERE contentid = #{contentid}
  	</delete>
  	
- 	<!-- 축제 건의 삭제 -->
+ 	축제 건의 삭제
  	<delete id="festaQuestionDelete">
  		DELETE
 		FROM admin_question
 		WHERE contentid = #{contentid}
  	</delete>
  	
- 	<!-- 축제 댓글 -->
+ 	축제 댓글
  	<delete id="festaReplyDelete">
  		DELETE
 		FROM festa_reply
 		WHERE contentid = #{contentid}
  	</delete>
  	
- 	<!-- 삭제할 축제 댓글 번호 -->
+ 	삭제할 축제 댓글 번호
  	<select id="deleteReportidSelect" resultType="kr.co.thefesta.festival.domain.FestivalReplyDTO">
 	 	SELECT festa_reply.frno
 	    FROM    festa_reply
@@ -251,7 +300,7 @@
 	    WHERE  festa_reply.contentid = #{contentid}
  	</select>
  	
- 	<!-- 축제 댓글 신고삭제 -->
+ 	축제 댓글 신고삭제
  	<delete id="reportFrnoDelete" parameterType="java.util.ArrayList">
  		DELETE
 		FROM report
@@ -260,7 +309,7 @@
 					#{item.frno},
 			</foreach>
 		</trim>
- 	</delete>
+ 	</delete> -->
  	
  	
  	
@@ -298,4 +347,13 @@
          WHERE bid = #{rbid}
       </selectKey>
  	</insert>
+ 	
+ 	
+ 	<!-- 축제 자동삭제처리(1년기준) -->
+ 	<select id="festivalSchdulerDelete" resultType="kr.co.thefesta.festival.domain.FestivalDTO">
+ 		SELECT 	*
+		FROM	festa_ex
+		WHERE creationDate = #{time}
+		
+ 	</select>
  </mapper>
