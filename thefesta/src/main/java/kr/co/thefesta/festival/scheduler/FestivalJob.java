@@ -1,36 +1,33 @@
 package kr.co.thefesta.festival.scheduler;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.URI;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
 
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.scheduling.quartz.QuartzJobBean;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 import kr.co.thefesta.festival.domain.FestivalDTO;
 import kr.co.thefesta.festival.domain.FestivalImageDTO;
-import kr.co.thefesta.festival.domain.detailCommon.DetailCommonDTO;
-import kr.co.thefesta.festival.domain.detailCommon.DetailCommonItemDTO;
-import kr.co.thefesta.festival.domain.detailImage.DetailImageDTO;
-import kr.co.thefesta.festival.domain.detailImage.DetailImageItemDTO;
-import kr.co.thefesta.festival.domain.detailInfo.DetailInfoDTO;
-import kr.co.thefesta.festival.domain.detailInfo.DetailInfoItemDTO;
-import kr.co.thefesta.festival.domain.detailIntro.DetailIntroDTO;
-import kr.co.thefesta.festival.domain.detailIntro.DetailIntroItemDTO;
-import kr.co.thefesta.festival.domain.searchFestival.SearchFestivalDTO;
-import kr.co.thefesta.festival.domain.searchFestival.SearchFestivalItemDTO;
+import kr.co.thefesta.festival.domain.api.ItemDTO;
+import kr.co.thefesta.festival.domain.api.ResultDTO;
 import kr.co.thefesta.festival.service.IFestivalService;
 import lombok.extern.log4j.Log4j;
 
@@ -44,274 +41,342 @@ public class FestivalJob extends QuartzJobBean{
         this.festivalService = festivalService;
     }
 	
-	private String API_KEY = "2CQIk%2BsA5VR%2Bxo%2BB%2FYaxP2uKEoNjx1QUnlxo0zZ0GTXgbiBzgX%2FKmndkj27rvGsy6TZhWQkNl5ewBnR1qaCspg%3D%3D";
-	
 	// 현재 날짜(년월일)
 	private LocalDate today = LocalDate.now();
 	// 현재 날짜 + 1년
 	private String oneYearAfterDate = today.plusYears(1).format(DateTimeFormatter.ofPattern("YYYYMMdd"));
 	// 현재 날짜 - 3년
-	private String threeYearsBeforeDate = today.minusYears(3).format(DateTimeFormatter.ofPattern("YYYYMMdd"));
+	private String threeYearsBeforeDate = today.minusYears(1).format(DateTimeFormatter.ofPattern("YYYYMMdd"));
 	
 	private String EVENT_START_DATE = threeYearsBeforeDate;
 	private String EVENT_END_DATE = oneYearAfterDate;
 	
 	@Override
 	protected void executeInternal(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-		log.info("스케줄러 정상 작동------------------");
-		festivalInfoGET();
+		try {
+			log.info("스케줄러 정상 작동------------------");
+			callApi();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
-	private void festivalInfoGET() {
-	    try {
-	    	int numOfRows = 50;
-	        int pageNo = 1;
+	private void callApi() throws Exception {
+		log.info("api call success.........");
 
-	        while (true) {
-	            String sfUrlBuilder = buildUrl("searchFestival1", pageNo);
+		// RestTemplate 인스턴스 생성
+		RestTemplate restTemplate = new RestTemplate();
+		restTemplate.getMessageConverters().add(0, new StringHttpMessageConverter(StandardCharsets.UTF_8));
 
-	            String sfResult = callAPI(sfUrlBuilder);
-	            
-	            try {
-	            	Gson gson = new Gson();
-	                SearchFestivalDTO sfResponse = gson.fromJson(sfResult, SearchFestivalDTO.class);
+		// Gson 인스턴스 생성
+		Gson gson = new Gson();
 
-	                List<SearchFestivalItemDTO> sfItems = sfResponse.getResponse().getBody().getItems().getItem();
-	                
-	                FestivalDTO fDto = new FestivalDTO();
-	                
-	                for (SearchFestivalItemDTO sfItemDTO : sfItems) {
-	                    if (sfItemDTO.getCat2().equals("A0207")) {
-	                    	fDto = setSearchFestival(sfItemDTO);
-	                        
-	                        FestivalImageDTO fiDto = new FestivalImageDTO();
-	                        
-	                        String contentid = sfItemDTO.getContentid(); 
-	                        
-	                        fiDto.setContentid(contentid);
-	                        
-	                        String dcUrlBuilder = buildUrl("detailCommon1", contentid);
-	                        String dcResult = callAPI(dcUrlBuilder);
-	                        setDetailCommon(fDto, gson, dcResult);
+		try {
+			// baseURL
+			String baseUrl = "http://apis.data.go.kr/B551011/KorService1/searchFestival1";
 
-	                        String diUrlBuilder = buildUrl("detailIntro1", contentid);
-	                        String diResult = callAPI(diUrlBuilder);
-	                        setDetailIntro(fDto, gson, diResult);
+			// service Key
+			String decodeServiceKey = "ry91Z60eoTHfLc9NI16ATVi+0k0SmnSdKalV1FXzqhL9Icp5Hv1b8uqkCyplKkQBi63yeRK0c43fRGAipcOFWg==";
+			String encodeServiceKey = URLEncoder.encode(decodeServiceKey, "UTF-8");
 
-	                        String difUrlBuilder = buildUrl("detailInfo1", contentid);
-	                        String difResult = callAPI(difUrlBuilder);
-	                        setDetailInfo(fDto, gson, difResult);
-	                        
-	                        boolean result = festivalService.updateFestival(fDto);
-	                        
-	                        if (result) {
-	                        	String dimgUrlBuilder = buildUrl("detailImage1", contentid);
-	                        	String dimgResult = callAPI(dimgUrlBuilder);
-	                        	setDetailImage(fiDto, gson, dimgResult);
-	                        	
-	                        	log.info("단건 업데이트 완료--------------------");
-							} else {
-								festivalService.insertApi(fDto);
+			// API 호출을 위한 파라미터 설정
+				int numOfRows = 100;
+				int pageNo = 1;
+				
+				while (true) {
+					try {
+						URI uri = UriComponentsBuilder.fromHttpUrl(baseUrl)
+								.queryParam("serviceKey", encodeServiceKey)
+								.queryParam("MobileOS", "ETC")
+								.queryParam("MobileApp", "Thefesta")
+								.queryParam("numOfRows", numOfRows)
+								.queryParam("pageNo", pageNo)
+								.queryParam("listYN", "Y")
+								.queryParam("arrange", "C")
+								.queryParam("eventStartDate", EVENT_START_DATE)
+								.queryParam("eventEndDate", EVENT_END_DATE)
+								.queryParam("_type", "json")
+								.build(true)
+								.toUri();
+
+						log.info("uri1 address : " + uri);
+						
+						// HttpHeaders 설정
+						HttpHeaders headers = new HttpHeaders();
+						headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+						headers.set("Accept", "*/*;q=0.9"); // HTTP_ERROR 방지
+						
+						// API 호출
+						ResponseEntity<String> response1 = restTemplate.exchange(uri, HttpMethod.GET, null, String.class);
+
+						// 호출한 값 ResultDto 객체에 담기
+						ResultDTO resultDto1 = gson.fromJson(response1.getBody(), ResultDTO.class);
+
+						List<ItemDTO> itemDto = resultDto1.getResponse().getBody().getItems().getItem();
+						FestivalDTO fDto = new FestivalDTO();
+
+						//contentid로 데이터 가져오기
+						for (ItemDTO item : itemDto) {
+							if (item.getCat2().equals("A0207")) {
+								String contentid = item.getContentid();
 								
-								String dimgUrlBuilder = buildUrl("detailImage1", contentid);
-								String dimgResult = callAPI(dimgUrlBuilder);
-								setDetailImage(fiDto, gson, dimgResult);
+								fDto.setContentid(contentid);
+								fDto.setEventstartdate(item.getEventstartdate());
+								fDto.setEventenddate(item.getEventenddate());
+								fDto.setFirstimage(item.getFirstimage());
+								fDto.setFirstimage2(item.getFirstimage2());
+								fDto.setMapx(item.getMapx() != null ? Double.parseDouble(item.getMapx()) : 0.0);
+								fDto.setMapy(item.getMapy() != null ? Double.parseDouble(item.getMapy()) : 0.0);
+								fDto.setTitle(item.getTitle());
+								fDto.setAddr1(item.getAddr1());
+								fDto.setAcode(item.getAreacode() != null ? Integer.parseInt(item.getAreacode()) : 0);
+								fDto.setScode(item.getSigungucode() != null ? Integer.parseInt(item.getSigungucode()) : 0);
 								
-								log.info("단건 등록 완료--------------------");
+								log.info("contentid: " + contentid);
+				
+								String detailCommon = "http://apis.data.go.kr/B551011/KorService1/detailCommon1";
+								String detailIntro = "http://apis.data.go.kr/B551011/KorService1/detailIntro1";
+								String detailInfo = "http://apis.data.go.kr/B551011/KorService1/detailInfo1";
+								String detailImage = "http://apis.data.go.kr/B551011/KorService1/detailImage1";
+				
+								URI detailCommonUri = UriComponentsBuilder.fromHttpUrl(detailCommon)
+										.queryParam("serviceKey", encodeServiceKey)
+										.queryParam("MobileOS", "ETC")
+										.queryParam("MobileApp", "Thefesta")
+										.queryParam("numOfRows", numOfRows)
+										.queryParam("pageNo", "1")
+										.queryParam("_type", "json")
+										.queryParam("contentId", contentid)
+										.queryParam("defaultYN", "Y")
+										.queryParam("firstImageYN", "Y")
+										.queryParam("areacodeYN", "Y")
+										.queryParam("addrinfoYN", "Y")
+										.queryParam("mapinfoYN", "Y")
+										.queryParam("overviewYN", "Y")
+										.build(true).toUri();
+				
+								URI detailIntroUri = UriComponentsBuilder.fromHttpUrl(detailIntro)
+										.queryParam("serviceKey", encodeServiceKey)
+										.queryParam("MobileOS", "ETC")
+										.queryParam("MobileApp", "Thefesta")
+										.queryParam("numOfRows", numOfRows)
+										.queryParam("pageNo", "1")
+										.queryParam("_type", "json")
+										.queryParam("contentId", contentid)
+										.queryParam("contentTypeId", "15")
+										.build(true)
+										.toUri();
+								
+								URI detailInfoUri = UriComponentsBuilder.fromHttpUrl(detailInfo)
+										.queryParam("serviceKey", encodeServiceKey)
+										.queryParam("MobileOS", "ETC")
+										.queryParam("MobileApp", "Thefesta")
+										.queryParam("numOfRows", numOfRows)
+										.queryParam("pageNo", "1")
+										.queryParam("_type", "json")
+										.queryParam("contentId", contentid)
+										.queryParam("contentTypeId", "15")
+										.build(true)
+										.toUri();
+								
+								URI detailImageUri = UriComponentsBuilder.fromHttpUrl(detailImage)
+										.queryParam("serviceKey", encodeServiceKey)
+										.queryParam("MobileOS", "ETC")
+										.queryParam("MobileApp", "Thefesta")
+										.queryParam("numOfRows", numOfRows)
+										.queryParam("pageNo", "1")
+										.queryParam("_type", "json")
+										.queryParam("contentId", contentid)
+										.queryParam("imageYN", "Y")
+										.queryParam("subImageYN", "Y")
+										.build(true)
+										.toUri();
+				
+								log.info("detailCommonUri address : " + detailCommonUri);
+								log.info("detailIntroUri address : " + detailIntroUri);
+								log.info("detailInfoUri address : " + detailInfoUri);
+								log.info("detailImageUri address : " + detailImageUri);
+				
+								// detailCommonUri API 호출
+								ResponseEntity<String> detailCommonResponse = restTemplate.exchange(detailCommonUri, HttpMethod.GET, null, String.class);
+				
+								// detailIntroUri API 호출
+								ResponseEntity<String> detailIntroUriResponse = restTemplate.exchange(detailIntroUri, HttpMethod.GET, null, String.class);
+								
+								// detailInfoUri API 호출
+								ResponseEntity<String> detailInfoUriResponse = restTemplate.exchange(detailInfoUri, HttpMethod.GET, null, String.class);
+								
+								// detailImageUri API 호출
+								ResponseEntity<String> detailImageUriResponse = restTemplate.exchange(detailImageUri, HttpMethod.GET, null, String.class);
+								
+								// detailCommonResponse
+								if (detailCommonResponse.getBody().contains("\"items\": \"\"")) {
+									item.setHomepage("(null)");
+								} else {
+
+									// detailCommonUri 데이터를 ResultDTO에 담기
+									ResultDTO detailCommonResponseResultDto = gson.fromJson(detailCommonResponse.getBody().toString(), ResultDTO.class);
+									log.info("detailCommonResponseResultDto : " + detailCommonResponseResultDto.getResponse().getBody().getItems());
+									
+									// ResultDTO에서 값 가져오기
+									String homepage = detailCommonResponseResultDto.getResponse().getBody().getItems().getItem().get(0).getHomepage();
+									
+									// ItemDTO에 값 담기
+									fDto.setHomepage(homepage);
+								}
+								
+								// detailIntroUriResponse
+								if (detailIntroUriResponse.getBody().contains("\"items\": \"\"")) {
+									fDto.setAgelimit("(null)");
+									fDto.setSponsor1("(null)");
+									fDto.setSponsor1tel("(null)");
+									fDto.setSponsor2("(null)");
+									fDto.setSponsor2tel("(null)");
+									fDto.setUsetimefestival("(null)");
+									fDto.setPlaytime("(null)");
+								} else {
+									// uri3 데이터를 ResultDTO에 담기
+									ResultDTO detailIntroResultDto = gson.fromJson(detailIntroUriResponse.getBody(), ResultDTO.class);
+									log.info("detailIntroResultDto : " + detailIntroResultDto.getResponse().getBody().getItems());
+				
+									// ResultDTO에서 값 가져오기
+									String agelimit = detailIntroResultDto.getResponse().getBody().getItems().getItem().get(0)
+											.getAgelimit();
+									String sponsor1 = detailIntroResultDto.getResponse().getBody().getItems().getItem().get(0)
+											.getSponsor1();
+									String sponsor1tel = detailIntroResultDto.getResponse().getBody().getItems().getItem().get(0)
+											.getSponsor1tel();
+									String sponsor2 = detailIntroResultDto.getResponse().getBody().getItems().getItem().get(0)
+											.getSponsor2();
+									String sponsor2tel = detailIntroResultDto.getResponse().getBody().getItems().getItem().get(0)
+											.getSponsor2tel();
+									String usetimefestival = detailIntroResultDto.getResponse().getBody().getItems().getItem().get(0)
+											.getUsetimefestival();
+									String playtime = detailIntroResultDto.getResponse().getBody().getItems().getItem().get(0)
+											.getPlaytime();
+				
+									// ItemDTO에 값 담기
+									fDto.setAgelimit(agelimit);
+									fDto.setSponsor1(sponsor1);
+									fDto.setSponsor1tel(sponsor1tel);
+									fDto.setSponsor2(sponsor2);
+									fDto.setSponsor2tel(sponsor2tel);
+									fDto.setUsetimefestival(usetimefestival);
+									fDto.setPlaytime(playtime);
+								}
+								
+								// detailInfoUriResponse
+								if (detailInfoUriResponse.getBody().contains("\"items\": \"\"")) {
+									fDto.setEventintro("(null)");
+									fDto.setEventtext("(null)");
+								} else {
+									// ResultDTO에서 값 가져오기
+									ResultDTO detailInfoResultDto = gson.fromJson(detailInfoUriResponse.getBody(), ResultDTO.class);
+									log.info("detailInfoResultDto : " + detailInfoResultDto.getResponse().getBody().getItems());
+							       
+									List<ItemDTO> difItems = detailInfoResultDto.getResponse().getBody().getItems().getItem();
+
+							        for (ItemDTO itemDTO : difItems) {
+							        	if (itemDTO.getInfoname().equals("행사소개")) {
+							        		fDto.setEventintro(itemDTO.getInfotext());
+							        	} else if (itemDTO.getInfoname().equals("행사내용")) {
+							        		fDto.setEventtext(itemDTO.getInfotext());
+							        	} else {
+							        		fDto.setEventtext(null);
+							        	}
+							        }
+									
+								}
+								
+								boolean isUpdate = festivalService.updateFestival(fDto);
+								log.info("isUpdate----" + isUpdate);
+			                    
+			                    if (isUpdate) {
+			                    	log.info("isUpdate true----" + isUpdate);
+			                    	
+			                    	// detailImageUriResponse
+			    					if (detailImageUriResponse.getBody().contains("\"items\": \"\"")) {
+			    						log.info("이미지 없음----------");
+			    					} else {
+
+			    						// uri3 데이터를 ResultDTO에 담기
+			    						FestivalImageDTO fiDto = new FestivalImageDTO();
+			    						ResultDTO detailImageResultDto = gson.fromJson(detailImageUriResponse.getBody(), ResultDTO.class);
+			    						log.info("detailImageResultDto : " + detailImageResultDto.getResponse().getBody().getItems());
+			    						
+			    						List<ItemDTO> imgItems = detailImageResultDto.getResponse().getBody().getItems().getItem();
+			    						
+			    						for (ItemDTO itemDTO : imgItems) {
+			    							fiDto.setContentid(contentid);
+			    				        	fiDto.setSerialnum(itemDTO.getSerialnum());
+			    				            fiDto.setOriginimgurl(itemDTO.getOriginimgurl());
+			    				            fiDto.setSmallimageurl(itemDTO.getSmallimageurl());
+			    				            
+			    				            int result = festivalService.searchImg(fiDto.getSerialnum());
+			    				            if (result == 0) {
+			    				            	log.info("insertImg---------");
+			    				            	festivalService.insertImg(fiDto);
+			    							} else {
+			    								log.info("업데이트된 이미지 없음------------");
+			    							}
+			    				        }
+			    					}
+			                    	
+			                    	log.info("단건 업데이트 완료--------------------");
+								} else {
+									log.info("isUpdate false----" + isUpdate);
+									festivalService.insertApi(fDto);
+									
+			                    	// detailImageUriResponse
+			    					if (detailImageUriResponse.getBody().contains("\"items\": \"\"")) {
+			    						log.info("이미지 없음----------");
+			    					} else {
+			    						// uri3 데이터를 ResultDTO에 담기
+			    						FestivalImageDTO fiDto = new FestivalImageDTO();
+			    						ResultDTO detailImageResultDto = gson.fromJson(detailImageUriResponse.getBody(), ResultDTO.class);
+			    						log.info("detailImageResultDto : " + detailImageResultDto.getResponse().getBody().getItems());
+			    						
+			    						List<ItemDTO> imgItems = detailImageResultDto.getResponse().getBody().getItems().getItem();
+			    						
+			    						for (ItemDTO itemDTO : imgItems) {
+			    							fiDto.setContentid(contentid);
+			    				        	fiDto.setSerialnum(itemDTO.getSerialnum());
+			    				            fiDto.setOriginimgurl(itemDTO.getOriginimgurl());
+			    				            fiDto.setSmallimageurl(itemDTO.getSmallimageurl());
+			    				            
+			    				            int result = festivalService.searchImg(fiDto.getSerialnum());
+			    				            log.info("result searchImg----" + result);
+			    				            if (result == 0) {
+			    				            	log.info("insertImg---------");
+			    				            	festivalService.insertImg(fiDto);
+			    							} else {
+			    								log.info("업데이트된 이미지 없음------------");
+			    							}
+			    				        }
+			    					}
+									log.info("단건 등록 완료--------------------");	
+								}
 							}
-	                    }
-	                }
-
-	                pageNo++;
-
-	                if (sfItems.isEmpty() || sfItems.size() < numOfRows) {
-	                	log.info("완료-----------");
-	                    break;
-	                }
+					}
+					
+					pageNo++;
+					
+					if (itemDto.isEmpty() || itemDto.size() < numOfRows) {
+						log.info("itemDto :" + itemDto);
+						log.info("완료-----------");
+						break;
+					}
 				} catch (JsonSyntaxException e) {
 					log.info("items = null----------------------");
-					log.info("sfUrlBuilder--------" + sfUrlBuilder);
 					log.info("완료-----------");
 					e.printStackTrace();
 					break;
 				}
-	        }
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
+			}
+		} catch (UnsupportedEncodingException e) {
+			log.error("Error encoding service key", e);
+		} catch (Exception e) {
+			log.error("Error making API call", e);
+		}
 	}
-	
-	private String buildUrl(String apiName, Object... params) throws UnsupportedEncodingException {
-	    StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/B551011/KorService1/");
-	    urlBuilder.append(apiName);
-	    urlBuilder.append("?" + URLEncoder.encode("ServiceKey", "UTF-8") + "=" + API_KEY);
-	    urlBuilder.append("&" + URLEncoder.encode("_type", "UTF-8") + "=json");
-	    urlBuilder.append("&" + URLEncoder.encode("numOfRows", "UTF-8") + "=50");
-	    urlBuilder.append("&" + URLEncoder.encode("MobileOS", "UTF-8") + "=ETC");
-        urlBuilder.append("&" + URLEncoder.encode("MobileApp", "UTF-8") + "=TheFesta");
-
-	    switch (apiName) {
-	        case "searchFestival1":
-	            urlBuilder.append("&" + URLEncoder.encode("eventStartDate", "UTF-8") + "=" + EVENT_START_DATE);
-	            urlBuilder.append("&" + URLEncoder.encode("eventEndDate", "UTF-8") + "=" + EVENT_END_DATE);
-	            urlBuilder.append("&" + URLEncoder.encode("listYN", "UTF-8") + "=Y");
-	            urlBuilder.append("&" + URLEncoder.encode("arrange", "UTF-8") + "=C");
-	            urlBuilder.append("&" + URLEncoder.encode("pageNo", "UTF-8") + "=" + params[0]);
-	            break;
-	        case "detailCommon1":
-	        	urlBuilder.append("&" + URLEncoder.encode("pageNo", "UTF-8") + "=1");
-	        	urlBuilder.append("&" + URLEncoder.encode("contentId", "UTF-8") + "=" + params[0]);
-	        	urlBuilder.append("&" + URLEncoder.encode("defaultYN", "UTF-8") + "=Y");
-	        	urlBuilder.append("&" + URLEncoder.encode("firstImageYN", "UTF-8") + "=Y");
-	        	urlBuilder.append("&" + URLEncoder.encode("areacodeYN", "UTF-8") + "=Y");
-	        	urlBuilder.append("&" + URLEncoder.encode("addrinfoYN", "UTF-8") + "=Y");
-	        	urlBuilder.append("&" + URLEncoder.encode("mapinfoYN", "UTF-8") + "=Y");
-	        	urlBuilder.append("&" + URLEncoder.encode("overviewYN", "UTF-8") + "=Y");
-	        	break;
-	        case "detailIntro1":
-	        case "detailInfo1":
-	        	urlBuilder.append("&" + URLEncoder.encode("pageNo", "UTF-8") + "=1");
-	        	urlBuilder.append("&" + URLEncoder.encode("contentId", "UTF-8") + "=" + params[0]);
-	        	urlBuilder.append("&" + URLEncoder.encode("contentTypeId", "UTF-8") + "=15");
-	        	break;
-	        case "detailImage1":
-	            urlBuilder.append("&" + URLEncoder.encode("pageNo", "UTF-8") + "=1");
-	            urlBuilder.append("&" + URLEncoder.encode("contentId", "UTF-8") + "=" + params[0]);
-	            urlBuilder.append("&" + URLEncoder.encode("imageYN", "UTF-8") + "=Y");
-	            urlBuilder.append("&" + URLEncoder.encode("subImageYN", "UTF-8") + "=Y");
-	            break;
-	    }
-
-	    return urlBuilder.toString();
-	}
-
-	private String callAPI(String url) throws IOException {
-	    HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-	    
-	    // 연결 시간 초과 및 읽기 시간 초과 설정 (예: 10초)
-	    int timeout = 10000; // 10초
-	    connection.setConnectTimeout(timeout);
-	    connection.setReadTimeout(timeout);
-	    
-	    try (
-    		BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-	        StringBuilder resultBuilder = new StringBuilder();
-	        String line;
-	        while ((line = reader.readLine()) != null) {
-	            resultBuilder.append(line);
-	        }
-	        return resultBuilder.toString();
-	    } finally {
-	        connection.disconnect();
-	    }
-	}
-	
-	private FestivalDTO setSearchFestival(SearchFestivalItemDTO itemDTO) {
-		FestivalDTO fDto = new FestivalDTO();
-	    fDto.setContentid(itemDTO.getContentid());
-	    fDto.setTitle(itemDTO.getTitle());
-	    fDto.setEventstartdate(itemDTO.getEventstartdate());
-	    fDto.setEventenddate(itemDTO.getEventenddate());
-	    fDto.setAddr1(itemDTO.getAddr1());
-	    fDto.setFirstimage(itemDTO.getFirstimage());
-	    fDto.setFirstimage2(itemDTO.getFirstimage2());
-	    fDto.setAcode(Integer.parseInt(itemDTO.getAreacode()));
-	    fDto.setScode(Integer.parseInt(itemDTO.getSigungucode()));
-	    fDto.setMapx(Double.parseDouble(itemDTO.getMapx()));
-	    fDto.setMapy(Double.parseDouble(itemDTO.getMapy()));
-	    return fDto;
-	}
-
-	private void setDetailCommon(FestivalDTO fDto, Gson gson, String dcResult) {
-	    try {
-	        DetailCommonDTO dcResponse = gson.fromJson(dcResult, DetailCommonDTO.class);
-	        List<DetailCommonItemDTO> dcItems = dcResponse.getResponse().getBody().getItems().getItem();
-	        
-	        for (DetailCommonItemDTO detailCommonItemDTO : dcItems) {
-	            fDto.setHomepage(detailCommonItemDTO.getHomepage());
-	        }
-	    } catch (JsonSyntaxException e) {
-	        // JSON 파싱 오류가 발생하면 빈 객체로 유지
-	        fDto.setHomepage(null);
-	        e.printStackTrace();
-	    }
-	}
-
-	private void setDetailIntro(FestivalDTO fDto, Gson gson, String diResult) {
-	    try {
-	        DetailIntroDTO diResponse = gson.fromJson(diResult, DetailIntroDTO.class);
-	        List<DetailIntroItemDTO> diItems = diResponse.getResponse().getBody().getItems().getItem();
-
-	        for (DetailIntroItemDTO detailIntroItemDTO : diItems) {
-	            fDto.setAgelimit(detailIntroItemDTO.getAgelimit());
-	            fDto.setSponsor1(detailIntroItemDTO.getSponsor1());
-	            fDto.setSponsor1tel(detailIntroItemDTO.getSponsor1tel());
-	            fDto.setSponsor2(detailIntroItemDTO.getSponsor2());
-	            fDto.setSponsor2tel(detailIntroItemDTO.getSponsor2tel());
-	            fDto.setUsetimefestival(detailIntroItemDTO.getUsetimefestival());
-	            fDto.setPlaytime(detailIntroItemDTO.getPlaytime());
-	        }
-	    } catch (JsonSyntaxException e) {
-	        // JSON 파싱 오류가 발생하면 빈 객체로 유지
-	        fDto.setAgelimit(null);
-	        fDto.setSponsor1(null);
-	        fDto.setSponsor1tel(null);
-	        fDto.setSponsor2(null);
-	        fDto.setSponsor2tel(null);
-	        fDto.setUsetimefestival(null);
-	        fDto.setPlaytime(null);
-	        e.printStackTrace();
-	    }
-	}
-
-	private void setDetailInfo(FestivalDTO fDto, Gson gson, String difResult) {
-	    try {
-	        DetailInfoDTO difResponse = gson.fromJson(difResult, DetailInfoDTO.class);
-	        List<DetailInfoItemDTO> difItems = difResponse.getResponse().getBody().getItems().getItem();
-
-	        for (DetailInfoItemDTO detailInfoItemDTO : difItems) {
-	            if (detailInfoItemDTO.getInfoname().equals("행사소개")) {
-	                fDto.setEventintro(detailInfoItemDTO.getInfotext());
-	            } else if (detailInfoItemDTO.getInfoname().equals("행사내용")) {
-	                fDto.setEventtext(detailInfoItemDTO.getInfotext());
-	            } else {
-	                fDto.setEventtext(null);
-	            }
-	        }
-	    } catch (JsonSyntaxException e) {
-	        // JSON 파싱 오류가 발생하면 빈 객체로 유지
-	        fDto.setEventintro(null);
-	        fDto.setEventtext(null);
-	        e.printStackTrace();
-	    }
-	}
-
-	private void setDetailImage(FestivalImageDTO fiDto, Gson gson, String dimgResult) throws Exception {
-	    try {
-	        DetailImageDTO dimgResponse = gson.fromJson(dimgResult, DetailImageDTO.class);
-	        List<DetailImageItemDTO> dimgItems = dimgResponse.getResponse().getBody().getItems().getItem();
-	        
-	        for (DetailImageItemDTO detailImageItemDTO : dimgItems) {
-	        	fiDto.setSerialnum(detailImageItemDTO.getSerialnum());
-	            fiDto.setOriginimgurl(detailImageItemDTO.getOriginimgurl());
-	            fiDto.setSmallimageurl(detailImageItemDTO.getSmallimageurl());
-	            
-	            int result = festivalService.searchImg(fiDto.getSerialnum());
-	            if (result == 0) {
-	            	log.info("insertImg---------");
-	            	festivalService.insertImg(fiDto);
-				} else {
-					log.info("업데이트된 이미지 없음------------");
-				}
-	        }
-	    } catch (JsonSyntaxException e) {
-	        // JSON 파싱 오류가 발생하면 빈 객체로 유지
-	    	log.info("이미지 없음-------");
-	        e.printStackTrace();
-	    }
-	}
-
-
-
-	
 }

@@ -13,4 +13,6 @@ public class LikeDTO {
 	private int lno;
 	private String contentid;
 	private String id;
+	private String title;
+	private String firstimage;
 }

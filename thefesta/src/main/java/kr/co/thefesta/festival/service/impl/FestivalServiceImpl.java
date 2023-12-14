@@ -11,6 +11,7 @@ import kr.co.thefesta.festival.domain.FestivalDTO;
 import kr.co.thefesta.festival.domain.FestivalImageDTO;
 import kr.co.thefesta.festival.domain.FestivalReplyDTO;
 import kr.co.thefesta.festival.domain.LikeDTO;
+import kr.co.thefesta.festival.domain.api.ItemDTO;
 import kr.co.thefesta.festival.persistence.IFestivalDAO;
 import kr.co.thefesta.festival.service.IFestivalService;
 
@@ -23,7 +24,6 @@ public class FestivalServiceImpl implements IFestivalService {
 	@Override
 	public void insertApi(FestivalDTO fDto) throws Exception {
 		fDao.insertApi(fDto);
-		
 	}
 
 	@Override
@@ -79,6 +79,21 @@ public class FestivalServiceImpl implements IFestivalService {
 	@Override
 	public int searchLike(LikeDTO lDto) throws Exception {
 		return fDao.searchLike(lDto);
+	}
+
+	@Override
+	public List<FestivalDTO> getList(String keyword, int today) throws Exception {
+		return fDao.getList(keyword, today);
+	}
+
+	@Override
+	public List<LikeDTO> LikeList(Criteria cri, String id) throws Exception {
+		return fDao.LikeList(cri, id);
+	}
+
+	@Override
+	public int getCountByLike(String id) {
+		return fDao.getCountByLike(id);
 	}
 
 }

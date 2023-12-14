@@ -1,5 +1,7 @@
 package kr.co.thefesta.festival;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +23,7 @@ import kr.co.thefesta.festival.domain.AreaCodeDTO;
 import kr.co.thefesta.festival.domain.Criteria;
 import kr.co.thefesta.festival.domain.FestivalDTO;
 import kr.co.thefesta.festival.domain.FestivalImageDTO;
+import kr.co.thefesta.festival.domain.FestivalReplyDTO;
 import kr.co.thefesta.festival.domain.LikeDTO;
 import kr.co.thefesta.festival.domain.PageDTO;
 import kr.co.thefesta.festival.service.IFestivalService;
@@ -61,6 +64,24 @@ public class FestivalController {
 		}
 	}
 	
+	@GetMapping("/listAll")
+	public ResponseEntity<List<FestivalDTO>> getList(@RequestParam String keyword) throws Exception {
+		log.info("show festival list..................");
+		
+		int today = Integer.parseInt(LocalDate.now().format(DateTimeFormatter.ofPattern("YYYYMMdd")));
+		log.info("today : " + today);
+		
+		try {
+			log.info("keyword----" + keyword);
+			List<FestivalDTO> fList = service.getList(keyword, today);
+			log.info("fList----" + fList);
+			
+			return new ResponseEntity<>(fList, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
 	@GetMapping("/detail/{contentid}")
 	public ResponseEntity<?> getFesivalDetail(@PathVariable String contentid) throws Exception {
 		log.info("getFesivalDetail-------------------");
@@ -69,7 +90,7 @@ public class FestivalController {
 		try {
 			List<FestivalImageDTO> fiList = service.getImg(contentid);
 			
-			log.info(fiList);
+			log.info("fiList : " + fiList);
 			
 			return new ResponseEntity<>(fiList, HttpStatus.OK);
 		} catch (Exception e) {
@@ -126,5 +147,25 @@ public class FestivalController {
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 			
+	}
+	
+	@GetMapping(value = "/likeList")
+	public ResponseEntity<Map<String, Object>> getLikeList(@RequestParam(defaultValue = "1") int page, @RequestParam String id) throws Exception {
+		log.info("getList-------------------");
+		Map<String, Object> response = new HashMap<>();
+		
+		Criteria cri = new Criteria(page, 10);
+		
+		List<LikeDTO> lList = service.LikeList(cri, id);
+		int total = service.getCountByLike(id);
+		
+		response.put("list", lList);
+		response.put("pageMaker", new PageDTO(cri, total));
+		
+		log.info("cri : " + cri);
+		log.info("frList : " + lList);
+		log.info("total : " + total);
+		
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 }

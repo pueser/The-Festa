@@ -3,6 +3,7 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
  <mapper namespace="FestivalMapper">
+ 	<!-- 축제 -->
  	<insert id="insertApi">
  		INSERT INTO festa(contentid, title, eventstartdate, eventenddate, addr1, eventintro, eventtext, homepage, agelimit, sponsor1, sponsor1tel, sponsor2, sponsor2tel, usetimefestival, playtime, firstimage, firstimage2, acode, scode, mapx, mapy) 
 		VALUES(#{contentid}, #{title}, #{eventstartdate}, #{eventenddate}, #{addr1, jdbcType=VARCHAR}, #{eventintro, jdbcType=VARCHAR}, #{eventtext, jdbcType=VARCHAR}, #{homepage, jdbcType=VARCHAR}, #{agelimit, jdbcType=VARCHAR}, #{sponsor1, jdbcType=VARCHAR}, #{sponsor1tel, jdbcType=VARCHAR}, #{sponsor2, jdbcType=VARCHAR}, #{sponsor2tel, jdbcType=VARCHAR}, #{usetimefestival, jdbcType=VARCHAR}, #{playtime, jdbcType=VARCHAR}, #{firstimage, jdbcType=VARCHAR}, #{firstimage2, jdbcType=VARCHAR}, #{acode, jdbcType=INTEGER}, #{scode, jdbcType=INTEGER}, #{mapx, jdbcType=DOUBLE}, #{mapy, jdbcType=DOUBLE})
@@ -17,16 +18,6 @@
  		SELECT *
 		FROM festa_image
 		WHERE contentid = #{contentid}
- 	</select>
- 	
- 	<insert id="insertAreaCode">
- 		INSERT INTO festa_area(ano, acode, aname, scode, sname)
- 		VALUES(seq_ano.nextval, #{acode}, #{aname}, #{scode}, #{sname})
- 	</insert>
- 	
- 	<select id="getAreaCode" resultType="kr.co.thefesta.festival.domain.AreaCodeDTO">
- 		SELECT *
-		FROM festa_area
  	</select>
  	
  	<sql id="criteria">
@@ -57,6 +48,16 @@
 					rownum <= #{pageNum} * #{amount}
 				 )
 			WHERE rn > (#{pageNum}-1)*#{amount}
+		]]>
+	</select>
+	
+ 	<select id="getList" resultType="kr.co.thefesta.festival.domain.FestivalDTO">
+		SELECT *
+		FROM festa
+		WHERE title LIKE '%' || #{keyword, jdbcType=VARCHAR} || '%'
+		<![CDATA[
+		AND eventstartdate <= #{today}
+		AND eventenddate >= #{today}
 		]]>
 	</select>
 	
@@ -105,7 +106,25 @@
 		FROM dual
 	</select>
 	
-	<select id="searchLike" resultType="int">
+	<!-- 지역코드 -->
+ 	<insert id="insertAreaCode">
+ 		INSERT INTO festa_area(ano, acode, aname, scode, sname)
+ 		VALUES(seq_ano.nextval, #{acode}, #{aname}, #{scode}, #{sname})
+ 	</insert>
+ 	
+ 	<select id="getAreaCode" resultType="kr.co.thefesta.festival.domain.AreaCodeDTO">
+ 		SELECT *
+		FROM festa_area
+ 	</select>
+	
+	<!-- 좋아요 -->
+	<select id="getCountByLike" resultType="int">
+		SELECT count(*)
+		FROM festa_like
+		WHERE id = #{id}
+	</select>
+	
+	<select id="getCountByUserLike" resultType="int">
 		SELECT count(*)
 		FROM festa_like
 		WHERE id = #{id}
@@ -126,4 +145,26 @@
 		WHERE id=#{id}
 		AND contentid = #{contentid}
 	</delete>
+	
+	<select id="getLikeListWithPaging" resultType="kr.co.thefesta.festival.domain.LikeDTO">
+ 		<![CDATA[ 
+ 			SELECT lno, 
+		   		   contentid, 
+		   		   id,
+		   		   title,
+       			   firstimage
+ 			FROM (SELECT rownum rn, 
+ 				         fl.lno, 
+ 				   		 fl.contentid, 
+ 				   		 fl.id,
+ 				   		 f.firstimage,
+ 				   		 f.title
+ 				  FROM festa_like fl, festa f 
+ 				  WHERE id = #{id} 
+ 				  AND fl.contentid = f.contentid
+ 				  AND lno > 0 
+ 				  AND rownum <= #{cri.pageNum} * #{cri.amount}) 
+ 			WHERE rn > (#{cri.pageNum} -1) * #{cri.amount} 
+ 		]]> 
+ 	</select>
  </mapper>

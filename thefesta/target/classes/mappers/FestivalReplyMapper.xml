@@ -16,17 +16,21 @@
  				   nickname, 
  				   frcontent, 
  				   frregist, 
- 				   fredit
+ 				   fredit,
+       			   profileimg
  			FROM (SELECT rownum rn, 
- 				         frno, 
- 				   		 contentid, 
- 				   		 id, 
- 				   		 nickname, 
- 				   		 frcontent, 
- 				   		 frregist, 
- 				   		 fredit
- 				  FROM festa_reply 
+ 				         f.frno, 
+ 				   		 f.contentid, 
+ 				   		 f.id, 
+ 				   		 f.nickname, 
+ 				   		 f.frcontent, 
+ 				   		 f.frregist, 
+ 				   		 f.fredit,
+             			 m.profileimg
+ 				  FROM festa_reply f,
+           			   member m 
  				  WHERE contentid = #{contentid} 
+ 				  AND f.id = m.id
  				  AND frno > 0 
  				  AND rownum <= #{cri.pageNum} * #{cri.amount}) 
  			WHERE rn > (#{cri.pageNum} -1) * #{cri.amount} 
@@ -43,13 +47,12 @@
  	
  	<update id="updateReply">
 		UPDATE festa_reply
-		SET frcontent = #{frcontent}
+		SET frcontent = #{frcontent}, fredit = sysdate
 		WHERE frno = #{frno}
 	</update>
 	
 	<delete id="deleteReply">
 		DELETE FROM festa_reply
-		WHERE id = #{id}
-		AND frno = #{frno}
+		WHERE frno = #{frno}
 	</delete>
  </mapper>
