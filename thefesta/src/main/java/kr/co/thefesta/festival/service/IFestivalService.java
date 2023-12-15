@@ -26,4 +26,5 @@ public interface IFestivalService {
 	public int searchImg(String serialnum) throws Exception;
 	public List<AreaCodeDTO> getAreaCode() throws Exception;
 	public List<FestivalImageDTO> getImg(String contentid) throws Exception;
+	public FestivalDTO getFestival(String contentid) throws Exception;
 }

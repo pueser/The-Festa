@@ -96,4 +96,9 @@ public class FestivalServiceImpl implements IFestivalService {
 		return fDao.getCountByLike(id);
 	}
 
+	@Override
+	public FestivalDTO getFestival(String contentid) throws Exception {
+		return fDao.getFestival(contentid);
+	}
+
 }

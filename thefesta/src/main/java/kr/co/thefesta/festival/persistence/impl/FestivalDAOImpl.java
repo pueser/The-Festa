@@ -104,4 +104,9 @@ public class FestivalDAOImpl implements IFestivalDAO {
 	public int getCountByLike(String id) {
 		return session.selectOne("FestivalMapper.getCountByLike", id);
 	}
+
+	@Override
+	public FestivalDTO getFestival(String contentid) throws Exception {
+		return session.selectOne("FestivalMapper.getFestival", contentid);
+	}
 }

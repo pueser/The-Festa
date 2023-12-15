@@ -20,6 +20,12 @@
 		WHERE contentid = #{contentid}
  	</select>
  	
+ 	<select id="getFestival" resultType="kr.co.thefesta.festival.domain.FestivalDTO">
+ 		SELECT *
+		FROM festa
+		WHERE contentid = #{contentid}
+ 	</select>
+ 	
  	<sql id="criteria">
 	    <trim prefix="(" suffix=") AND " prefixOverrides="OR">
 	        <choose>

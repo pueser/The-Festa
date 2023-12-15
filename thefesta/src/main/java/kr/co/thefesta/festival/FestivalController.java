@@ -83,18 +83,26 @@ public class FestivalController {
 	}
 	
 	@GetMapping("/detail/{contentid}")
-	public ResponseEntity<?> getFesivalDetail(@PathVariable String contentid) throws Exception {
+	public ResponseEntity<Map<String, Object>> getFesivalDetail(@PathVariable String contentid) throws Exception {
 		log.info("getFesivalDetail-------------------");
 		log.info("contentid : " + contentid);
 		
+		Map<String, Object> response = new HashMap<>();
+		
 		try {
 			List<FestivalImageDTO> fiList = service.getImg(contentid);
+			FestivalDTO fDto = service.getFestival(contentid);
+			
+			response.put("fiList", fiList);
+			response.put("fDto", fDto);
 			
 			log.info("fiList : " + fiList);
+			log.info("fDto : " + fDto);
 			
-			return new ResponseEntity<>(fiList, HttpStatus.OK);
+			return new ResponseEntity<>(response, HttpStatus.OK);
 		} catch (Exception e) {
-			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			response.put("error", e.getMessage());
+			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	
