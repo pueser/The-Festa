@@ -55,4 +55,9 @@ public class BoardDAOImpl implements IBoardDAO {
 		session.update("BoardMapper.increaseViewCnt", bid);
 		
 	}
+	
+	@Override
+	public List<BoardDTO> listGet() throws Exception {
+		return session.selectList("BoardMapper.listGet");
+	}
 }

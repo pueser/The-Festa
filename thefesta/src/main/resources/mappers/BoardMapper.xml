@@ -6,8 +6,8 @@
   
 <mapper namespace="BoardMapper">
    <insert id="create">
-      INSERT INTO board(bid, nickname, btitle, bcontent, id)
-      VALUES(seq_bid.nextval, #{nickname}, #{btitle}, #{bcontent}, #{id})
+      INSERT INTO board(bno, bid, nickname, btitle, bcontent, id)
+      VALUES(#{bno}, seq_bid.nextval, #{nickname}, #{btitle}, #{bcontent}, #{id})
       <selectKey keyProperty="bid" resultType="int" order="AFTER">
          SELECT seq_bid.currval 
          FROM dual
@@ -115,5 +115,12 @@
         SET bviewcnt = bviewcnt + 1
         WHERE bid = #{bid}
     </update>
-   
+    
+    <select id="listGet" resultType="kr.co.thefesta.board.domain.BoardDTO">
+      SELECT *
+      FROM board
+      WHERE bid > 0 AND bstatecode = 'Y'
+      ORDER BY bid DESC
+   </select>
+  
 </mapper>

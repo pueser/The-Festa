@@ -54,5 +54,11 @@ public class ReplyServiceImpl implements IReplyService {
 		return ReplyMapper.replyCntUpdate(bid);
 	}
 
+	@Override
+	public List<ReplyDTO> listAll() {
+		log.info("reply listAll..........");
+		return ReplyMapper.listAll();
+	}
+
 }
 

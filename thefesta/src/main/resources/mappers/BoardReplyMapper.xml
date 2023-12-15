@@ -26,7 +26,7 @@
 	
 	<update id="update">
 		UPDATE board_reply
-		SET brcontent = #{brcontent} brregist = sysdate
+		SET brcontent = #{brcontent}, brregist = sysdate
 		WHERE brno = #{brno}
 	</update>
 	
@@ -48,5 +48,10 @@
 						WHERE bd.bid = br.bid)
 		WHERE bd.bid = #{bid}
 	</update>
+	<select id="listAll" resultType="kr.co.thefesta.board.domain.ReplyDTO">
+		SELECT *
+		FROM board_reply
+		ORDER BY brno ASC
+	</select>
 </mapper>
   

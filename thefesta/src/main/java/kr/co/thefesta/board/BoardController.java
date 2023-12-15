@@ -103,4 +103,14 @@ public class BoardController {
             return new ResponseEntity<>("Failed to increase view count", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
+    @RequestMapping(value = "/listGet", method = RequestMethod.GET)
+    public ResponseEntity<Map<String, Object>> listGet() throws Exception {
+        log.info("listGet.................");
+        Map<String, Object> result = new HashMap<>();
+        result.put("list", service.listGet());       
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+    
 }

@@ -67,4 +67,9 @@ public class BoardServiceImpl implements IBoardService {
 		
 	}
 
+	@Override
+	public List<BoardDTO> listGet() throws Exception {
+		return bDao.listGet();
+	}
+
 }
