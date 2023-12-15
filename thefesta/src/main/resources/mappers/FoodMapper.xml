@@ -29,16 +29,30 @@
         WHERE f.contentid = #{contentid}
   	</select>
   	
-  	<select id="select" resultType="kr.co.thefesta.food.domain.RecommendDTO">
+  	<select id="recommend" resultType="kr.co.thefesta.food.domain.RecommendDTO">
   		SELECT fd.contentid,
   			   fd.title,
 		       fd.firstimage2,
 		       fd.addr1,
+		       fd.cat3,
 		       (SELECT COUNT(*) FROM food_like WHERE contentid = fd.contentid) AS likeCnt		       
 		FROM food fd JOIN festa f
 		ON fd.areacode = f.acode AND fd.sigungucode = f.scode
 		WHERE f.contentid = #{contentid}
 		ORDER BY likeCnt DESC
+  	</select>
+  	
+  	<select id="recommendUser" resultType="kr.co.thefesta.food.domain.RecommendDTO">
+  		SELECT fd.contentid,
+       		   fd.title,
+               fd.firstimage2,
+               fd.addr1,
+               fd.cat3,
+               (SELECT COUNT(*) FROM food_like WHERE contentid = fd.contentid) AS likeCnt
+        FROM food fd
+        JOIN festa f ON fd.areacode = f.acode AND fd.sigungucode = f.scode 
+        WHERE f.contentid = #{contentid}
+        ORDER BY (SELECT COUNT(*) FROM food_like WHERE cat3 = fd.cat3 AND id = #{id}) DESC, likeCnt DESC
   	</select>
   	
   	<select id="read" resultType="kr.co.thefesta.food.domain.ItemDTO">

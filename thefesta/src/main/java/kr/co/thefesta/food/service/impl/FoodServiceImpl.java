@@ -10,6 +10,7 @@ import kr.co.thefesta.food.domain.AreacodeDTO;
 import kr.co.thefesta.food.domain.ItemDTO;
 import kr.co.thefesta.food.domain.LikeDTO;
 import kr.co.thefesta.food.domain.RecommendDTO;
+import kr.co.thefesta.food.domain.UserDTO;
 import kr.co.thefesta.food.persistence.IFoodDAO;
 import kr.co.thefesta.food.service.IFoodService;
 import lombok.extern.log4j.Log4j;
@@ -42,6 +43,13 @@ public class FoodServiceImpl implements IFoodService {
 //		log.info("listAll data : " + itemDto);
 		return recDto;
 	}
+	
+	@Override
+	public List<RecommendDTO> listAllUser(UserDTO userDto) throws Exception {
+		List<RecommendDTO> recDto = fDao.listAllUser(userDto);
+		return recDto;
+	}
+	
 
 	@Override
 	public ItemDTO read(String contentid) throws Exception {
