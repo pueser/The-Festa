@@ -1,0 +1,258 @@
+@charset "UTF-8";
+*{
+	padding: 0;
+	margin: 0;
+}
+html{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100vh;
+}
+body{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width:100%;
+	height: 100%;
+}
+button{
+	background: none;
+	border: none;
+	cursor: pointer;
+}
+.schedulerBox{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	height: 80%;
+	width: 100%
+}
+#filterLine{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	width: 100%;
+	height: 10%;
+}
+#selectLine{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: row;
+	width: 100%;
+	height: 50%;
+}
+.selectMenu{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 50%;
+}
+.selectOptions{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	text-align: center;
+	font-size: 3vh;
+}
+#searchLine{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 50%;
+}
+#searchBox{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 85%;
+	font-size: 3vh;
+}
+#searchBtn{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 15%;
+	height: 100%;
+	font-size: 2vh;
+	color: white;
+	background: #002ead;
+}
+#searchBox::placeholder{
+	text-align: center;
+}
+.scheduler{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	width: 100%;
+	height: 90%
+}
+.control{
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-direction: row;
+	width: 90%;
+	height: 10%;
+}
+.control button{
+	font-size: 3vh;
+}
+#selectMomentBtn{
+	width: 80%;
+}
+#schedulerCalendar{
+	width: 100%;
+	height: 80%;
+	font-size: 2vh;
+}
+#schedulerCalendar thead td{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 14%;
+	height: 16%;
+}
+#schedulerCalendar tr{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: 16%;
+}
+#schedulerCalendar td{
+	display: flex;
+	justify-content: flex-start;
+	align-items: flex-start;
+	width: 14%;
+	height: 100%;
+	position: relative;
+	outline: 1px black solid;
+}
+.dayDateText{
+	margin: 5%;
+}
+#festaCnt{
+	position: absolute;
+	left: 20%;
+	top: 2.1875vh;
+	width: 60%;
+	aspect-ratio: auto 1 / 1;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background: #FFFF00;
+	border-radius: 50%;
+	box-shadow: 0 0.3125vh 0 0.09375vh rgba(50, 50, 93, 0.25), 0 0.15625vh 0 0.0625vh rgba(0, 0, 0, 0.3), 0 0.03125vh 0 0.03125vh rgba(0, 0, 0, 0.25);
+}
+#festaCnt:active{
+	position: absolute;
+	left: 20%;
+	top: 2.5vh;
+	width: 60%;
+	aspect-ratio: auto 1 / 1;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background: #FFFF00;
+	border-radius: 50%;
+	box-shadow: none;
+}
+#document{
+	display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+    width: 90%;
+    height: 10%;
+}
+#document span{
+	font-size: 2vh;
+}
+.yearModalBack{
+	display: none;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+}
+#yearModal{
+	display: flex;
+/* 	align-items: center; */
+	justify-content: center;
+	width: 100%;
+	overflow: scroll;
+}
+#yearModal::-webkit-scrollbar{
+  display:none;
+}
+#yearModalSelectBox{
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	list-style: none;
+	width: 100%;
+}
+.year{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	background-color: #50bcdf4D;
+}
+.year button{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 10vw;
+}
+#selectYear{
+	background-color: #50bcdf;
+}
+#selectYear button{
+	font-size: 12vw;
+}
+.monthModalBack{
+	display: none;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+}
+#monthModal{
+	display: flex;
+	width: 100%;
+	overflow: scroll;
+}
+#monthModal::-webkit-scrollbar{
+/*   display:none; */
+}
+#monthModalSelectBox{
+	display: flex;
+	align-items: center;
+/* 	justify-content: center; */
+	flex-direction: column;
+	width: 100%;
+	list-style: none;
+}
+.month{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	background-color: #50bcdf4D;
+}
+.monthBtn{
+	font-size: 10vw;
+}
+#selectMonth{
+	background-color: #50bcdf;
+}
+#selectMonthBtn{
+	font-size: 12vw;
+}
