@@ -6,7 +6,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Scheduler</title>
-<link rel="stylesheet" href="../resources/css/scheduler.css">
+<link rel="stylesheet" href="../resources/css/Scheduler.css">
 </head>
 <body>
 	<script
@@ -57,6 +57,9 @@
 				const county = this.value;
 				var countyValue = county;
 				$("#countyValue").val(countyValue);
+				if (county == "0") {
+					$("#districtOptions").val("0");
+				}
 				var keyword = $("#keyword").val();
 				calendar(countyValue, districtValue, keyword);
 				$.ajax({
@@ -272,19 +275,19 @@
 	                	if(moment().format('YYYYMMDD') === days.format('YYYYMMDD')){
 		                	daysDom += "<td class='dayBlock' id='todayBlock' >";
 		                	daysDom += "<span class='dayDateText' style='color:"+textColor+"'>"+days.format('D')+"</span>";
-		                	daysDom += "<div id='festaCnt' style='background:gray;box-shadow:none;top:2.5vh;'>"+dateFestaCnt+"</div>"
+		                	daysDom += "<button id='festaCnt' style='background:gray;box-shadow:none;top:2.5vh;' disabled>"+dateFestaCnt+"</button>"
 		                	daysDom += "</td>";
 		                }
 		                else if(days.format('MM') !== today.format('MM')){
 		                	daysDom += "<td class='dayBlock' id='notNowMonth' >";
 		                	daysDom += "<span class='dayDateText' style='color:"+textColor+"'>"+days.format('D')+"</span>";
-		                	daysDom += "<div id='festaCnt' style='background:gray;box-shadow:none;top:2.5vh;'>"+dateFestaCnt+"</div>"
+		                	daysDom += "<button id='festaCnt' style='background:gray;box-shadow:none;top:2.5vh;' disabled>"+dateFestaCnt+"</button>"
 		                	daysDom += "</td>";
 		                }
 		                else{
 		                	daysDom += "<td class='dayBlock'>";
 		                	daysDom += "<span class='dayDateText' style='color:"+textColor+"'>"+days.format('D')+"</span>";
-		                	daysDom += "<div id='festaCnt' style='background:gray;box-shadow:none;top:2.5vh;'>"+dateFestaCnt+"</div>"
+		                	daysDom += "<button id='festaCnt' style='background:gray;box-shadow:none;top:2.5vh;' disabled>"+dateFestaCnt+"</button>"
 		                	daysDom += "</td>";
 		                }
 					}
@@ -292,19 +295,19 @@
 	                	if(moment().format('YYYYMMDD') === days.format('YYYYMMDD')){
 		                	daysDom += "<td class='dayBlock' id='todayBlock' >";
 		                	daysDom += "<span class='dayDateText' style='color:"+textColor+"'>"+days.format('D')+"</span>";
-		                	daysDom += "<div id='festaCnt'>"+dateFestaCnt+"</div>"
+		                	daysDom += "<button id='festaCnt' value='"+days.format('YYYYMMDD')+"'>"+dateFestaCnt+"</button>"
 		                	daysDom += "</td>";
 		                }
 		                else if(days.format('MM') !== today.format('MM')){
 		                	daysDom += "<td class='dayBlock' id='notNowMonth' >";
 		                	daysDom += "<span class='dayDateText' style='color:"+textColor+"'>"+days.format('D')+"</span>";
-		                	daysDom += "<div id='festaCnt'>"+dateFestaCnt+"</div>"
+		                	daysDom += "<button id='festaCnt' value='"+days.format('YYYYMMDD')+"'>"+dateFestaCnt+"</button>"
 		                	daysDom += "</td>";
 		                }
 		                else{
 		                	daysDom += "<td class='dayBlock'>";
 		                	daysDom += "<span class='dayDateText' style='color:"+textColor+"'>"+days.format('D')+"</span>";
-		                	daysDom += "<div id='festaCnt'>"+dateFestaCnt+"</div>"
+		                	daysDom += "<button id='festaCnt' value='"+days.format('YYYYMMDD')+"'>"+dateFestaCnt+"</button>"
 		                	daysDom += "</td>";
 		                }
 	                }
@@ -443,6 +446,63 @@
     		const monthModal = document.querySelector('#monthModal');
     		monthModal.scrollTop=parseInt(offset);
 		}
+		
+		// 축제 리스트 모달 생성
+		$(document).on("click", "#festaCnt", function(){
+			$("#festaListBox").empty();
+// 			alert(this.value);
+			var date = this.value;
+			var countyValue = $("#countyValue").val();
+    		var districtValue = $("#districtValue").val();
+    		var keyword = $("#keyword").val();
+			console.log(festaList(date, countyValue, districtValue, keyword));
+			var festaData = festaList(date, countyValue, districtValue, keyword);
+			var festaDom = "";
+			for (var i = 0; i < festaData.length; i++) {
+				if (festaData[i].eventstartdate == date) {
+					festaDom += "<li class='festaList'><div style='display:inline-block;width:100%;overflow:hidden; white-space:nowrap;'>○"+festaData[i].title+"</div></li>";
+				}
+				else if (festaData[i].eventenddate == date) {
+					festaDom += "<li class='festaList'><div style='display:inline-block;width:100%;overflow:hidden; white-space:nowrap;'>□"+festaData[i].title+"</div></li>";
+					
+				}
+				else{
+					festaDom += "<li class='festaList'><div style='display:inline-block;width:100%;overflow:hidden; white-space:nowrap;'>☆"+festaData[i].title+"</div></li>";
+				}
+			}
+			$("#festaListBox").append(festaDom);
+			$(".schedulerBox").css('display', 'none');
+			$("#festaListModalBack").css('display', 'flex');
+		})
+		
+		function festaList(date, countyValue, districtValue, keyword){
+			var result;
+			$.ajax({
+		        type:"GET",
+		        url:"festaList",
+		        dataType: "text",
+		        data:{
+		        	"date": date,
+                    "countyValue": countyValue,
+                    "districtValue": districtValue,
+                    "keyword": keyword
+		        	},
+	        	async :false,
+		        success:function(data){
+		        	var responseData = JSON.parse(data)
+		        	result = responseData.festaList;
+		        },
+		        error: function(jqXHR, textStatus, errorThrown) {
+	               if(textStatus=="timeout") {
+	                alert("시간이 초과되어 데이터를 수신하지 못하였습니다.");
+	               } else {
+	                alert("데이터 전송에 실패했습니다. 다시 시도해 주세요");
+	               } 
+    				return false;
+	            }
+		    });
+			return result;
+		}
     </script>
 	<div class="schedulerBox">
 		<div id='filterLine'>
@@ -502,6 +562,12 @@
 	<div class="monthModalBack">
 		<div id="monthModal">
 			<ul id="monthModalSelectBox">
+			</ul>
+		</div>
+	</div>
+	<div id="festaListModalBack">
+		<div id="festaListModal">
+			<ul id="festaListBox">
 			</ul>
 		</div>
 	</div>
