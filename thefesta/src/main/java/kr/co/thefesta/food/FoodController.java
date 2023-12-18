@@ -144,7 +144,7 @@ public class FoodController {
 			String decodeServiceKey2 = "FUZ9ccIzOa33akBnPSF3ULPUdvCk/Cfj7x8/1hXBaStY+b8nVOmDepdDMLhQBp5qMvBSzdGCv/mOFMFAFTKMhA==";
 			String decodeServiceKey3 = "Pl6K060b4TyB9IpUXHlnOQONaTgkdSlRW8yGTnUDedutQ5Y915/K84w7UW4BOae8X7S8FSmZlXrbtQeeaT5Dsw==";
 			String decodeServiceKey4 = "syUAggWKlsXU0flFJw7DH8pKOHZWwazzpJY3fvseFQGLf3IEXKPyBE4/xUHvTZNzBtyaT3ApTkR1HvDEgS5I0A==";
-			String encodeServiceKey = URLEncoder.encode(decodeServiceKey3, "UTF-8");
+			String encodeServiceKey = URLEncoder.encode(decodeServiceKey, "UTF-8");
 
 			// API 호출을 위한 파라미터 설정
 			int pageNo = 1;
@@ -352,52 +352,5 @@ public class FoodController {
 		log.info("DB 저장 완료");
 		return CompletableFuture.completedFuture(null);
 	}
-
-//	spring으로만 했을 때
-
-//	음식점 전체 목록
-//	@RequestMapping(value = "/list", method = RequestMethod.GET)
-//	public void listAll() throws Exception {
-//		log.info("food list connect.....");
-//
-//		List<ItemDTO> itemDto = service.listAll();
-//		log.info("list's itemDto : " + itemDto);
-//
-//		mav = new ModelAndView("/food/list");
-//		mav.addObject("itemDto", itemDto);
-//
-//		return mav;
-//	}
-
-//	음식점 추천 목록
-//	@RequestMapping(value = "/list", method = RequestMethod.GET)
-//	public ModelAndView selectFesta(ModelAndView mav) throws Exception {
-//		List<FestivalDTO> festaDto = service.selectFestaId();
-//		log.info("festaDto : " + festaDto);
-//		String contentid = festaDto.get(0).getContentid();
-//		log.info(contentid);
-//
-//		List<RecommendDTO> recDto = service.listAll();
-//		log.info("recDto : " + recDto);
-//		AreacodeDTO areaDto = service.selectArea();
-//		log.info("areaDto : " + areaDto);
-//
-//		mav = new ModelAndView("/food/list");
-//		mav.addObject("RecDto", recDto);
-//		mav.addObject("AreaDto", areaDto);
-//
-//		return mav;
-//	}
-
-//	음식점 상세 페이지
-//	@RequestMapping(value = "/detail", method = RequestMethod.GET)
-//	public ModelAndView read(@RequestParam("contentid") String contentid, ModelAndView mav) throws Exception {
-//		log.info("food detail connect.....");
-//
-//		mav = new ModelAndView("/food/detail");
-//		mav.addObject("itemDto", service.read(contentid));
-//
-//		return mav;
-//	}
 
 }
