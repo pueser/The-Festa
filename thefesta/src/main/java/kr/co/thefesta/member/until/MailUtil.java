@@ -7,9 +7,9 @@ import javax.mail.internet.MimeMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.stereotype.Component;
 
-import kr.co.thefesta.member.until.MailUtil;
-
+@Component
 public class MailUtil {
 
 	private static JavaMailSender mailSender;
