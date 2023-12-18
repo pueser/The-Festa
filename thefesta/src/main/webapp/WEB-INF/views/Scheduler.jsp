@@ -73,7 +73,9 @@
 			        success:function(data){
 			        	var responseData = JSON.parse(data)
 		        		var districtList = responseData.districtList;
+			        	$("#districtOptions").empty();
 			        	var districtOptionDom = ""
+		        		districtOptionDom+="<option value='0' selected>전체</option>";
 			        	for (var i = 0; i < districtList.length; i++) {
 			        		districtOptionDom+="<option value="+districtList[i].scode+">"+districtList[i].sname+"</option>";
 						}
