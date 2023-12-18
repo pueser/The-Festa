@@ -96,7 +96,6 @@
 	      statecode = 3,
 	    </if>
 	    <if test="statecode == 4">
-	      nickname = null,
 	      statecode = 4,
 	    </if>
 	  updatedate = sysdate
