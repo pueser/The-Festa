@@ -263,6 +263,7 @@ button{
 	display: none;
 	align-items: center;
 	justify-content: center;
+	flex-direction: column;
 	width: 100%;
 	height: 100%;
 }
@@ -270,15 +271,15 @@ button{
 	display: flex;
 	justify-content:flex-start;
 	width: 90%;
-	height:80%;
+	height:70%;
 	overflow: scroll;
-	position: relative;
+/* 	position: relative; */
 }
 #festaListBox{
 	list-style: none;
-	position:absolute;
-	top:0;
-	left:0;
+/* 	position:absolute; */
+/* 	top:0; */
+/* 	left:0; */
 	width: 100%;
 }
 .festaList{
@@ -286,4 +287,20 @@ button{
 }
 #festaListModal::-webkit-scrollbar{
   display:none;
+}
+#closeBtnLine{
+	display: flex;
+	justify-content: center;
+	align-items:flex-start;
+	width: 90%;
+	height:20%;
+}
+#closeBtn{
+	color: white;
+	background-color: #7B1FA2;
+	border-radius: 10px;
+	font-size: 5vw;
+	width: 40%;
+	height: 27%;
+	margin-top: 10%;
 }

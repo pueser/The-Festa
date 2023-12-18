@@ -58,8 +58,9 @@
 				var countyValue = county;
 				$("#countyValue").val(countyValue);
 				if (county == "0") {
-					$("#districtOptions").val("0");
+					$("#districtValue").val("0");
 				}
+				var districtValue = $("#districtValue").val();
 				var keyword = $("#keyword").val();
 				calendar(countyValue, districtValue, keyword);
 				$.ajax({
@@ -503,6 +504,12 @@
 		    });
 			return result;
 		}
+		
+		//축제 리스트 모달 닫기 버튼
+		$(document).on("click", "#closeBtn", function(){
+			$("#festaListModalBack").css('display', 'none');
+			$(".schedulerBox").css('display', 'flex');
+		})
     </script>
 	<div class="schedulerBox">
 		<div id='filterLine'>
@@ -570,6 +577,7 @@
 			<ul id="festaListBox">
 			</ul>
 		</div>
+		<div id="closeBtnLine"><button id="closeBtn">닫기</button></div>
 	</div>
 	<input type="hidden" id="selectedYear" value='0'></input>
 	<input type="hidden" id="selectedMonth" value='0'></input>

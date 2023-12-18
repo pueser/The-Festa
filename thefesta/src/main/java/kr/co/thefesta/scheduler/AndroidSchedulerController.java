@@ -46,6 +46,7 @@ public class AndroidSchedulerController {
 	@ResponseBody
 	public Map<String, List<FestivalDTO>> getFestaList(SchedulerCri sCri) throws Exception {
 		log.info("getFestaList....................");
+		log.info("RequestParam => sCri: " + sCri);
 		Map<String, List<FestivalDTO>> result = new HashMap<>();
 		result.put("festaList", service.getFestaList(sCri));
 		log.info("controllerResult : " + result);
