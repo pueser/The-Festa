@@ -15,8 +15,22 @@
 		src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
 	<script>
 	
+		// 페이지 로딩이 완료되었을 때 실행
+// 		$(window).on("load", function(){
+// 			closeLoadingWithMask();
+// 			$(".schedulerBox").css('display', 'flex');
+// 		})
+	
 		// 페이지 오픈 시 컴파일
     	$(document).ready(function(){
+    		
+    		LoadingWithMask('../resources/image/festa_loding.gif');
+//     		setTimeout(closeLoadingWithMask(), 3000);
+    		setTimeout(() => {
+    			closeLoadingWithMask();
+    			$(".schedulerBox").css('display', 'flex');
+    		}, 3000);
+    		
     		
 			// 달력 만들기
 			var countyValue = $("#countyValue").val();
@@ -512,6 +526,31 @@
 			$("#festaListModalBack").css('display', 'none');
 			$(".schedulerBox").css('display', 'flex');
 		})
+		
+		function LoadingWithMask(gif) {    
+			//화면에 출력할 마스크를 설정해줍니다.    
+			var mask = "<div id='mask' style='z-index:9000; background-color:#FFFFFF; display:flex; align-items: center;justify-content: center;'></div>";    
+			var loadingImg = '';          
+			loadingImg += " <img id='loadingImg' src='"+ gif + "' style=' display: block; margin: 0px auto;'/>";     
+			//화면에 레이어 추가    
+			$('body').append(mask)     
+			//마스크의 높이와 너비를 화면 것으로 만들어 전체 화면을 채웁니다.    
+			$('#mask').css({            
+				'width' : '80%',            
+				'height': '100%'          
+// 				'opacity' : '0.3'    
+			});      
+			//마스크 표시    
+// 			$('#mask').show();      
+			//로딩중 이미지 표시    
+			$('#mask').append(loadingImg);    
+			$('#loadingImg').show();
+		} 
+		
+		function closeLoadingWithMask() {    
+			$('#mask, #loadingImg').css("display","none");    
+			$('#mask, #loadingImg').empty();  
+		}
     </script>
 	<div class="schedulerBox">
 		<div id='filterLine'>
