@@ -267,11 +267,12 @@
 	FROM    board
 	WHERE   bno = 3 AND bstatecode= 'Y'
  	</select>
- 	<!--문의사항 statecode 변경 -->
- 	<update id="adminQuestionStatecodeChange">
- 		UPDATE admin_question
-		SET questionstatecode = 'Y'
-		WHERE questionid = #{questionid}
+ 	
+ 	<!--문의게시판 bstatecode = c 변경 -->
+ 	<update id="adminQuestionDelete">
+ 		UPDATE 	board
+		SET 	bstatecode = 'c'
+		WHERE   bid = #{bid}
  	</update>
  	
  	
@@ -318,17 +319,119 @@
  		WHERE	eventenddate = #{time}
  	</delete>
  	<!-- 신고누적이 없는 게시글 list -->
- 	<select id="boardSchuderList" resultType="kr.co.thefesta.board.domain.BoardDTO">
+ 	<!-- <select id="boardSchuderList" resultType="kr.co.thefesta.board.domain.BoardDTO">
  		SELECT board.bid
 		FROM board
 		LEFT JOIN report
 		ON board.bid = report.rbid
 		WHERE report.rbid is NULL AND board.bstatecode = 'N'
- 	</select>
+ 	</select> -->
  	<!-- 게시글 자동삭제처리(1년기준) -->
  	<!-- 게시글 report신고 댓글 삭제 -->
  	
- 	<!-- 게시글 자동삭제처리(1년기준) -->
+ 	<!-- 1번 -->
+ 	<select id="boardSchuderList" resultType="Integer">
+ 	<![CDATA[
+ 	SELECT bid
+	FROM(
+		SELECT b.bid
+		FROM(
+	    	SELECT a.bid
+	    	FROM(
+	        	SELECT board_reply.brno, board.bid 
+	        	FROM board_reply
+	        	INNER JOIN board
+	        	ON board.bid = board_reply.bid
+	        	WHERE board_reply.brstatecode = 'N' AND board.bstatecode = 'N'
+	    	)a
+	    	LEFT JOIN report
+	    	ON report.rbid = a.bid
+	    	WHERE report.rbid is NULL
+		)b
+		LEFT JOIN (
+	    	SELECT a.brno, a.bid
+	    	FROM(
+		        SELECT board_reply.brno, board.bid 
+		        FROM board_reply
+		        INNER JOIN board
+		        ON board.bid = board_reply.bid
+		        WHERE board_reply.brstatecode = 'N' AND board.bstatecode = 'N'
+	    	)a
+		    INNER JOIN report
+		    ON report.rbrno = a.brno
+		    WHERE report.reportstate <> 4
+		)c
+		ON b.bid = c.bid
+		WHERE c.bid is NULL
+	)
+	GROUP BY bid
+	]]>
+ 	</select>
+ 	<!-- 2번 -->
+ 	<!-- <select id="boardReportSchuderList" resultType="Integer">
+ 	<![CDATA[
  	
+	]]>
+ 	</select> -->
+ 	<!-- 3번-->
+ 	<select id="boardReportSchuderList" resultType="Integer">
+ 	<![CDATA[
+ 	SELECT b.bid
+	FROM(
+    	SELECT  bid
+    	FROM(
+        	SELECT a.bid, a.brno, report.reportid
+        	FROM (
+            	SELECT board_reply.brno, board.bid 
+            	FROM board_reply
+            	INNER JOIN board
+            	ON board.bid = board_reply.bid
+            	WHERE board_reply.brstatecode = 'N' AND board.bstatecode = 'N'
+        	) a
+	        INNER JOIN report
+	        ON report.rbid = a.bid 
+	        WHERE report.reportstate = 4
+    	)
+    	GROUP BY bid
+	) b
+	LEFT JOIN (
+    	SELECT  bid
+    	FROM(
+            SELECT a.bid, a.brno, report.reportid 
+            FROM (
+                SELECT board_reply.brno, board.bid
+                FROM board_reply
+                INNER JOIN board
+                ON board.bid = board_reply.bid
+                WHERE board_reply.brstatecode = 'N' AND board.bstatecode = 'N'
+            ) a
+            INNER JOIN report
+            ON report.rbrno = a.brno
+            WHERE report.reportstate <> 4
+    	)
+    	GROUP BY bid
+	)c
+	ON b.bid = c.bid
+	WHERE c.bid is NULL
+ 	]]>
+ 	</select>
+ 	<!-- 4번 -->
+ 	<select id="boardReplyReportSchuderList" resultType="Integer">
+ 	SELECT brno
+	FROM(
+		SELECT  a.brno
+		FROM (
+   			SELECT board_reply.brno, board.bid
+   			FROM board_reply
+		    INNER JOIN board
+		    ON board.bid = board_reply.bid
+		    WHERE board_reply.brstatecode = 'N' AND board.bstatecode = 'N'
+		) a
+	INNER JOIN report
+	ON report.rbrno = a.brno
+	WHERE report.reportstate = 4
+	)
+	GROUP BY brno
+ 	</select>
  	
  </mapper>

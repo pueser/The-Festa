@@ -206,6 +206,16 @@ public class AdminController {
 		return result;
 	}
 	
+	//축제list 갯수
+	@RequestMapping(value = "/festaListCnt", method = RequestMethod.GET)
+	public int festaListCnt()throws Exception{
+		log.info("festaListCnt Get....");
+		int total = service.festaListCnt();
+		log.info("total" + total);
+		
+		return total;
+	}
+	
 	//축제 건의내용 list
 	@RequestMapping(value = "/questionList", method = RequestMethod.GET)
 	public Map<String, Object> questionList(Criteria cri, Integer contentid)throws Exception{
@@ -226,6 +236,16 @@ public class AdminController {
 		 result.put("pageMaker", new PageDTO(cri, total));
 		
 		return result;
+	}
+	
+	//축제건의list 갯수
+	@RequestMapping(value = "/questionListCnt", method = RequestMethod.GET)
+	public int questionListCnt(Integer contentid)throws Exception{
+		log.info("questionListCnt Get....");
+		int total = service.questionListCnt(contentid);
+		log.info("total" + total);
+		
+		return total;
 	}
 	
 	//축제 건의 삭제
@@ -303,9 +323,17 @@ public class AdminController {
 		return result;
 	}
 	
+	//문의 bstatecode = c 변경
+	@RequestMapping(value = "/adminQuestionbstatecodeChange", method = RequestMethod.POST)
+	public void adminQuestionDelete(Integer bid)throws Exception{
+		log.info("받은 bid 값 =" + bid);
+		log.info("adminQuestionDelete post....");
+		service.adminQuestionDelete(bid);
+	}
+	
 	
 	//DB 자동삭제 처리
-	//@Scheduled(fixedRate = 3000)//3초
+//	@Scheduled(fixedRate = 3000)//3초
 	public void DBdataDelete() throws Exception {
 		log.info("DBdataDelete is started");
 		

@@ -1,6 +1,7 @@
 package kr.co.thefesta.admin.persistence.impl;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -247,19 +248,42 @@ public class AdminDAOImpl implements IAdminDAO {
 	public int adminQuestionListCnt() throws Exception {
 		return session.selectOne("AdminMapper.adminQuestionListCnt");
 	}
+	//문의 bstatecode = c 변경
+	@Override
+	public void adminQuestionDelete(Integer bid) throws Exception {
+		session.update("AdminMapper.adminQuestionDelete" , bid);
+	}
 	
-	
-	//축제 자동삭제처리(1년기준)
+	//자동삭제처리(1년기준)
 	@Override
 	public void festivalSchdulerDelete(String time) throws Exception {
 		log.info("전달 받은 값 = " + time);
+		List<Object> boardSchuderList = new ArrayList<>();
+		List<Object> boardReplySchuderList = new ArrayList<>();
+		List<Object> boardReportSchuderList = new ArrayList<>();
+		List<Object> boardReplyReportSchuderList = new ArrayList<>();
 		
-		session.delete("AdminMapper.festivalSchdulerDelete", time);//축제 삭제(1년이 지난경우)
-		session.selectList("AdminMapper.boardSchuderList");//게시글 (신고누적이 없는) list
 		
-		
+		//축제 삭제
+		//session.delete("AdminMapper.festivalSchdulerDelete", time);
+		//댓글만 삭제처리 된 상태
+		//게시글 : N, 댓글 : N
+		//1번 : 게시글 신고 누적 없고, 해당 게시글 댓글은 신고 누적이 있을 경우(단, 해당 게시글 댓글 중 reportstate4가 아닌 댓글이 있는경우 제외)
+		boardSchuderList.add(session.selectList("AdminMapper.boardSchuderList"));
+		log.info("신고 없는 삭제처리할 bid = " + boardSchuderList.toString());
+		//2번 : 게시글 댓글 신고 누적이 없는 댓글
+		boardReplySchuderList.add(session.selectList("AdminMapper.boardReplySchuderList"));
+		log.info("신고 없는 삭제처리할 brno = " + boardReportSchuderList.toString());
+		//3번 : 게시글 신고 누적있지만, reportstate 4인 게시글(단 해당 게시글 댓글 중 reportstate4가 아닌 댓글이 있는경우 제외)
+		boardReportSchuderList.add(session.selectList("AdminMapper.boardReportSchuderList"));
+		log.info("신고 있는 삭제처리할 bid = " + boardReportSchuderList.toString());
+		//4번 : 게시글 댓글 신고 누적 있지만,  댓글 reportstate 4인 댓글
+		boardReplyReportSchuderList.add(session.selectList("AdminMapper.boardReplyReportSchuderList"));
+		log.info("신고 있는 삭제처리할 brno = " + boardReplyReportSchuderList.toString());
 		
 	}
+
+	
 
 	
 

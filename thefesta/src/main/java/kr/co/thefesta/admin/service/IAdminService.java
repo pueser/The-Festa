@@ -58,6 +58,8 @@ public interface IAdminService {
 	public List<BoardDTO> adminQuestionList(Criteria cri)throws Exception;
 	//문의사항 갯수
 	public int adminQuestionListCnt()throws Exception;
+	//문의 bstatecode = c 변경
+	public void adminQuestionDelete(Integer bid)throws Exception;
 	//축제 댓글 신고 등록
 	public void festaReplyReport(ReportDTO reportDto)throws Exception;
 	//게시글 댓글 신고 등록
