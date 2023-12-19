@@ -78,4 +78,9 @@ public class FoodServiceImpl implements IFoodService {
 		fDao.delete(likeDto);
 	}
 
+	@Override
+	public List<LikeDTO> userLikeList(String id) throws Exception {
+		return fDao.userLikeList(id);
+	}
+
 }

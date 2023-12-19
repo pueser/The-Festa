@@ -69,6 +69,11 @@ public class FoodDAOImpl implements IFoodDAO {
 		session.delete("FoodMapper.deleteLike", likeDto);
 	}
 
+	@Override
+	public List<LikeDTO> userLikeList(String id) throws Exception {
+		return session.selectList("FoodMapper.userLikeList", id);
+	}
+
 	
 	
 }

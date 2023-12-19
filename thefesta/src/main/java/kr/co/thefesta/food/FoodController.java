@@ -121,6 +121,19 @@ public class FoodController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 	}
+	
+	// 회원이 좋아요한 음식점 리스트
+	@RequestMapping(value = "/userlikelist", method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> getUserLikeList(@RequestParam("id") String id) throws Exception {
+		log.info("userId : " + id);
+		
+		Map<String, Object> responseMap = new HashMap<>();
+		
+		List<LikeDTO> likeDto = service.userLikeList(id);
+		responseMap.put("likeDTOList", likeDto);
+		log.info("likeDTOList : " + likeDto);
+		return new ResponseEntity<>(responseMap, HttpStatus.OK);
+	}
 
 	// 음식점 Api 호출 및 DB 저장
 	@RequestMapping(value = "/callapi", method = RequestMethod.GET)
@@ -158,7 +171,7 @@ public class FoodController {
 					.queryParam("MobileApp", "Thefesta")
 					.queryParam("MobileOS", "ETC")
 					.queryParam("contentTypeId", "39")
-					.queryParam("arrange", "O")
+					.queryParam("arrange", "Q")
 					.queryParam("_type", "json")
 					.build(true)
 					.toUri();
@@ -193,7 +206,7 @@ public class FoodController {
 			log.info(pageNo);
 
 			//page로 데이터 가져오기
-			for (int i = 23; i <= pageNo; i++) {
+			for (int i = 1; i <= pageNo; i++) {
 
 				URI uri1 = UriComponentsBuilder.fromHttpUrl(baseUrl)
 						.queryParam("serviceKey", encodeServiceKey)
@@ -202,7 +215,7 @@ public class FoodController {
 						.queryParam("MobileApp", "Thefesta")
 						.queryParam("MobileOS", "ETC")
 						.queryParam("contentTypeId", "39")
-						.queryParam("arrange", "O")
+						.queryParam("arrange", "Q")
 						.queryParam("_type", "json")
 						.build(true)
 						.toUri();

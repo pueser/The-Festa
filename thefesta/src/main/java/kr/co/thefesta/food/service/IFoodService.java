@@ -23,5 +23,6 @@ public interface IFoodService {
 	public AreacodeDTO selectArea(String contentid) throws Exception;
 	public void insert(LikeDTO likeDto) throws Exception;
 	public void delete(LikeDTO likeDto) throws Exception;
+	public List<LikeDTO> userLikeList(String id) throws Exception;
 
 }

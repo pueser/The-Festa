@@ -74,7 +74,7 @@ public class FoodJob extends QuartzJobBean {
 			String decodeServiceKey2 = "FUZ9ccIzOa33akBnPSF3ULPUdvCk/Cfj7x8/1hXBaStY+b8nVOmDepdDMLhQBp5qMvBSzdGCv/mOFMFAFTKMhA==";
 			String decodeServiceKey3 = "Pl6K060b4TyB9IpUXHlnOQONaTgkdSlRW8yGTnUDedutQ5Y915/K84w7UW4BOae8X7S8FSmZlXrbtQeeaT5Dsw==";
 			String decodeServiceKey4 = "syUAggWKlsXU0flFJw7DH8pKOHZWwazzpJY3fvseFQGLf3IEXKPyBE4/xUHvTZNzBtyaT3ApTkR1HvDEgS5I0A==";
-			String encodeServiceKey = URLEncoder.encode(decodeServiceKey3, "UTF-8");
+			String encodeServiceKey = URLEncoder.encode(decodeServiceKey, "UTF-8");
 
 			// API 호출을 위한 파라미터 설정
 			int pageNo = 1;
@@ -88,7 +88,7 @@ public class FoodJob extends QuartzJobBean {
 					.queryParam("MobileApp", "Thefesta")
 					.queryParam("MobileOS", "ETC")
 					.queryParam("contentTypeId", "39")
-					.queryParam("arrange", "O")
+					.queryParam("arrange", "Q")
 					.queryParam("_type", "json")
 					.build(true)
 					.toUri();
@@ -123,7 +123,7 @@ public class FoodJob extends QuartzJobBean {
 			log.info(pageNo);
 
 			//page로 데이터 가져오기
-			for (int i = 23; i <= pageNo; i++) {
+			for (int i = 1; i <= pageNo; i++) {
 
 				URI uri1 = UriComponentsBuilder.fromHttpUrl(baseUrl)
 						.queryParam("serviceKey", encodeServiceKey)
@@ -132,7 +132,7 @@ public class FoodJob extends QuartzJobBean {
 						.queryParam("MobileApp", "Thefesta")
 						.queryParam("MobileOS", "ETC")
 						.queryParam("contentTypeId", "39")
-						.queryParam("arrange", "O")
+						.queryParam("arrange", "Q")
 						.queryParam("_type", "json")
 						.build(true)
 						.toUri();

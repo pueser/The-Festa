@@ -86,5 +86,11 @@
 		WHERE contentid = #{contentid} AND id = #{id}
   	</delete>
   	
+  	<select id="userLikeList" resultType="kr.co.thefesta.food.domain.LikeDTO">
+		SELECT *
+		FROM food_like
+		WHERE id = #{id}
+  	</select>
+  	
   </mapper>
   
