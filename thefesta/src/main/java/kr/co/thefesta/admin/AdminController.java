@@ -379,7 +379,7 @@ public class AdminController {
 	}
 	
 	//게시글 신고 (parameter : reportcontent, reporter, reported, rbid)
-	@RequestMapping(value = "boardReport", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@RequestMapping(value = "/boardReport", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public String boardReport(ReportDTO reportDto) throws Exception{
 		log.info("boardReport post ...");
 		MemberDTO memberDto = memberService.selMember(reportDto.getReported());
