@@ -50,7 +50,7 @@ public class MemberController {
 		MemberDTO memInfo = service.login(mDto);
 		
 		log.info("MemberDTO ==> " + mDto);
-		log.info("MemberDTO ==> " + memInfo);
+		log.info("memInfo ==> " + memInfo);
 		
 		if (memInfo != null) {
 			session.setAttribute("loginInfo", memInfo.getId());
