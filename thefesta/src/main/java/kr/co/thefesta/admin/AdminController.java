@@ -63,6 +63,16 @@ public class AdminController {
 		return result;
 	}
 	
+	//member 테이블 회원총원
+		@RequestMapping(value = "/memberListCnt", method = RequestMethod.GET)
+		public int memberListCnt()throws Exception{
+			log.info("memberListCnt Get....");
+			int total = service.memberCnt();
+			log.info("total" + total);
+			
+			return total;
+		}
+	
 	
 	//회원 상세페이지(신고 list 페이지)
 	@RequestMapping(value = "/memberDetail", method = RequestMethod.GET)
@@ -86,6 +96,17 @@ public class AdminController {
 	    
 		log.info("reportList = " + reportList.toString());
 		return result;
+	}
+	
+	//회원 상세페이지 갯수(신고 list 페이지)
+	@RequestMapping(value = "/memberDetailCnt", method = RequestMethod.GET)
+	public int memberDetailCnt(String id)throws Exception{
+		log.info("memberDetailCnt Get....");
+		log.info("받은 id값 "+ id);
+		int total = service.memberReportCnt(id);
+		log.info("total" + total);
+		
+		return total;
 	}
 	
 	//회원 닉네임 표시
@@ -154,6 +175,16 @@ public class AdminController {
 		return result;
 	}
 	
+	//신고list 갯수
+	@RequestMapping(value = "/reportListCnt", method = RequestMethod.GET)
+	public int reportListCnt()throws Exception{
+		log.info("reportListCnt Get....");
+		int total = service.reportListCnt();
+		log.info("total" + total);
+		
+		return total;
+	}
+	
 	//신고처리상태 변경(reportstate->2)
 	@RequestMapping(value = "/reportstateChange", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public int reportstateChange(Integer reportid)throws Exception{
@@ -184,6 +215,7 @@ public class AdminController {
 		
 		return reportnum;
 	}
+	
 	
 	
 	//축제list & 축제 문의list
@@ -242,6 +274,7 @@ public class AdminController {
 	@RequestMapping(value = "/questionListCnt", method = RequestMethod.GET)
 	public int questionListCnt(Integer contentid)throws Exception{
 		log.info("questionListCnt Get....");
+		log.info("contentid = " + contentid);
 		int total = service.questionListCnt(contentid);
 		log.info("total" + total);
 		
@@ -301,6 +334,17 @@ public class AdminController {
 		return result;
 	}
 	
+	//게시판 list(자유 &리뷰) 갯수
+	@RequestMapping(value = "/boardListCnt", method = RequestMethod.GET)
+	public int boardListCnt()throws Exception{
+		log.info("boardlistCnt Get....");
+		int total = service.boardListCnt();
+		log.info("total" + total);
+		
+		return total;
+	}
+		
+	
 	//문의사항 list
 	@RequestMapping(value = "/adminQuestionList", method = RequestMethod.GET)
 	public Map<String, Object> adminQuestionList(Criteria cri)throws Exception{
@@ -321,6 +365,16 @@ public class AdminController {
 	     
 	     
 		return result;
+	}
+	
+	//문의사항 list 갯수
+	@RequestMapping(value = "/adminQuestionListCnt", method = RequestMethod.GET)
+	public int adminQuestionListCnt()throws Exception{
+		log.info("adminQuestionListCnt Get....");
+		int total = service.adminQuestionListCnt();
+		log.info("total" + total);
+		
+		return total;
 	}
 	
 	//문의 bstatecode = c 변경

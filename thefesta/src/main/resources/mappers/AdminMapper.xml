@@ -271,7 +271,7 @@
  	<!--문의게시판 bstatecode = c 변경 -->
  	<update id="adminQuestionDelete">
  		UPDATE 	board
-		SET 	bstatecode = 'c'
+		SET 	bstatecode = 'C'
 		WHERE   bid = #{bid}
  	</update>
  	
