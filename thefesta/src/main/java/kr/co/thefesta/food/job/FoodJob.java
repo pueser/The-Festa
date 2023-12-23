@@ -6,7 +6,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -15,19 +14,16 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.quartz.QuartzJobBean;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.google.gson.Gson;
 
-import kr.co.thefesta.food.domain.ItemDTO;
-import kr.co.thefesta.food.domain.ResultDTO;
+import kr.co.thefesta.food.domain.api.ItemDTO;
+import kr.co.thefesta.food.domain.api.ResultDTO;
 import kr.co.thefesta.food.service.IFoodService;
 import lombok.extern.log4j.Log4j;
 
@@ -44,22 +40,31 @@ public class FoodJob extends QuartzJobBean {
 	@Override
 	protected void executeInternal(JobExecutionContext jobExecutionContext) throws JobExecutionException {
 		try {
-//			foodService.delete();  //DB 데이터 삭제
-//			log.info("data delete success.........");
-			callApi(); //API 호출 및 데이터 DB에 저장
+			//DB 데이터 삭제 후 다시 저장
+			foodService.delete();
+			log.info("data delete success.........");
+			callApi();
+			
+			//DB 업데이트
+//			updateApi();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	// 음식점 Api 호출 및 DB 저장
-	@RequestMapping(value = "/callapi", method = RequestMethod.GET)
+	// 음식점 DB 저장
 	public void callApi() throws Exception {
 		log.info("api call success.........");
 
 		// RestTemplate 인스턴스 생성
 		RestTemplate restTemplate = new RestTemplate();
 		restTemplate.getMessageConverters().add(0, new StringHttpMessageConverter(StandardCharsets.UTF_8));
+		
+		// 타임아웃 설정
+        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(5000); // 연결 타임아웃 설정 (5초)
+        requestFactory.setReadTimeout(5000);    // 읽기 타임아웃 설정 (5초)
+        restTemplate.setRequestFactory(requestFactory);
 
 		// Gson 인스턴스 생성
 		Gson gson = new Gson();
@@ -74,7 +79,7 @@ public class FoodJob extends QuartzJobBean {
 			String decodeServiceKey2 = "FUZ9ccIzOa33akBnPSF3ULPUdvCk/Cfj7x8/1hXBaStY+b8nVOmDepdDMLhQBp5qMvBSzdGCv/mOFMFAFTKMhA==";
 			String decodeServiceKey3 = "Pl6K060b4TyB9IpUXHlnOQONaTgkdSlRW8yGTnUDedutQ5Y915/K84w7UW4BOae8X7S8FSmZlXrbtQeeaT5Dsw==";
 			String decodeServiceKey4 = "syUAggWKlsXU0flFJw7DH8pKOHZWwazzpJY3fvseFQGLf3IEXKPyBE4/xUHvTZNzBtyaT3ApTkR1HvDEgS5I0A==";
-			String encodeServiceKey = URLEncoder.encode(decodeServiceKey, "UTF-8");
+			String encodeServiceKey = URLEncoder.encode(decodeServiceKey2, "UTF-8");
 
 			// API 호출을 위한 파라미터 설정
 			int pageNo = 1;
@@ -88,7 +93,7 @@ public class FoodJob extends QuartzJobBean {
 					.queryParam("MobileApp", "Thefesta")
 					.queryParam("MobileOS", "ETC")
 					.queryParam("contentTypeId", "39")
-					.queryParam("arrange", "Q")
+					.queryParam("arrange", "Q") 
 					.queryParam("_type", "json")
 					.build(true)
 					.toUri();
@@ -259,7 +264,18 @@ public class FoodJob extends QuartzJobBean {
 						item.setRestdatefood(restdatefood);
 					}
 				}
-				saveDataAsync(itemDto); //DB 저장
+				
+				for (ItemDTO item : itemDto) {
+					//DB 저장
+					log.info("itemDto : " + item.toString());
+					foodService.create(item);
+					
+					//DB 업데이트
+//					log.info("itemDto : " + item.toString());
+//					foodService.update(item);
+				}
+				log.info("...............restaurant DB save complete!");
+//				log.info("...............restaurant DB update complete!");
 			}
 		} catch (UnsupportedEncodingException e) {
 			log.error("Error encoding service key", e);
@@ -267,20 +283,4 @@ public class FoodJob extends QuartzJobBean {
 			log.error("Error making API call", e);
 		}
 	}
-
-	@Async
-	@Transactional
-	public CompletableFuture<Void> saveDataAsync(List<ItemDTO> itemDto) {
-		for (ItemDTO item : itemDto) {
-			log.info("itemDto : " + item.toString());
-			try {
-				foodService.create(item);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		log.info("DB 저장 완료");
-		return CompletableFuture.completedFuture(null);
-	}
-
 }

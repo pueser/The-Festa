@@ -1,8 +1,6 @@
 package kr.co.thefesta.food.persistence.impl;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,15 +8,14 @@ import org.springframework.stereotype.Repository;
 
 import kr.co.thefesta.festival.domain.FestivalDTO;
 import kr.co.thefesta.food.domain.AreacodeDTO;
-import kr.co.thefesta.food.domain.ItemDTO;
 import kr.co.thefesta.food.domain.LikeDTO;
+import kr.co.thefesta.food.domain.NonUserDTO;
 import kr.co.thefesta.food.domain.RecommendDTO;
 import kr.co.thefesta.food.domain.UserDTO;
+import kr.co.thefesta.food.domain.api.ItemDTO;
 import kr.co.thefesta.food.persistence.IFoodDAO;
-import lombok.extern.log4j.Log4j;
 
 @Repository
-@Log4j
 public class FoodDAOImpl implements IFoodDAO {
 
 	@Autowired
@@ -33,10 +30,25 @@ public class FoodDAOImpl implements IFoodDAO {
 	public void delete() throws Exception {
 		session.delete("FoodMapper.delete");
 	}
+	
+	@Override
+	public void update(ItemDTO itemDto) throws Exception {
+		session.update("FoodMapper.update", itemDto);
+	}
+	
+	@Override
+	public List<FestivalDTO> selectFestaId() throws Exception {
+		return session.selectList("FoodMapper.selectFestaid");
+	}
+	
+	@Override
+	public int listCnt(String contentid) throws Exception {
+		return session.selectOne("FoodMapper.listCnt",contentid);
+	}
 
 	@Override
-	public List<RecommendDTO> listAll(String contentid) throws Exception {
-		return session.selectList("FoodMapper.recommend", contentid);
+	public List<RecommendDTO> listAll(NonUserDTO nonUserDto) throws Exception {
+		return session.selectList("FoodMapper.recommend", nonUserDto);
 	}
 	
 	@Override
@@ -50,11 +62,6 @@ public class FoodDAOImpl implements IFoodDAO {
 	}
 
 	@Override
-	public List<FestivalDTO> selectFestaId() throws Exception {
-		return session.selectList("FoodMapper.selectFestaid");
-	}
-
-	@Override
 	public AreacodeDTO selectArea(String contentid) throws Exception {
 		return session.selectOne("FoodMapper.selectAreacode", contentid);
 	}
@@ -65,7 +72,7 @@ public class FoodDAOImpl implements IFoodDAO {
 	}
 
 	@Override
-	public void delete(LikeDTO likeDto) throws Exception {
+	public void deleteLike(LikeDTO likeDto) throws Exception {
 		session.delete("FoodMapper.deleteLike", likeDto);
 	}
 
@@ -74,6 +81,4 @@ public class FoodDAOImpl implements IFoodDAO {
 		return session.selectList("FoodMapper.userLikeList", id);
 	}
 
-	
-	
 }

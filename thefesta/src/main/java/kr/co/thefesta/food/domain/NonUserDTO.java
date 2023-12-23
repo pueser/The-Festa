@@ -9,10 +9,9 @@ import lombok.ToString;
 @NoArgsConstructor
 @Data
 @ToString
-public class UserDTO {
+public class NonUserDTO {
 	
 	private String contentid;
-	private String id;
 	private Criteria cri;
 	
 	public int getPageNum() {

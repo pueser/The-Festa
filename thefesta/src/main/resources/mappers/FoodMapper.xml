@@ -13,49 +13,85 @@
   		DELETE FROM food
   	</delete>
   	
+  	<update id="update">
+  	UPDATE food
+    SET title=#{title}, addr1=#{addr1}, infocenterfood=#{infocenterfood}, firstmenu=#{firstmenu},
+        treatmenu=#{treatmenu}, opentimefood=#{opentimefood}, restdatefood=#{restdatefood},
+        parkingfood=#{parkingfood}, overview=#{overview}, firstimage=#{firstimage},
+        firstimage2=#{firstimage2}, mapx=#{mapx}, mapy=#{mapy}, areacode=#{areacode},
+        sigungucode=#{sigungucode}, cat3=#{cat3}
+    WHERE contentid = #{contentid}
+  	</update>
+  	
   	<select id="selectFestaid" resultType="kr.co.thefesta.festival.domain.FestivalDTO">
   		SELECT *
 		FROM festa
   	</select>
   	
-  	<select id="selectAreacode" resultType="kr.co.thefesta.food.domain.AreacodeDTO">
-  		SELECT f.title,
-               f.acode,
-               f.scode,
-               a.aname,
-               a.sname
-        FROM festa_area a
-        JOIN festa f ON f.acode = a.acode AND f.scode = a.scode
-        WHERE f.contentid = #{contentid}
-  	</select>
+  	<select id="listCnt" resultType="int">
+	    SELECT COUNT(*) AS TotalRows
+	    FROM (
+	        SELECT fd.contentid,
+	               fd.title,
+	               fd.firstimage2,
+	               fd.addr1,
+	               fd.cat3,
+	               (SELECT COUNT(*) FROM food_like WHERE contentid = fd.contentid) AS likeCnt
+	        FROM food fd JOIN festa f
+	        ON fd.areacode = f.acode AND fd.sigungucode = f.scode
+	        WHERE f.contentid = #{contentid}
+	    ) Result
+	</select>
   	
   	<select id="recommend" resultType="kr.co.thefesta.food.domain.RecommendDTO">
-  		SELECT fd.contentid,
-  			   fd.title,
-		       fd.firstimage2,
-		       fd.addr1,
-		       fd.cat3,
-		       (SELECT COUNT(*) FROM food_like WHERE contentid = fd.contentid) AS likeCnt		       
-		FROM food fd JOIN festa f
-		ON fd.areacode = f.acode AND fd.sigungucode = f.scode
-		WHERE f.contentid = #{contentid}
-		ORDER BY likeCnt DESC
+    <![CDATA[
+        SELECT contentid, title, firstimage2, addr1, cat3, likeCnt
+        FROM (
+            SELECT contentid, title, firstimage2, addr1, cat3, likeCnt, ROWNUM AS rn
+            FROM (
+                SELECT fd.contentid,
+                       fd.title,
+                       fd.firstimage2,
+                       fd.addr1,
+                       fd.cat3,
+                       (SELECT COUNT(*) FROM food_like WHERE contentid = fd.contentid) AS likeCnt
+                FROM food fd JOIN festa f
+                ON fd.areacode = f.acode AND fd.sigungucode = f.scode
+                WHERE f.contentid = #{contentid}
+                ORDER BY likeCnt DESC, fd.contentid DESC
+            )
+            WHERE ROWNUM <= #{pageNum} * #{amount}
+        )
+        WHERE rn > (#{pageNum}-1)*#{amount}
+    ]]>
+	</select>
+  	
+    <select id="recommendUser" resultType="kr.co.thefesta.food.domain.RecommendDTO">
+  	<![CDATA[
+        SELECT rn, contentid, title, firstimage2, addr1, cat3, likeCnt, userlikeCnt
+        FROM (
+            SELECT contentid, title, firstimage2, addr1, cat3, likeCnt, ROWNUM AS rn, userlikeCnt
+            FROM (
+                SELECT fd.contentid,
+       		           fd.title,
+                       fd.firstimage2,
+                       fd.addr1,
+                       fd.cat3,
+                       (SELECT COUNT(*) FROM food_like WHERE contentid = fd.contentid) AS likeCnt,
+                       (SELECT COUNT(*) FROM food_like fl WHERE fl.cat3 = fd.cat3 AND id = #{id}) userlikeCnt
+            	FROM food fd JOIN festa f
+            	ON fd.areacode = f.acode AND fd.sigungucode = f.scode 
+            	WHERE f.contentid = #{contentid}
+            	ORDER BY userlikeCnt DESC, likeCnt DESC, fd.contentid DESC
+            )
+            WHERE ROWNUM <= #{pageNum} * #{amount}
+        )
+        WHERE rn > (#{pageNum}-1)*#{amount}
+    ]]>
   	</select>
   	
-  	<select id="recommendUser" resultType="kr.co.thefesta.food.domain.RecommendDTO">
-  		SELECT fd.contentid,
-       		   fd.title,
-               fd.firstimage2,
-               fd.addr1,
-               fd.cat3,
-               (SELECT COUNT(*) FROM food_like WHERE contentid = fd.contentid) AS likeCnt
-        FROM food fd
-        JOIN festa f ON fd.areacode = f.acode AND fd.sigungucode = f.scode 
-        WHERE f.contentid = #{contentid}
-        ORDER BY (SELECT COUNT(*) FROM food_like WHERE cat3 = fd.cat3 AND id = #{id}) DESC, likeCnt DESC
-  	</select>
   	
-  	<select id="read" resultType="kr.co.thefesta.food.domain.ItemDTO">
+  	<select id="read" resultType="kr.co.thefesta.food.domain.api.ItemDTO">
   		SELECT contentid,
   			   title,
   			   addr1,
@@ -76,6 +112,17 @@
   		WHERE contentid = #{contentid}
   	</select>
   	
+  	<select id="selectAreacode" resultType="kr.co.thefesta.food.domain.AreacodeDTO">
+  		SELECT f.title,
+               f.acode,
+               f.scode,
+               a.aname,
+               a.sname
+        FROM festa_area a
+        JOIN festa f ON f.acode = a.acode AND f.scode = a.scode
+        WHERE f.contentid = #{contentid}
+  	</select>
+  	
   	<insert id="insertLike">
   		INSERT INTO food_like(lno, contentid, title, cat3, id)
 		VALUES(food_like_seq.nextval, #{contentid}, #{title}, #{cat3}, #{id})
@@ -92,5 +139,4 @@
 		WHERE id = #{id}
   	</select>
   	
-  </mapper>
-  
+  </mapper> 

@@ -16,6 +16,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,11 +32,14 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.google.gson.Gson;
 
 import kr.co.thefesta.food.domain.AreacodeDTO;
-import kr.co.thefesta.food.domain.ItemDTO;
+import kr.co.thefesta.food.domain.Criteria;
 import kr.co.thefesta.food.domain.LikeDTO;
+import kr.co.thefesta.food.domain.NonUserDTO;
+import kr.co.thefesta.food.domain.PageDTO;
 import kr.co.thefesta.food.domain.RecommendDTO;
-import kr.co.thefesta.food.domain.ResultDTO;
 import kr.co.thefesta.food.domain.UserDTO;
+import kr.co.thefesta.food.domain.api.ItemDTO;
+import kr.co.thefesta.food.domain.api.ResultDTO;
 import kr.co.thefesta.food.service.IFoodService;
 import lombok.extern.log4j.Log4j;
 
@@ -50,38 +54,50 @@ public class FoodController {
 	
 	// 음식점 추천 목록
 	@RequestMapping(value = "/list", method = RequestMethod.GET)
-	public ResponseEntity<Map<String, Object>> getFoodList(@RequestParam("contentid") String contentid, @RequestParam(name ="id", required = false) String id, @RequestBody(required = false) UserDTO userDto) throws Exception {
+	public ResponseEntity<Map<String, Object>> getFoodList(
+			@RequestParam("contentid") String contentid,
+			@RequestParam(name ="id", required = false) String id,
+			@RequestParam(name = "pageNum", required = false) Integer pageNum,
+	        @RequestParam(name = "amount", required = false) Integer amount) throws Exception {
 		log.info("food list connect.....");
 		log.info("contentid: " + contentid);
 		log.info("Id: " + id);
+		log.info("pageNum: " + pageNum);
+		log.info("amount: " + amount);
+		
+		 // 페이징 정보 추출
+		Criteria cri = new Criteria(pageNum != null ? pageNum : 1, amount != null ? amount : service.listCnt(contentid));
+	    log.info("cri: " + (cri != null ? cri.toString() : "null"));
+		
+		Map<String, Object> responseMap = new HashMap<>();
+		List<RecommendDTO> recDto;
+		AreacodeDTO areaCodeDto;
+		int total = 0;
 		
 		if (id != null) { //회원(로그인)
 			
-			userDto = new UserDTO(contentid, id);
-			
-			List<RecommendDTO> recDto = service.listAllUser(userDto);
-			AreacodeDTO areaCodeDto = service.selectArea(userDto.getContentid());
-			
-			Map<String, Object> responseMap = new HashMap<>();
-			responseMap.put("recommendDTOList", recDto);
-			responseMap.put("areacodeDTO", areaCodeDto);
-			log.info("recDto: " + recDto);
-			log.info("areaDto : " + areaCodeDto);
-			return new ResponseEntity<>(responseMap, HttpStatus.OK);
+			UserDTO userDto = new UserDTO(contentid, id, cri);
+			recDto = service.listAllUser(userDto);
+			areaCodeDto = service.selectArea(userDto.getContentid());
 			
 		} else { //비회원(비로그인)
-			
-			List<RecommendDTO> recDto = service.listAll(contentid);
-			AreacodeDTO areaCodeDto = service.selectArea(contentid);
-			
-			Map<String, Object> responseMap = new HashMap<>();
-			responseMap.put("recommendDTOList", recDto);
-			responseMap.put("areacodeDTO", areaCodeDto);
-			log.info("recDto: " + recDto);
-			log.info("areaDto : " + areaCodeDto);
-			return new ResponseEntity<>(responseMap, HttpStatus.OK);
+			NonUserDTO nonUserDto = new NonUserDTO(contentid, cri);
+			recDto = service.listAll(nonUserDto);
+			areaCodeDto = service.selectArea(nonUserDto.getContentid());
 			
 		}
+		
+		total = service.listCnt(contentid);
+		log.info("total : " + total);
+		
+		responseMap.put("recommendDTOList", recDto);
+		responseMap.put("areacodeDTO", areaCodeDto);
+		responseMap.put("pageMaker", new PageDTO(cri, total));
+		log.info("recDto: " + recDto);
+		log.info("areaDto : " + areaCodeDto);
+		log.info("responseMap: " + responseMap);
+		
+		return new ResponseEntity<>(responseMap, HttpStatus.OK);
 	}
 
 	// 음식점 상세 페이지
@@ -102,7 +118,7 @@ public class FoodController {
 		log.info("food like connect......");
 		log.info("likeDto : " + likeDto);
 		try {
-			service.insert(likeDto);
+			service.insertLike(likeDto);
 			return ResponseEntity.ok().build();
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -115,7 +131,7 @@ public class FoodController {
 		log.info("food unlike connect......");
 		log.info("likeDto : " + likeDto);
 		try {
-			service.delete(likeDto);
+			service.deleteLike(likeDto);
 			return ResponseEntity.ok().build();
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -143,7 +159,13 @@ public class FoodController {
 		// RestTemplate 인스턴스 생성
 		RestTemplate restTemplate = new RestTemplate();
 		restTemplate.getMessageConverters().add(0, new StringHttpMessageConverter(StandardCharsets.UTF_8));
-
+		
+		// 타임아웃 설정
+        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(5000); // 연결 타임아웃 설정 (5초)
+        requestFactory.setReadTimeout(5000);    // 읽기 타임아웃 설정 (5초)
+        restTemplate.setRequestFactory(requestFactory);
+		
 		// Gson 인스턴스 생성
 		Gson gson = new Gson();
 
@@ -157,7 +179,7 @@ public class FoodController {
 			String decodeServiceKey2 = "FUZ9ccIzOa33akBnPSF3ULPUdvCk/Cfj7x8/1hXBaStY+b8nVOmDepdDMLhQBp5qMvBSzdGCv/mOFMFAFTKMhA==";
 			String decodeServiceKey3 = "Pl6K060b4TyB9IpUXHlnOQONaTgkdSlRW8yGTnUDedutQ5Y915/K84w7UW4BOae8X7S8FSmZlXrbtQeeaT5Dsw==";
 			String decodeServiceKey4 = "syUAggWKlsXU0flFJw7DH8pKOHZWwazzpJY3fvseFQGLf3IEXKPyBE4/xUHvTZNzBtyaT3ApTkR1HvDEgS5I0A==";
-			String encodeServiceKey = URLEncoder.encode(decodeServiceKey, "UTF-8");
+			String encodeServiceKey = URLEncoder.encode(decodeServiceKey4, "UTF-8");
 
 			// API 호출을 위한 파라미터 설정
 			int pageNo = 1;
@@ -171,7 +193,7 @@ public class FoodController {
 					.queryParam("MobileApp", "Thefesta")
 					.queryParam("MobileOS", "ETC")
 					.queryParam("contentTypeId", "39")
-					.queryParam("arrange", "Q")
+					.queryParam("arrange", "R")   // O=제목순, Q=수정일순, R=생성일순
 					.queryParam("_type", "json")
 					.build(true)
 					.toUri();
@@ -206,16 +228,16 @@ public class FoodController {
 			log.info(pageNo);
 
 			//page로 데이터 가져오기
-			for (int i = 1; i <= pageNo; i++) {
+			for (int i = 112; i <= pageNo; i++) {
 
 				URI uri1 = UriComponentsBuilder.fromHttpUrl(baseUrl)
 						.queryParam("serviceKey", encodeServiceKey)
 						.queryParam("pageNo", i)
-						.queryParam("numOfRows", 100)
+						.queryParam("numOfRows", numOfRows)
 						.queryParam("MobileApp", "Thefesta")
 						.queryParam("MobileOS", "ETC")
 						.queryParam("contentTypeId", "39")
-						.queryParam("arrange", "Q")
+						.queryParam("arrange", "R")
 						.queryParam("_type", "json")
 						.build(true)
 						.toUri();
@@ -342,7 +364,14 @@ public class FoodController {
 						item.setRestdatefood(restdatefood);
 					}
 				}
-				saveDataAsync(itemDto); //DB 저장
+//				saveDataAsync(itemDto);
+				
+				//DB 저장
+				for (ItemDTO item : itemDto) {
+					log.info("itemDto : " + item.toString());
+					service.create(item);
+				}
+				log.info("...............restaurant DB save complete!");
 			}
 		} catch (UnsupportedEncodingException e) {
 			log.error("Error encoding service key", e);
@@ -362,7 +391,7 @@ public class FoodController {
 				e.printStackTrace();
 			}
 		}
-		log.info("DB 저장 완료");
+		log.info("...............restaurant DB save complete!");
 		return CompletableFuture.completedFuture(null);
 	}
 

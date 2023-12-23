@@ -7,17 +7,16 @@ import org.springframework.stereotype.Service;
 
 import kr.co.thefesta.festival.domain.FestivalDTO;
 import kr.co.thefesta.food.domain.AreacodeDTO;
-import kr.co.thefesta.food.domain.ItemDTO;
 import kr.co.thefesta.food.domain.LikeDTO;
+import kr.co.thefesta.food.domain.NonUserDTO;
 import kr.co.thefesta.food.domain.RecommendDTO;
 import kr.co.thefesta.food.domain.UserDTO;
+import kr.co.thefesta.food.domain.api.ItemDTO;
 import kr.co.thefesta.food.persistence.IFoodDAO;
 import kr.co.thefesta.food.service.IFoodService;
-import lombok.extern.log4j.Log4j;
 
 
 @Service("foodService")
-@Log4j
 public class FoodServiceImpl implements IFoodService {
 	
 	@Autowired
@@ -36,11 +35,26 @@ public class FoodServiceImpl implements IFoodService {
 	public void delete() throws Exception {
 		fDao.delete();
 	}
+	
+	@Override
+	public void update(ItemDTO itemDto) throws Exception {
+		fDao.update(itemDto);
+	}
+	
+	@Override
+	public List<FestivalDTO> selectFestaId() throws Exception {
+		List<FestivalDTO> festaDto = fDao.selectFestaId();
+		return festaDto;
+	}
+	
+	@Override
+	public int listCnt(String contentid) throws Exception {
+		return fDao.listCnt(contentid);
+	}
 
 	@Override
-	public List<RecommendDTO> listAll(String contentid) throws Exception {
-		List<RecommendDTO> recDto = fDao.listAll(contentid);
-//		log.info("listAll data : " + itemDto);
+	public List<RecommendDTO> listAll(NonUserDTO nonUserDto) throws Exception {
+		List<RecommendDTO> recDto = fDao.listAll(nonUserDto);
 		return recDto;
 	}
 	
@@ -50,17 +64,11 @@ public class FoodServiceImpl implements IFoodService {
 		return recDto;
 	}
 	
-
 	@Override
 	public ItemDTO read(String contentid) throws Exception {
 		return fDao.read(contentid);
 	}
 
-	@Override
-	public List<FestivalDTO> selectFestaId() throws Exception {
-		List<FestivalDTO> festaDto = fDao.selectFestaId();
-		return festaDto;
-	}
 
 	@Override
 	public AreacodeDTO selectArea(String contentid) throws Exception {
@@ -69,13 +77,13 @@ public class FoodServiceImpl implements IFoodService {
 	}
 
 	@Override
-	public void insert(LikeDTO likeDto) throws Exception {
+	public void insertLike(LikeDTO likeDto) throws Exception {
 		fDao.insertLike(likeDto);
 	}
 
 	@Override
-	public void delete(LikeDTO likeDto) throws Exception {
-		fDao.delete(likeDto);
+	public void deleteLike(LikeDTO likeDto) throws Exception {
+		fDao.deleteLike(likeDto);
 	}
 
 	@Override
