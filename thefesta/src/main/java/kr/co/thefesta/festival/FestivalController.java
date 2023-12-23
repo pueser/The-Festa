@@ -115,6 +115,7 @@ public class FestivalController {
 		int result = service.insertLike(lDto);
 		
 		log.info("Like INSERT Result : " + result);
+		log.info("result : " + new ResponseEntity<>("success", HttpStatus.OK));
 		
 		return result == 1 ? new ResponseEntity<>("success", HttpStatus.OK)
 								   : new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -159,7 +160,7 @@ public class FestivalController {
 	
 	@GetMapping(value = "/likeList")
 	public ResponseEntity<Map<String, Object>> getLikeList(@RequestParam(defaultValue = "1") int page, @RequestParam String id) throws Exception {
-		log.info("getList-------------------");
+		log.info("getLikeList-------------------");
 		Map<String, Object> response = new HashMap<>();
 		
 		Criteria cri = new Criteria(page, 10);
@@ -171,7 +172,7 @@ public class FestivalController {
 		response.put("pageMaker", new PageDTO(cri, total));
 		
 		log.info("cri : " + cri);
-		log.info("frList : " + lList);
+		log.info("lList : " + lList);
 		log.info("total : " + total);
 		
 		return new ResponseEntity<>(response, HttpStatus.OK);

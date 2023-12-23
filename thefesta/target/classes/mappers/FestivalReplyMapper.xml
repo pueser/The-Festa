@@ -11,29 +11,24 @@
 	<select id="getListWithPaging" resultType="kr.co.thefesta.festival.domain.FestivalReplyDTO">
  		<![CDATA[ 
  			SELECT frno, 
- 				   contentid, 
- 				   id, 
- 				   nickname, 
- 				   frcontent, 
- 				   frregist, 
- 				   fredit,
-       			   profileimg
- 			FROM (SELECT rownum rn, 
- 				         f.frno, 
- 				   		 f.contentid, 
- 				   		 f.id, 
- 				   		 f.nickname, 
- 				   		 f.frcontent, 
- 				   		 f.frregist, 
- 				   		 f.fredit,
-             			 m.profileimg
- 				  FROM festa_reply f,
-           			   member m 
- 				  WHERE contentid = #{contentid} 
- 				  AND f.id = m.id
- 				  AND frno > 0 
- 				  AND rownum <= #{cri.pageNum} * #{cri.amount}) 
- 			WHERE rn > (#{cri.pageNum} -1) * #{cri.amount} 
+			       contentid, 
+			       id, 
+			       nickname, 
+			       frcontent, 
+			       frregist, 
+			       fredit,
+			       profileimg
+			FROM (SELECT rownum rn, 
+			             t.*
+			      FROM (SELECT f.*, m.profileimg
+			              FROM festa_reply f,
+			                   member m
+			             WHERE contentid = #{contentid} 
+			             AND f.id = m.id
+			               AND frno > 0 
+			             ORDER BY f.frregist) t
+			      WHERE rownum <= #{cri.pageNum} * #{cri.amount})
+			WHERE rn > (#{cri.pageNum} -1) * #{cri.amount} 
  		]]> 
  	</select> 
 	
