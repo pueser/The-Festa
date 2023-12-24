@@ -58,7 +58,7 @@
                 FROM food fd JOIN festa f
                 ON fd.areacode = f.acode AND fd.sigungucode = f.scode
                 WHERE f.contentid = #{contentid}
-                ORDER BY likeCnt DESC, fd.contentid DESC
+                ORDER BY likeCnt DESC, fd.title ASC
             )
             WHERE ROWNUM <= #{pageNum} * #{amount}
         )
@@ -82,7 +82,7 @@
             	FROM food fd JOIN festa f
             	ON fd.areacode = f.acode AND fd.sigungucode = f.scode 
             	WHERE f.contentid = #{contentid}
-            	ORDER BY userlikeCnt DESC, likeCnt DESC, fd.contentid DESC
+            	ORDER BY userlikeCnt DESC, likeCnt DESC, fd.title ASC
             )
             WHERE ROWNUM <= #{pageNum} * #{amount}
         )

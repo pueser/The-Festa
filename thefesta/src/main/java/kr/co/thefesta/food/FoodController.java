@@ -127,7 +127,7 @@ public class FoodController {
 
 	// 좋아요 취소
 	@RequestMapping(value = "/unlikefood", method = RequestMethod.POST)
-	public ResponseEntity<String> unLikeFood(@RequestBody LikeDTO likeDto) throws Exception {
+	public ResponseEntity<Void> unLikeFood(@RequestBody LikeDTO likeDto) throws Exception {
 		log.info("food unlike connect......");
 		log.info("likeDto : " + likeDto);
 		try {
