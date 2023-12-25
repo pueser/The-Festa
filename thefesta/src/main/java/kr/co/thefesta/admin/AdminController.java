@@ -417,7 +417,7 @@ public class AdminController {
 	
 	//게시글 댓글 신고(parameter : reportcontent, reporter, reported, rbrno)
 	@RequestMapping(value = "/boardReplyReport", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public String boardReplyReport(ReportDTO reportDto) throws Exception{
+	public String boardReplyReport(@RequestBody ReportDTO reportDto) throws Exception{
 		log.info("boardReplyReport post ...");
 		MemberDTO memberDto = memberService.selMember(reportDto.getReported());
 		String num = memberDto.getStatecode();
@@ -426,7 +426,7 @@ public class AdminController {
 		
 		if(num.equals("1")) {
 			int result = service.boardReplyReport(reportDto);
-			return result + "댓글이 신고 되었습니다.";
+			return  "댓글이 신고 되었습니다.";
 		}else {
 			return "해당 댓글 작성자는 현재 사이트의 회원이 아닙니다. 신고가 불가능 합니다. 관리자에게 문의 바람니다.";
 		}
@@ -434,7 +434,7 @@ public class AdminController {
 	
 	//게시글 신고 (parameter : reportcontent, reporter, reported, rbid)
 	@RequestMapping(value = "/boardReport", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public String boardReport(ReportDTO reportDto) throws Exception{
+	public String boardReport(@RequestBody ReportDTO reportDto) throws Exception{
 		log.info("boardReport post ...");
 		MemberDTO memberDto = memberService.selMember(reportDto.getReported());
 		String num = memberDto.getStatecode();
@@ -443,7 +443,7 @@ public class AdminController {
 		
 		if(num.equals("1")) {
 			int result = service.boardReport(reportDto);
-			return result + "게시글이 신고 되었습니다.";
+			return  "게시글이 신고 되었습니다.";
 		}else {
 			return "해당 게시글 작성자는 현재 사이트의 회원이 아닙니다. 신고가 불가능 합니다. 관리자에게 문의 바람니다.";
 		}
