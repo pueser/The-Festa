@@ -25,7 +25,7 @@
             bviewcnt,
             id
       FROM board
-      WHERE bid=#{bid} AND bstatecode= in ('Y', 'C')
+      WHERE bid=#{bid} AND bstatecode in ('Y', 'C')
    </select>
    
    <update id="update">

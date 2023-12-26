@@ -6,8 +6,8 @@
   
 <mapper namespace="BoardMapper">
    <insert id="create">
-      INSERT INTO board(bid, nickname, btitle, bcontent, id)
-      VALUES(seq_bid.nextval, #{nickname}, #{btitle}, #{bcontent}, #{id})
+      INSERT INTO board(bno, bid, nickname, btitle, bcontent, id)
+      VALUES(#{bno}, seq_bid.nextval, #{nickname}, #{btitle}, #{bcontent}, #{id})
       <selectKey keyProperty="bid" resultType="int" order="AFTER">
          SELECT seq_bid.currval 
          FROM dual
@@ -25,7 +25,7 @@
             bviewcnt,
             id
       FROM board
-      WHERE bid=#{bid} AND bstatecode= 'Y'
+      WHERE bid=#{bid} AND bstatecode in ('Y', 'C')
    </select>
    
    <update id="update">
@@ -86,7 +86,7 @@
               FROM (
                    SELECT *
                    FROM board
-                   WHERE bstatecode = 'Y'
+                   WHERE bstatecode in ('Y', 'C')
                    ORDER BY bid DESC
                  ) ordered_board
                WHERE
@@ -106,7 +106,7 @@
       FROM board
       WHERE 
       <include refid="criteria"></include>
-      bid > 0 AND bstatecode = 'Y'
+      bid > 0 AND bstatecode in ('Y', 'C')
    </select>
    
    <!-- 게시물의 viewcnt를 1 증가시키는 SQL 문 -->
@@ -115,5 +115,12 @@
         SET bviewcnt = bviewcnt + 1
         WHERE bid = #{bid}
     </update>
-   
+    
+    <select id="listGet" resultType="kr.co.thefesta.board.domain.BoardDTO">
+      SELECT *
+      FROM board
+      WHERE bid > 0 AND bstatecode in ('Y', 'C')
+      ORDER BY bid DESC
+   </select>
+  
 </mapper>
