@@ -304,7 +304,7 @@ public class AdminController {
 	
 	//축제 건의내용 저장
 	@RequestMapping(value = "/questionRegister", method = RequestMethod.POST)
-	public void questionCreate(QuestionDTO questionDto) throws Exception{
+	public void questionCreate(@RequestBody QuestionDTO questionDto) throws Exception{
 		log.info("questionCreate post...");
 		
 		log.info("받은 값 = " + questionDto.toString());
