@@ -15,7 +15,7 @@ public class MailUtil {
 	private static JavaMailSender mailSender;
 
 	@Autowired
-	public void MailUtil2(JavaMailSender mailSender) {
+	public void MailUtil(JavaMailSender mailSender) {
 		MailUtil.mailSender = mailSender;
 	}
 
