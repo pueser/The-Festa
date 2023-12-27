@@ -50,7 +50,7 @@ public class MemberController {
 		MemberDTO memInfo = service.login(mDto);
 		
 		log.info("MemberDTO ==> " + mDto);
-		log.info("memInfo ==> " + memInfo);
+		log.info("MemberDTO ==> " + memInfo);
 		
 		if (memInfo != null) {
 			session.setAttribute("loginInfo", memInfo.getId());
@@ -87,6 +87,7 @@ public class MemberController {
 	@RequestMapping(value = "/nicknameCheck", method = RequestMethod.POST)
     public String nicknameCheck(@RequestBody MemberDTO mDto) throws Exception {
         String nickname = mDto.getNickname();
+        log.info("nickname : " + nickname);
 		int nicknameCheck = service.nicknameCheck(nickname);
         String nickCheckResult = "fail";
         
@@ -180,6 +181,35 @@ public class MemberController {
 	    }
 	}
 	
+
+	@PostMapping("/updateImg")
+	public String updateImg(@RequestParam String id, @RequestParam MultipartFile file) throws Exception {
+	    log.info("id" + id);
+
+	    Map<String, Object> paramMap = new HashMap<>();
+
+	    if (!file.isEmpty()) {
+	        String saveImg = "D:\\workspace\\spring4-4.10.0.RELEASE\\thefestaTest\\src\\main\\webapp\\resources\\fileUpload\\" + file.getOriginalFilename();
+	        log.info("파일 저장" + saveImg);
+	        file.transferTo(new File(saveImg));
+
+	        File savedFile = new File(saveImg);
+	        if (savedFile.exists()) {
+	            log.info("파일이 성공적으로 저장되었습니다.");
+
+	            String profileImg = "http://localhost:9090/resources/fileUpload/" + file.getOriginalFilename();
+	            log.info("테스트" + profileImg + id);
+	            paramMap.put("profileImg", profileImg);
+	            paramMap.put("id", id);
+	            service.updateImg(paramMap);
+	            log.info(paramMap);
+
+	            return "success";
+	        }
+	    }
+	    return "fail";
+	}
+	
 	
 	@PostMapping(value = "/updateState")
 	public void updateState(@RequestBody MemberDTO mDto) throws Exception {
@@ -236,7 +266,7 @@ public class MemberController {
 	    
 	    String profileImg = uploadFileName;
 	    
-	    log.info("profileImg : " + profileImg);
+	    log.info("profileImg1 : " + profileImg);
 	    
 	    paramMap.put("profileImg", profileImg);
 	    paramMap.put("id", id);
