@@ -48,10 +48,11 @@
 						WHERE bd.bid = br.bid)
 		WHERE bd.bid = #{bid}
 	</update>
-	<select id="listAll" resultType="kr.co.thefesta.board.domain.ReplyDTO">
-		SELECT *
+	<select id="userReply" resultType="kr.co.thefesta.board.domain.ReplyDTO">
+      	SELECT *
 		FROM board_reply
+		WHERE id = #{id}
 		ORDER BY brno ASC
-	</select>
+   </select>
 </mapper>
   

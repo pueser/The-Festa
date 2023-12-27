@@ -16,6 +16,6 @@ public interface BoardReplyMapper {
 		public List<ReplyDTO> getListWithPaging(@Param("cri") Criteria cri,
 												@Param("bid") int bid);
 		public int replyCntUpdate(int bid);
-		public List<ReplyDTO> listAll();
+		public List<ReplyDTO> userReply(String id);
 	}
 

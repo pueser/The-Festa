@@ -35,13 +35,13 @@ public class ReplyController {
 
         int insertResult = service.register(replyDto);
         int replyCntResult = service.replyCntUpdate(replyDto.getBid());
-        
-        log.info("Reply INSERT Result : " + insertResult);
-        log.info("Reply Count Result : " + replyCntResult);
 
-        return insertResult == 1 && replyCntResult == 1
+        log.info("Reply INSERT Result: " + insertResult);
+        log.info("Reply Count Result: " + replyCntResult);
+
+        return (insertResult == 1 && replyCntResult == 1)
                 ? ResponseEntity.ok("success")
-                : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+                : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("error");
     }
 
     @GetMapping("/pages/{bid}/{page}")
@@ -83,14 +83,13 @@ public class ReplyController {
                 : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
     
-    @GetMapping("listAll")
-    public ResponseEntity<List<ReplyDTO>> listAll() {
+    @PostMapping("/userReply")
+    public ResponseEntity<?> userReply(@RequestBody ReplyDTO replyDto) {
+        String id = replyDto.getId();
+        log.info("받아 온 유저 데이터: " + id);
 
-       
-        log.info("get Reply List..............");
-
-
-        return ResponseEntity.ok(service.listAll());
+        List<ReplyDTO> userReplies = service.userReply(id);
+        return ResponseEntity.ok(userReplies);
     }
     
 }

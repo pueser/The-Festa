@@ -60,4 +60,9 @@ public class BoardDAOImpl implements IBoardDAO {
 	public List<BoardDTO> listGet() throws Exception {
 		return session.selectList("BoardMapper.listGet");
 	}
+	
+	@Override
+	public List<BoardDTO> userBoard(String id) throws Exception {
+		return session.selectList("BoardMapper.userBoard", id);
+	}
 }

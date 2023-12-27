@@ -72,4 +72,8 @@ public class BoardServiceImpl implements IBoardService {
 		return bDao.listGet();
 	}
 
+	@Override
+	public List<BoardDTO> userBoard(String id) throws Exception {
+		return bDao.userBoard(id);
+	}
 }

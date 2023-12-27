@@ -17,5 +17,6 @@ public interface IBoardDAO {
 	public int getTotalCnt(Criteria cri) throws Exception;
 	public void increaseViewCnt(int bid) throws Exception;
 	public List<BoardDTO> listGet() throws Exception;
+	public List<BoardDTO> userBoard(String id) throws Exception;
 	
 }

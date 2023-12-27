@@ -55,9 +55,9 @@ public class ReplyServiceImpl implements IReplyService {
 	}
 
 	@Override
-	public List<ReplyDTO> listAll() {
-		log.info("reply listAll..........");
-		return ReplyMapper.listAll();
+	public List<ReplyDTO> userReply(String id) {
+		log.info("userReply ............");
+		return ReplyMapper.userReply(id);
 	}
 
 }

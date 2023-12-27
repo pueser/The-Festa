@@ -1,6 +1,7 @@
 package kr.co.thefesta.board;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,5 +113,33 @@ public class BoardController {
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+    
+    @RequestMapping(value = "/userBoard", method = RequestMethod.POST)
+    public ResponseEntity<Map<String, Object>> userBoard(@RequestBody BoardDTO bDto) throws Exception {
+    	
+    	String id = bDto.getId();
+    	log.info("받아 온 유저 데이터: " + id);
+    	
+    	Map<String, Object> result = new HashMap<>();
+        result.put("list", service.userBoard(id));       
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+    
+//    @RequestMapping("/userBoard/{page}", method = RequestMethod.POST)
+//    public ResponseEntity<Map<String, Object>> userBoard(@PathVariable int page, 
+//    													 @RequestBody BoardDTO bDto) {
+//        String id = bDto.getId();
+//
+//        Criteria cri = new Criteria(page, 10); // 페이지당 10개의 아이템
+//
+//        log.info("get User Board List by Page: " + page + ", User ID: " + id);
+//        log.info("cri :" + cri);
+//
+//        Map<String, Object> result = new HashMap<>();
+//        result.put("list", service.userBoard(id, cri)); // 서비스에서 페이징된 데이터를 가져오도록 수정
+//
+//        return ResponseEntity.ok(result);
+//    }
     
 }
