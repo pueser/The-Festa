@@ -159,14 +159,14 @@
 		FROM (
     		SELECT title, eventstartdate, eventenddate, contentid, addr1, questioncount, rownum  as rn
     		FROM (
-		        SELECT *
+		        SELECT title, eventstartdate, eventenddate, contentid, addr1, questioncount
 		        FROM admin_festa_a
 		        UNION
-		        SELECT *
+		        SELECT title, eventstartdate, eventenddate, contentid, addr1, questioncount
 		        FROM admin_festa_b
+                ORDER BY questioncount DESC
     		)
 		    WHERE rownum <= #{pageNum} * #{amount}
-		    ORDER BY eventstartdate DESC
 		)
 		WHERE rn > (#{pageNum} -1) * #{amount}
 	]]>
