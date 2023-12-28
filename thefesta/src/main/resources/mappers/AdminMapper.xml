@@ -21,7 +21,7 @@
                             SELECT id,statecode,finalaccess, reportnum, totalreportnum
                             FROM admin_member_reportstate_0
                         )
-				       ORDER BY totalreportnum DESC
+				       ORDER BY totalreportnum DESC, statecode DESC
 	    			)
 				    WHERE rownum <= #{pageNum} * #{amount} AND statecode <> '0'
 				)
@@ -95,7 +95,7 @@
 	    		SELECT rownum  as rn, reportid, reportcontent, reporter, rbid, rbrno, rfrno, reportdate, reported
 	   			FROM report
 	    		WHERE reportstate = '1' AND rownum <= #{pageNum} * #{amount}
-	    		ORDER BY reportid ASC
+	    		ORDER BY reportid DESC
 			)
 			WHERE rn > (#{pageNum} -1) * #{amount}
 		]]>
