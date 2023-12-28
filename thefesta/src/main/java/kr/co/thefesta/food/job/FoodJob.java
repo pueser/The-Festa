@@ -60,12 +60,6 @@ public class FoodJob extends QuartzJobBean {
 		RestTemplate restTemplate = new RestTemplate();
 		restTemplate.getMessageConverters().add(0, new StringHttpMessageConverter(StandardCharsets.UTF_8));
 		
-		// 타임아웃 설정
-        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-        requestFactory.setConnectTimeout(5000); // 연결 타임아웃 설정 (5초)
-        requestFactory.setReadTimeout(5000);    // 읽기 타임아웃 설정 (5초)
-        restTemplate.setRequestFactory(requestFactory);
-
 		// Gson 인스턴스 생성
 		Gson gson = new Gson();
 
