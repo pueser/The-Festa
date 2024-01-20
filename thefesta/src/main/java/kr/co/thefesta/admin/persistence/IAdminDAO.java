@@ -65,6 +65,6 @@ public interface IAdminDAO {
 	public int adminQuestionListCnt()throws Exception;
 	//문의 bstatecode = c 변경
 	public void adminQuestionDelete(Integer bid)throws Exception;
-	//축제 자동삭제처리(1년기준)
-	public void festivalSchdulerDelete(String time)throws Exception;
+	//자동삭제처리(1년기준)
+	public void DBdataDelete(String festaDeleteTime, String boardDeleteTime)throws Exception;
 }

@@ -316,63 +316,71 @@
  	<delete id="festivalSchdulerDelete">
  		DELETE 
  		FROM	festa
- 		WHERE	eventenddate = #{time}
+ 		WHERE	eventenddate = #{festaDeleteTime}
  	</delete>
- 	<!-- 신고누적이 없는 게시글 list -->
- 	<!-- <select id="boardSchuderList" resultType="kr.co.thefesta.board.domain.BoardDTO">
- 		SELECT board.bid
-		FROM board
-		LEFT JOIN report
-		ON board.bid = report.rbid
-		WHERE report.rbid is NULL AND board.bstatecode = 'N'
- 	</select> -->
- 	<!-- 게시글 자동삭제처리(1년기준) -->
- 	<!-- 게시글 report신고 댓글 삭제 -->
- 	
+
+	<!-- 게시글 댓글 자동삭제처리할 번호(bid, brno) -->
  	<!-- 1번 -->
  	<select id="boardSchuderList" resultType="Integer">
  	<![CDATA[
- 	SELECT bid
-	FROM(
-		SELECT b.bid
-		FROM(
-	    	SELECT a.bid
-	    	FROM(
-	        	SELECT board_reply.brno, board.bid 
-	        	FROM board_reply
-	        	INNER JOIN board
-	        	ON board.bid = board_reply.bid
-	        	WHERE board_reply.brstatecode = 'N' AND board.bstatecode = 'N'
-	    	)a
-	    	LEFT JOIN report
-	    	ON report.rbid = a.bid
-	    	WHERE report.rbid is NULL
-		)b
-		LEFT JOIN (
-	    	SELECT a.brno, a.bid
-	    	FROM(
-		        SELECT board_reply.brno, board.bid 
-		        FROM board_reply
-		        INNER JOIN board
-		        ON board.bid = board_reply.bid
-		        WHERE board_reply.brstatecode = 'N' AND board.bstatecode = 'N'
-	    	)a
-		    INNER JOIN report
-		    ON report.rbrno = a.brno
-		    WHERE report.reportstate <> 4
-		)c
-		ON b.bid = c.bid
-		WHERE c.bid is NULL
-	)
-	GROUP BY bid
+ 	SELECT  c.bid
+	FROM (
+    	SELECT bid
+    	FROM (
+	        SELECT  board.bid
+	        FROM    board
+	        WHERE   board.bstatecode = 'N'
+    	)a
+    	LEFT JOIN (
+	        SELECT  report.rbid
+	        FROM    report
+    	)b
+    	ON a.bid = b.rbid
+    	WHERE b.rbid is NULL
+	)c
+	LEFT JOIN (
+    	SELECT  board_reply.bid
+        FROM    board_reply
+        WHERE   board_reply.brstatecode = 'Y'
+        UNION
+        SELECT  bid
+        FROM    board_reply
+        INNER JOIN   (
+        	SELECT  report.rbrno
+            FROM    report
+            WHERE   report.reportstate <> 4
+        )a
+        ON  board_reply.brno = a.rbrno
+	)d
+	ON c.bid = d.bid
+	WHERE   d.bid is NULL
 	]]>
  	</select>
  	<!-- 2번 -->
- 	<!-- <select id="boardReportSchuderList" resultType="Integer">
+ 	<select id="boardReplySchuderList" resultType="Integer">
  	<![CDATA[
- 	
+ 	SELECT brno
+	FROM (
+	    SELECT  brno
+	    FROM (
+	        SELECT  board_reply.brno, board_reply.bid
+	        FROM    board_reply
+	        WHERE   board_reply.brstatecode = 'N'
+	    )
+	    GROUP BY brno
+	)a
+	LEFT JOIN (
+	    SELECT rbrno
+	    FROM (
+	        SELECT  report.rbrno
+	        FROM    report
+	    )
+	    GROUP BY rbrno
+	)b
+	ON a.brno = b.rbrno
+	WHERE b.rbrno is NULL
 	]]>
- 	</select> -->
+ 	</select>
  	<!-- 3번-->
  	<select id="boardReportSchuderList" resultType="Integer">
  	<![CDATA[
@@ -397,6 +405,24 @@
 	LEFT JOIN (
     	SELECT  bid
     	FROM(
+            SELECT a.bid, a.brno, report.reportid
+        	FROM (
+            	SELECT board_reply.brno, board.bid 
+            	FROM board_reply
+            	INNER JOIN board
+            	ON board.bid = board_reply.bid
+            	WHERE board_reply.brstatecode = 'N' AND board.bstatecode = 'N'
+        	) a
+	        INNER JOIN report
+	        ON report.rbid = a.bid 
+	        WHERE report.reportstate <> 4
+    	)
+    	GROUP BY bid
+	)c
+	ON b.bid = c.bid
+    LEFT JOIN (
+        SELECT  bid
+    	FROM(
             SELECT a.bid, a.brno, report.reportid 
             FROM (
                 SELECT board_reply.brno, board.bid
@@ -410,9 +436,9 @@
             WHERE report.reportstate <> 4
     	)
     	GROUP BY bid
-	)c
-	ON b.bid = c.bid
-	WHERE c.bid is NULL
+	)d
+    ON d.bid = b.bid
+	WHERE c.bid is NULL AND d.bid is NULL
  	]]>
  	</select>
  	<!-- 4번 -->
@@ -421,11 +447,9 @@
 	FROM(
 		SELECT  a.brno
 		FROM (
-   			SELECT board_reply.brno, board.bid
+   			SELECT board_reply.brno
    			FROM board_reply
-		    INNER JOIN board
-		    ON board.bid = board_reply.bid
-		    WHERE board_reply.brstatecode = 'N' AND board.bstatecode = 'N'
+		    WHERE board_reply.brstatecode = 'N'
 		) a
 	INNER JOIN report
 	ON report.rbrno = a.brno
@@ -433,5 +457,98 @@
 	)
 	GROUP BY brno
  	</select>
+ 	
+ 	
+ 	<!-- 게시글 및 게시글 댓글 자동삭제처리(1년기준) -->
+ 	<!-- 1번 -->
+ 	<delete id="boardSchuderListDelete" parameterType="hashMap">
+ 		DELETE 
+ 		FROM	board
+ 		WHERE	bregist = #{time} AND bid   
+ 		<trim prefix="in (" suffix=")" suffixOverrides=",">
+			<foreach  item="item" collection="boardSchuderList">
+				#{ item },
+			</foreach>
+		</trim>
+ 	</delete>
+ 	<!-- 2번 -->
+ 	<delete id="boardReplySchuderListDelete" parameterType="hashMap">
+ 		DELETE 
+ 		FROM	board_reply
+ 		WHERE	brregist = #{time} AND brno   
+ 		<trim prefix="in (" suffix=")" suffixOverrides=",">
+			<foreach  item="item" collection="boardReplySchuderList">
+				#{ item },
+			</foreach>
+		</trim>
+ 	</delete>
+ 	<!-- 3번 -->
+ 	<delete id="boardReportSchuderListDelete" parameterType="hashMap">
+ 		DELETE 
+ 		FROM	board
+ 		WHERE	bregist = #{time} AND bid   
+ 		<trim prefix="in (" suffix=")" suffixOverrides=",">
+			<foreach  item="item" collection="boardReportSchuderList">
+				#{ item },
+			</foreach>
+		</trim>
+ 	</delete>
+ 	<!-- 4번 -->
+ 	<delete id="boardReplyReportSchuderListDelete" parameterType="hashMap">
+ 		DELETE 
+ 		FROM	board_reply
+ 		WHERE	brregist = #{time} AND brno   
+ 		<trim prefix="in (" suffix=")" suffixOverrides=",">
+			<foreach  item="item" collection="boardReplyReportSchuderList">
+				#{ item },
+			</foreach>
+		</trim>
+ 	</delete>
+ 	
+ 	<!-- 문의 게시글 및 관리자댓글 select -->
+ 	<!-- 문의 게시글 select -->
+ 	<select id="boardQuestionSchuderList" resultType="Integer">
+	 	SELECT  bid
+		FROM    board
+		WHERE   bstatecode = 'C'
+ 	</select>
+ 	<!-- 관리자댓글 select -->
+ 	<select id="boardQuestionReplySchuderList" resultType="Integer">
+	 	SELECT  b.brno
+		FROM    (
+		    SELECT  bid
+		    FROM    board
+		    WHERE   bstatecode = 'C'
+		)a
+		INNER JOIN  (
+		    SELECT  bid, brno
+		    FROM    board_reply
+		)b
+		ON  a.bid = b.bid
+ 	</select>
+ 	
+ 	<!-- 문의 게시글 및 관리자댓글 delete -->
+ 	<!-- 문의 게시글 delete -->
+ 	<delete id="boardQuestionSchuderListDelete" parameterType="hashMap">
+ 		DELETE 
+ 		FROM	board
+ 		WHERE	bregist = #{time} AND bid   
+ 		<trim prefix="in (" suffix=")" suffixOverrides=",">
+			<foreach  item="item" collection="boardQuestionSchuderList">
+				#{ item },
+			</foreach>
+		</trim>
+ 	</delete>
+ 	<!-- 관리자댓글 delete -->
+ 	<delete id="boardQuestionReplySchuderListDelete" parameterType="hashMap">
+ 		DELETE 
+ 		FROM	board_reply
+ 		WHERE	brregist = #{time} AND brno   
+ 		<trim prefix="in (" suffix=")" suffixOverrides=",">
+			<foreach  item="item" collection="boardQuestionReplySchuderList">
+				#{ item },
+			</foreach>
+		</trim>
+ 	</delete>
  	
  </mapper>

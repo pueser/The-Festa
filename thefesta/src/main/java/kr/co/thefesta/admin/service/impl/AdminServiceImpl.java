@@ -183,10 +183,10 @@ public class AdminServiceImpl implements IAdminService {
 	public void adminQuestionDelete(Integer bid) throws Exception {
 		adminDao.adminQuestionDelete(bid);
 	}
-	//축제 자동삭제처리(1년기준)
+	//자동삭제처리(1년기준)
 	@Override
-	public void festivalSchdulerDelete(String time) throws Exception {
-		 adminDao.festivalSchdulerDelete(time);
+	public void DBdataDelete(String festaDeleteTime, String boardDeleteTime) throws Exception {
+		 adminDao.DBdataDelete(festaDeleteTime, boardDeleteTime);
 		
 	}
 

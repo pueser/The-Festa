@@ -387,16 +387,22 @@ public class AdminController {
 	
 	
 	//DB 자동삭제 처리
-//	@Scheduled(fixedRate = 3000)//3초
+	@Scheduled(cron = "0 0 0 * * *")//매일 자정에 실행
 	public void DBdataDelete() throws Exception {
 		log.info("DBdataDelete is started");
 		
 		String stringTime = LocalDateTime.now().minusYears(1).toString();
 		String replaceTiem = stringTime.replace("-", "");
-		//현재 서버 기준 날짜(YYYMMDD)
-		String time = replaceTiem.substring(0,8);
 		
-		service.festivalSchdulerDelete(time);
+		//현재 서버 기준 날짜(YYYMMDD)
+		String festaDeleteTime = replaceTiem.substring(0,8);
+		//현재 서버 기준 날짜(YY/MM/DD)
+		String newTime1 = festaDeleteTime.substring(2,4).concat("/");
+		String newTime2 = festaDeleteTime.substring(4,6).concat("/");
+		String newTime3 = festaDeleteTime.substring(6);
+		String boardDeleteTime = newTime1.concat(newTime2).concat(newTime3);
+
+		service.DBdataDelete(festaDeleteTime, boardDeleteTime);
 
 	}
 	

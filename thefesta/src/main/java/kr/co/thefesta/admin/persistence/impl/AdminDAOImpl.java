@@ -180,18 +180,8 @@ public class AdminDAOImpl implements IAdminDAO {
 	
 	
 	//축제 삭제
-	@Transactional
 	@Override
 	public int festaDelete(Integer contentid) throws Exception {
-//		session.delete("AdminMapper.festaImageDelete", contentid); //축제 이미지 삭제
-//		session.delete("AdminMapper.festaLikeDelete", contentid);// 축제 좋아요 삭제
-//		session.delete("AdminMapper.festaQuestionDelete", contentid);// 축제 건의 삭제
-//		List<ReportDTO> list = session.selectList("AdminMapper.deleteReportidSelect", contentid);// 삭제할 축제댓글
-//		log.info("reportidList " + list.toString());
-//		
-//		session.delete("AdminMapper.reportFrnoDelete", list);// 축제댓글 신고 삭제
-//		session.delete("AdminMapper.festaReplyDelete", contentid);// 축제 댓글 삭제
-		
 		return session.delete("AdminMapper.festaDelete", contentid);// 축제 삭제
 		
 	}
@@ -255,32 +245,79 @@ public class AdminDAOImpl implements IAdminDAO {
 	}
 	
 	//자동삭제처리(1년기준)
+	@Transactional
 	@Override
-	public void festivalSchdulerDelete(String time) throws Exception {
-		log.info("전달 받은 값 = " + time);
-		List<Object> boardSchuderList = new ArrayList<>();
-		List<Object> boardReplySchuderList = new ArrayList<>();
-		List<Object> boardReportSchuderList = new ArrayList<>();
-		List<Object> boardReplyReportSchuderList = new ArrayList<>();
-		
+	public void DBdataDelete(String festaDeleteTime, String boardDeleteTime) throws Exception {
+		log.info("축제 삭제기준 일자 = " + festaDeleteTime);
+		log.info("게시판 삭제기준 일자 = " + boardDeleteTime);
 		
 		//축제 삭제
-		//session.delete("AdminMapper.festivalSchdulerDelete", time);
-		//댓글만 삭제처리 된 상태
-		//게시글 : N, 댓글 : N
-		//1번 : 게시글 신고 누적 없고, 해당 게시글 댓글은 신고 누적이 있을 경우(단, 해당 게시글 댓글 중 reportstate4가 아닌 댓글이 있는경우 제외)
-		boardSchuderList.add(session.selectList("AdminMapper.boardSchuderList"));
-		log.info("신고 없는 삭제처리할 bid = " + boardSchuderList.toString());
-		//2번 : 게시글 댓글 신고 누적이 없는 댓글
-		boardReplySchuderList.add(session.selectList("AdminMapper.boardReplySchuderList"));
-		log.info("신고 없는 삭제처리할 brno = " + boardReportSchuderList.toString());
-		//3번 : 게시글 신고 누적있지만, reportstate 4인 게시글(단 해당 게시글 댓글 중 reportstate4가 아닌 댓글이 있는경우 제외)
-		boardReportSchuderList.add(session.selectList("AdminMapper.boardReportSchuderList"));
-		log.info("신고 있는 삭제처리할 bid = " + boardReportSchuderList.toString());
-		//4번 : 게시글 댓글 신고 누적 있지만,  댓글 reportstate 4인 댓글
-		boardReplyReportSchuderList.add(session.selectList("AdminMapper.boardReplyReportSchuderList"));
-		log.info("신고 있는 삭제처리할 brno = " + boardReplyReportSchuderList.toString());
+		session.delete("AdminMapper.festivalSchdulerDelete", festaDeleteTime);
 		
+		
+		//게시글 및 게시글 댓글 번호 select
+		//게시글 : N(회원이 게시글 삭제), 댓글 : N(회원이 댓글 삭제), reportstate: 4(관리자 확인 완료)
+		//1번 : 게시글 삭제(게시글 신고 누적없음, 단, 댓글중에 reportstate4번이 아니고 bstatecode Y인 댓글이 있는 게시글은 제외)
+		List<Object> boardSchuderList = session.selectList("AdminMapper.boardSchuderList");
+		boardSchuderList.add(0);
+		log.info("1번 bid = " + boardSchuderList.toString());
+		//2번 : 게시글 댓글 삭제(게시글 댓글 신고 누적이 없음)
+		List<Object> boardReplySchuderList = session.selectList("AdminMapper.boardReplySchuderList");
+		boardReplySchuderList.add(0);
+		log.info("2번 brno = " + boardReplySchuderList.toString());
+		//3번 : 게시글 삭제(게시글 reportstate 4인 게시글, 단, 댓글중에 reportstate4번이 아니고 bstatecode Y인 댓글이 있는 게시글은 제외)
+		List<Object> boardReportSchuderList = session.selectList("AdminMapper.boardReportSchuderList");
+		boardReportSchuderList.add(0);
+		log.info("3번 bid = " + boardReportSchuderList.toString());
+		//4번 : 게시글 댓글 삭제(게시글 댓글 reportstate 4인 댓글)
+		List<Object> boardReplyReportSchuderList = session.selectList("AdminMapper.boardReplyReportSchuderList");
+		boardReplyReportSchuderList.add(0);
+		log.info("4번 brno = " + boardReplyReportSchuderList.toString());
+		
+		//게시글 및 게시글 댓글 번호 삭제
+		//2번
+		Map<String, Object> map2 = new HashMap<>();
+		map2.put("time", boardDeleteTime);
+		map2.put("boardReplySchuderList", boardReplySchuderList);
+		session.delete("AdminMapper.boardReplySchuderListDelete", map2);
+		//4번
+		Map<String, Object> map4 = new HashMap<>();
+		map4.put("time", boardDeleteTime);
+		map4.put("boardReplyReportSchuderList", boardReplyReportSchuderList);
+		session.delete("AdminMapper.boardReplyReportSchuderListDelete", map4);
+		//1번
+		Map<String, Object> map1 = new HashMap<>();
+		map1.put("time", boardDeleteTime);
+		map1.put("boardSchuderList", boardSchuderList);
+		session.delete("AdminMapper.boardSchuderListDelete", map1);
+		//3번
+		Map<String, Object> map3 = new HashMap<>();
+		map3.put("time", boardDeleteTime);
+		map3.put("boardReportSchuderList", boardReportSchuderList);
+		session.delete("AdminMapper.boardReportSchuderListDelete", map3);
+		
+		
+		//문의사항 Select(문의글 및 관리자댓글)
+		//문의글(해당 게시글이 bstatecode : C인 게시글)
+		List<Object> boardQuestionSchuderList = session.selectList("AdminMapper.boardQuestionSchuderList");
+		boardQuestionSchuderList.add(0);
+		log.info("문의사항 bid = " + boardQuestionSchuderList.toString());
+		//관리자댓글(해당 게시글의 bstatecode : C인 댓글)
+		List<Object> boardQuestionReplySchuderList = session.selectList("AdminMapper.boardQuestionReplySchuderList");
+		boardQuestionReplySchuderList.add(0);
+		log.info("문의사항 brno = " + boardQuestionReplySchuderList.toString());
+		
+		//문의사항 Delete(문의글 및 관리자댓글)
+		//관리자댓글
+		Map<String, Object> questionReplyMap = new HashMap<>();
+		questionReplyMap.put("time", boardDeleteTime);
+		questionReplyMap.put("boardQuestionReplySchuderList", boardQuestionReplySchuderList);
+		session.delete("AdminMapper.boardQuestionReplySchuderListDelete", questionReplyMap);
+		//문의글
+		Map<String, Object> questionMap = new HashMap<>();
+		questionMap.put("time", boardDeleteTime);
+		questionMap.put("boardQuestionSchuderList", boardQuestionSchuderList);
+		session.delete("AdminMapper.boardQuestionSchuderListDelete", questionMap);
 	}
 
 	
