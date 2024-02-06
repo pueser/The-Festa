@@ -155,20 +155,27 @@
  	<!-- 축제list & 축제 문의 -->
  	<select id="festaList" resultType="kr.co.thefesta.admin.domain.QuestionDTO">
  	<![CDATA[
- 		SELECT  title, eventstartdate, eventenddate, contentid, addr1, questioncount
-		FROM (
-    		SELECT title, eventstartdate, eventenddate, contentid, addr1, questioncount, rownum  as rn
-    		FROM (
-		        SELECT title, eventstartdate, eventenddate, contentid, addr1, questioncount
-		        FROM admin_festa_a
-		        UNION
-		        SELECT title, eventstartdate, eventenddate, contentid, addr1, questioncount
-		        FROM admin_festa_b
-                ORDER BY questioncount DESC
-    		)
-		    WHERE rownum <= #{pageNum} * #{amount}
-		)
-		WHERE rn > (#{pageNum} -1) * #{amount}
+ 	WITH RankedFesta AS (
+	    SELECT title, eventstartdate, eventenddate, contentid, addr1, questioncount, ROW_NUMBER() OVER (ORDER BY questioncount DESC) AS rn
+	    FROM (
+	        SELECT festa.title, festa.eventstartdate, festa.eventenddate, festa.contentid, festa.addr1, COUNT(*) AS questioncount
+	        FROM admin_question
+	        INNER JOIN festa ON festa.contentid = admin_question.contentid
+	        GROUP BY festa.title, festa.eventstartdate, festa.eventenddate, festa.contentid, festa.addr1
+	        UNION
+	        SELECT title, eventstartdate, eventenddate, contentid, addr1, 0 AS questioncount
+	        FROM festa
+	        WHERE
+	        	contentid NOT IN (
+	                SELECT contentid
+	                FROM admin_question
+	            )
+	    )
+	)
+	
+	SELECT title, eventstartdate, eventenddate, contentid, addr1, questioncount
+	FROM RankedFesta
+	WHERE rn BETWEEN (#{pageNum} - 1) * #{amount} + 1 AND #{pageNum} * #{amount}
 	]]>
  	</select>
  	
