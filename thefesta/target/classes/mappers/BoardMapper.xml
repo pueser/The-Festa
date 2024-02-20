@@ -122,5 +122,12 @@
       WHERE bid > 0 AND bstatecode in ('Y', 'C')
       ORDER BY bid DESC
    </select>
+   
+   <select id="userBoard" resultType="kr.co.thefesta.board.domain.BoardDTO">
+      SELECT *
+      FROM board
+      WHERE bid > 0 AND bstatecode in ('Y', 'C') AND id = #{id}
+      ORDER BY bid DESC
+   </select>
   
 </mapper>
