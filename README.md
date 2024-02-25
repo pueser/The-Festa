@@ -32,8 +32,12 @@
 - 회원 신고내용 확인 및 회원 상태 변경
 - 회원 신고누적 4회 초과 시 자동 강퇴처리
 
+<img width="48%" src="https://github.com/pueser/The-Festa/assets/117990884/636c1659-b671-4eeb-8d65-bf9286a94f36"/> <img width="48%" src="https://github.com/pueser/The-Festa/assets/117990884/ee64ca8d-c1de-48bc-b50b-8d3a9ac4482d"/>
+
 ### [문의사항]
 - 문의사항 확인 및 문의글의 댓글 작성
+
+<img width="48%" src="https://github.com/pueser/The-Festa/assets/117990884/f240f970-7b25-4bc6-8eec-d3a57112bb4b"/> <img width="48%" src="https://github.com/pueser/The-Festa/assets/117990884/fe762175-a470-4e3a-bfff-6202c0906065"/>
 
 ### [축제]
 - 축제 삭제 및 축제 건의 내용 확인
