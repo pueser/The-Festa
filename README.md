@@ -26,7 +26,7 @@
 ### [로그인]
 - 관리자 로그인시 헤더 변경
 
-<img width="50%" src="https://github.com/pueser/The-Festa/assets/117990884/82f76e49-2a27-4c9a-8ff4-d9f25a269ee8"/> <img width="50%" src="https://github.com/pueser/The-Festa/assets/117990884/3d92ef2c-e3a5-4d5c-9ca7-d6388acdd644"/>
+<img width="48%" src="https://github.com/pueser/The-Festa/assets/117990884/82f76e49-2a27-4c9a-8ff4-d9f25a269ee8"/> <img width="48%" src="https://github.com/pueser/The-Festa/assets/117990884/3d92ef2c-e3a5-4d5c-9ca7-d6388acdd644"/>
 
 ### [회원]
 - 회원 신고내용 확인 및 회원 상태 변경
