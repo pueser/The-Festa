@@ -41,6 +41,7 @@
 
 ### [축제]
 - 축제 삭제 및 축제 건의 내용 확인
+
 <img width="48%" src="https://github.com/pueser/The-Festa/assets/117990884/4c73b1c1-d588-4f54-a62e-fe64024bdb45"/> <img width="48%" src="https://github.com/pueser/The-Festa/assets/117990884/391cf020-d1fe-4c20-9241-275cf4bd2731"/>
 
 ### [게시판]
