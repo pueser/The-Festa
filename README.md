@@ -6,9 +6,8 @@
   
   controller 코드경로 : The-Festa/thefesta/src/main/java/kr/co/thefesta/admin/
 
-   mappers 코드경로 : The-Festa/thefesta/src/main/resources/mappers
+   mappers 코드경로 : The-Festa/thefesta/src/main/resources/mappers/AdminMapper.xml
   
-/AdminMapper.xml
 - 박미리(좋아요 기능 및 주변 맛집 추전)
 - 박지현(맵)
 - 송다인(회원)
