@@ -5,7 +5,8 @@
 - **황혜진(관리자)**
   
   controller 코드경로 : The-Festa/thefesta/src/main/java/kr/co/thefesta/admin/
-  mappers 코드경로 : The-Festa/thefesta/src/main/resources/mappers
+
+   mappers 코드경로 : The-Festa/thefesta/src/main/resources/mappers
   
 /AdminMapper.xml
 - 박미리(좋아요 기능 및 주변 맛집 추전)
