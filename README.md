@@ -53,3 +53,6 @@
 - 게시글 및 게시글 삭제처리
 
 <img width="48%" src="https://github.com/pueser/The-Festa/assets/117990884/da6ce547-15a5-4e08-bfc8-832713436d84"/> <img width="48%" src="https://github.com/pueser/The-Festa/assets/117990884/e6d74d7a-0958-4d29-9718-64dbef11baf9"/>
+
+
+<img width="48%" src="https://github.com/pueser/The-Festa/assets/117990884/c8f36ed4-f794-4b70-a216-d56432d5f5ef"/>
